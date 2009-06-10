@@ -7,11 +7,11 @@ from library.models import Person, Asset, Action
 
 def stream(request, openid):
     try:
-        me = Person.all().filter('openid =', openid)[0]
+        me = Person.all().filter(openid=openid)[0]
     except IndexError:
         raise Http404
 
-    actions = Action.all().filter('who =', me).order('-when')[0:10]
+    actions = Action.all().filter(who=me).order('-when')[0:10]
 
     return render_to_response(
         'library/stream.html',
