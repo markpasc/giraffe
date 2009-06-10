@@ -1,0 +1,19 @@
+<div class="asset">
+    <h3>
+        {% block title %}{{ asset.title }}{% endblock %}
+    </h3>
+
+    {% if asset.content %}
+        {{ asset.content }}
+    {% endif %}
+
+    <p>
+        {% block byline %}by {{ asset.author }}{% endblock %}
+        {% block timestamp %}at {{ asset.published }}{% endblock %}
+        {% block tags %}
+            {% if asset.tags %}
+                in {% for tag in asset.tags %}{{ tag }} {% endfor %}
+            {% endif %}
+        {% endblock %}
+    </p>
+</div>
