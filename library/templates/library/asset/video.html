@@ -1,0 +1,20 @@
+{% extends "library/asset/base.html" %}
+
+{% block content %}
+    {% with asset.links.rel__player.0 as player %}
+        {% if player %}
+            <object width="{{ player.width }}" height="{{ player.height }}">
+                <param name="movie" value="{{ player.href }}"></param>
+                <param name="allowFullScreen" value="true"></param>
+                <param name="allowscriptaccess" value="always"></param>
+                <embed src="{{ player.href }}"
+                    type="{{ player.content_type }}"
+                    allowscriptaccess="always"
+                    allowfullscreen="true"
+                    width="{{ player.width }}" height="{{ player.height }}"></embed>
+            </object>
+        {% endif %}
+    {% endwith %}
+
+    {{ block.super }}
+{% endblock %}

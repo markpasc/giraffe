@@ -9,6 +9,7 @@ class IncludeAssetByTypeNode(Node):
 
     template_for_type = {
         'http://activitystrea.ms/schema/1.0/bookmark': 'bookmark',
+        'http://activitystrea.ms/schema/1.0/video': 'video',
         None: 'asset',
     }
 

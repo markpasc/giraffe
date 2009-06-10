@@ -3,9 +3,11 @@
         {% block title %}{{ asset.title }}{% endblock %}
     </h3>
 
-    {% if asset.content %}
-        {{ asset.content }}
-    {% endif %}
+    {% block content %}
+        {% if asset.content %}
+            {{ asset.content }}
+        {% endif %}
+    {% endblock %}
 
     <p>
         {% block byline %}by {{ asset.author }}{% endblock %}
