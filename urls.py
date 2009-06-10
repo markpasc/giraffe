@@ -1,17 +1,19 @@
+from django.conf import settings
 from django.conf.urls.defaults import *
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+def app_include(app):
+    urls = '.'.join((app, 'urls'))
+    return (r'^', include(urls))
+
+def has_urls(app):
+    urls = '.'.join((app, 'urls'))
+    try:
+        __import__(urls)
+    except ImportError:
+        return False
+    else:
+        return True
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^giraffe/', include('giraffe.foo.urls')),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # (r'^admin/(.*)', admin.site.root),
+    *[app_include(app) for app in settings.INSTALLED_APPS if has_urls(app)]
 )
