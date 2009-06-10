@@ -14,10 +14,8 @@ class Query(db.Query):
     }
 
     def filter(self, *args, **kwargs):
-        q = self
-
         if args:
-            q = super(Query, q).filter(*args)
+            super(Query, self).filter(*args)
 
         for key, value in kwargs.iteritems():
             parts = key.split('__', 1)
@@ -28,9 +26,9 @@ class Query(db.Query):
             operator = self.operators[operator]
 
             query = ' '.join((field, operator))
-            q = super(Query, self).filter(query, value)
+            super(Query, self).filter(query, value)
 
-        return q
+        return self
 
     def __getattr__(self, name):
         if name.startswith('__'):
