@@ -1,40 +1,29 @@
-#!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+# Force Django to reload its settings before importing any of it.
+import os
+from django.conf import settings
+settings._target = None
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 
+import logging
+
+from django.core.handlers import wsgi
+from django.core import signals
+import django.db
+from google.appengine.ext.webapp import util
 
 
-import wsgiref.handlers
+def log_exception(*args, **kwargs):
+    logging.exception('Exception in request:')
 
-
-from google.appengine.ext import webapp
-
-
-class MainHandler(webapp.RequestHandler):
-
-  def get(self):
-    self.response.out.write('Hello world!')
+signals.got_request_exception.connect(log_exception)
+signals.got_request_exception.disconnect(django.db._rollback_on_exception)
 
 
 def main():
-  application = webapp.WSGIApplication([('/', MainHandler)],
-                                       debug=True)
-  wsgiref.handlers.CGIHandler().run(application)
+    application = wsgi.WSGIHandler()
+    util.run_wsgi_app(application)
 
 
 if __name__ == '__main__':
-  main()
+    main()
