@@ -3,7 +3,16 @@
 {% block content %}
 
     {% for action in actions %}
-        {{ action }}
+    <div class="action">
+        {% with action.what as asset %}
+            {% with asset.links.rel__related.0 as related_link %}
+            <h3>
+                <a href="{{ related_link.href }}">{{ asset.title }}</a>
+                <a href="{{ related_link.href }}">&#10148;</a>
+            </h3>
+            {% endwith %}
+        {% endwith %}
+    </div>
     {% endfor %}
 
 {% endblock %}
