@@ -2,8 +2,17 @@
 <html><head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>{% block htmltitle %}giraffe{% endblock %}</title>
+    <link href="/static/ply.css" rel="stylesheet" type="text/css" media="screen">
 </head><body>
 
-    {% block content %}{% endblock %}
+    <div class="grid showgrid">
+        <div class="span-16">
+            {% block content %}{% endblock %}
+        </div>
+
+        <div class="span-5 prefix-2">
+            <h2>(sidebar)</h2>
+        </div>
+    </div>
 
 </body></html>
