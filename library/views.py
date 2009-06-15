@@ -2,7 +2,7 @@ from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from library.models import Person, Asset, Action
+from library.models import Person, Asset, Action, Blog
 
 
 def stream(request, openid):
@@ -11,7 +11,8 @@ def stream(request, openid):
     except IndexError:
         raise Http404
 
-    actions = Action.all().filter(who=me).order('-when')[0:10]
+    blog = Blog.all().filter(person=me).order('-posted')[0:10]
+    actions = [x.action for x in blog]
 
     return render_to_response(
         'library/stream.html',

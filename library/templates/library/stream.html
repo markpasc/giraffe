@@ -4,7 +4,7 @@
 {% block content %}
 
     {% for action in actions %}
-        {% with action.what as asset %}
+        {% with action.asset as asset %}
             {% include_asset_by_type %}
         {% endwith %}
     {% endfor %}

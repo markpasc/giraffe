@@ -59,6 +59,13 @@ class Person(Model):
 
 
 class Asset(Model):
+
+    object_types = {
+        'video': 'http://activitystrea.ms/schema/1.0/video',
+        'bookmark': 'http://activitystrea.ms/schema/1.0/bookmark',
+        'post': 'http://activitystrea.ms/schema/1.0/blog-entry',
+    }
+
     author = db.ReferenceProperty(Person)
     object_type = db.StringProperty()
 
@@ -82,7 +89,19 @@ class Link(Model):
 
 
 class Action(Model):
-    who = db.ReferenceProperty(Person)
+
+    verbs = {
+        'post': 'http://activitystrea.ms/schema/1.0/post',
+        'favorite': 'http://activitystrea.ms/schema/1.0/favorite',
+    }
+
+    person = db.ReferenceProperty(Person)
     verb = db.StringProperty()
-    what = db.ReferenceProperty(Asset)
+    asset = db.ReferenceProperty(Asset)
     when = db.DateTimeProperty(auto_now_add=True)
+
+
+class Blog(Model):
+    person = db.ReferenceProperty(Person)
+    action = db.ReferenceProperty(Action)
+    posted = db.DateTimeProperty(auto_now_add=True)
