@@ -2,8 +2,17 @@
 <html><head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>{% block htmltitle %}giraffe{% endblock %}</title>
-    <link href="/static/ply.css" rel="stylesheet" type="text/css" media="screen">
+    <link href="{% url static path="style.css" %}" rel="stylesheet" type="text/css" media="screen">
 </head><body>
+
+    <div id="title">
+        <div class="grid">
+            <div class="span-24">
+                <h1><a href="{% url home %}"><img src="{% url static path="bee.png" %}" alt="Best Endtimes Ever"></a></h1>
+            </div>
+            <br style="clear: both;">
+        </div>
+    </div>
 
     <div class="grid showgrid">
         <div class="span-16">

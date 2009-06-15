@@ -15,5 +15,6 @@ def has_urls(app):
         return True
 
 urlpatterns = patterns('',
+    url(r'^static/(?P<path>.*)', 'django.views.static.serve', name='static'),
     *[app_include(app) for app in settings.INSTALLED_APPS if has_urls(app)]
 )
