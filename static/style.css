@@ -16,3 +16,13 @@ body {
     line-height: 1.5;
     text-transform: lowercase;
 }
+
+.asset p {
+    font-size: 1.2em;
+    line-height: 1.2em;
+}
+
+.asset .meta {
+    font-size: 1.0em;
+    line-height: 1.0em;
+}

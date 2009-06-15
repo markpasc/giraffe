@@ -1,4 +1,6 @@
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
+from django.template import Template, Context
 from google.appengine.ext import db
 
 
@@ -73,6 +75,12 @@ class Person(Model):
             return reverse('profile', kwargs={'slug': self.slug})
         return self.openid
 
+    def as_html(self):
+        t = Template('<a href="{{ person.get_permalink_url }}">{{ person.name }}</a>')
+        c = Context({ 'person': self })
+        html = t.render(c)
+        return mark_safe(html)
+
 
 class Asset(Model):
 
@@ -88,7 +96,7 @@ class Asset(Model):
     title = db.StringProperty()
     slug = db.StringProperty()
     content = db.BlobProperty()
-    category = db.CategoryProperty()
+    content_type = db.StringProperty()
 
     published = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
@@ -115,6 +123,16 @@ class Action(Model):
     verb = db.StringProperty()
     asset = db.ReferenceProperty(Asset)
     when = db.DateTimeProperty(auto_now_add=True)
+
+    def byline_html(self):
+        if self.verb == self.verbs['post']:
+            html = "posted by %s"
+        elif self.verb == self.verbs['favorite']:
+            html = "saved as a favorite by %s"
+        else:
+            html = "acted upon by %s"
+        html = html % self.person.as_html()
+        return mark_safe(html)
 
 
 class Blog(Model):

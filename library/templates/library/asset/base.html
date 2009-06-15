@@ -5,12 +5,17 @@
 
     {% block content %}
         {% if asset.content %}
-            {{ asset.content }}
+            {% ifequal asset.content_type "text/markdown" %}
+                {% load markup %}
+                {{ asset.content|markdown }}
+            {% else %}
+                {{ asset.content }}
+            {% endifequal %}
         {% endif %}
     {% endblock %}
 
-    <p>
-        {% block byline %}by {{ asset.author }}{% endblock %}
+    <p class="meta">
+        {% block byline %}{{ action.byline_html }}{% endblock %}
         {% block timestamp %}at {{ asset.published }}{% endblock %}
         {% block tags %}
             {% if asset.tags %}

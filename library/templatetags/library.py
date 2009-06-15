@@ -1,4 +1,5 @@
-from django.template import Library, Node, Variable
+from django.conf import settings
+from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.template.loader import get_template
 
 
