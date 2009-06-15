@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from google.appengine.ext import db
 
 
@@ -55,7 +56,22 @@ class Model(db.Expando):
 
 
 class Person(Model):
+
     openid = db.StringProperty()
+    slug = db.StringProperty()
+    name = db.StringProperty()
+    # userpic?
+
+    def blog(self):
+        return Blog.all().filter(person=self)
+
+    def actions(self):
+        return Action.all().filter(person=self)
+
+    def get_permalink_url(self):
+        if self.slug:
+            return reverse('profile', kwargs={'slug': self.slug})
+        return self.openid
 
 
 class Asset(Model):
