@@ -39,8 +39,10 @@ body {
     height: 390px;
 }
 
-#api-result-label {
+#api-result-about {
     line-height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 #api-result-body {

@@ -25,24 +25,27 @@
     <script type="text/javascript">
     $(document).ready(function () {
         $('#api-request-button').click(function (e) {
-            var method = $('#api-request-method').val();
+            var method = $('#api-request-method option:selected').val();
+            var path = $('#api-request-path').val();
             $.ajax({
                 dataType: 'text',
-                method: method,
+                type: method,
                 data: (method == "GET" ? null : $('#api-request-body').val()),
                 contentType: 'application/json',
                 processData: false,
-                url: $('#api-request-path').val(),
+                url: path,
                 complete: function (xhr, status) {
+                    $('#api-result-about').text(method + " " + path);
                     $('#api-result-body').text(xhr.responseText);
                 }
-            })
+            });
         });
     });
     </script>
 
     <div id="api-result" class="span-10 prefix-2">
-        <pre id="api-result-body"></pre>
+        <p id="api-result-about">&nbsp;</p>
+        <p><pre id="api-result-body"></pre></p>
     </div>
 
 {% endblock %}

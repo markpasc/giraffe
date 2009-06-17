@@ -49,21 +49,21 @@ def profile(request, slug):
     )
 
 
-@auth_required
-def api_browserpage(request):
-    if request.method not in "GET":
-        resp = HttpResponse(
-            content='Method %r not allowed on this resource' % request.method,
-            content_type='text/plain',
-            status=405,
-        )
-        resp['Allow'] = 'GET'
-        return resp
-
-    return render_to_response(
-        'library/api.html',
-        context_instance=RequestContext(request),
-    )
+def allowed_methods(*methods):
+    def wrapper(fn):
+        @wraps(fn)
+        def check_methods(request, *args, **kwargs):
+            if request.method not in methods:
+                resp = HttpResponse(
+                    content='Method %r not allowed on this resource' % request.method,
+                    content_type='text/plain',
+                    status=405,
+                )
+                resp['Allow'] = ', '.join(methods)
+                return resp
+            return fn(request, *args, **kwargs)
+        return check_methods
+    return wrapper
 
 
 def api_error(fn):
@@ -80,17 +80,19 @@ def api_error(fn):
 
 
 @auth_required
+@allowed_methods("GET")
+@api_error
+def api_browserpage(request):
+    return render_to_response(
+        'library/api.html',
+        context_instance=RequestContext(request),
+    )
+
+
+@auth_required
+@allowed_methods("POST", "GET")
 @api_error
 def api_list(request, kind):
-    if request.method not in ("POST", "GET"):
-        resp = HttpResponse(
-            content='Method %r not allowed on this resource' % request.method,
-            content_type='text/plain',
-            status=405,
-        )
-        resp['Allow'] = 'GET, POST'
-        return resp
-
     try:
         cls = library.models.model_with_kind(kind)
     except ValueError:
@@ -139,6 +141,7 @@ def api_list(request, kind):
 
 
 @auth_required
+@allowed_methods("GET", "PUT")
 @api_error
 def api_item(request, kind, id):
     try:
@@ -157,6 +160,9 @@ def api_item(request, kind, id):
             content_type='text/plain',
         )
 
-    return HttpResponse(
-        content=json.dumps(obj.as_data(), indent=4),
-    )
+    if request.method == "GET":
+        return HttpResponse(
+            content=json.dumps(obj.as_data(), indent=4),
+        )
+
+    raise NotImplementedError()
