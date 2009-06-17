@@ -100,7 +100,7 @@ def api_list(request, kind):
                    and x.kind().lower() == kind.lower()][0]
     except IndexError:
         return HttpResponseNotFound(
-            content='No such resource %r\nTry: %s' % (kind, ' '.join(classes)),
+            content='No such resource %r' % kind,
             content_type='text/plain',
         )
 
