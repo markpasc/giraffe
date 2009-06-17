@@ -17,6 +17,10 @@ body {
     text-transform: lowercase;
 }
 
+#title h1 img {
+    vertical-align: middle;
+}
+
 .asset p {
     font-size: 1.2em;
     line-height: 1.2em;
