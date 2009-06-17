@@ -2,52 +2,14 @@ from functools import wraps
 import traceback
 
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import simplejson as json
+import django.utils.simplejson as json
 from google.appengine.ext import db
 
 from library.auth import auth_required
 import library.models
-from library.models import Person, Asset, Action, Blog
-
-
-def stream(request, openid):
-    try:
-        me = Person.all().filter(openid=openid)[0]
-    except IndexError:
-        raise Http404
-
-    blog = Blog.all().filter(person=me).order('-posted')[0:10]
-    actions = [x.action for x in blog]
-
-    return render_to_response(
-        'library/stream.html',
-        {
-            'blogger': me,
-            'actions': actions,
-        },
-        context_instance=RequestContext(request),
-    )
-
-
-def profile(request, slug):
-    try:
-        person = Person.all().filter(slug=slug)[0]
-    except IndexError:
-        raise Http404
-
-    actions = Action.all().filter(person=person).order('-when')[0:10]
-
-    return render_to_response(
-        'library/profile.html',
-        {
-            'person': person,
-            'actions': actions,
-        },
-        context_instance=RequestContext(request),
-    )
 
 
 def allowed_methods(*methods):
@@ -83,7 +45,7 @@ def api_error(fn):
 @auth_required
 @allowed_methods("GET")
 @api_error
-def api_browserpage(request):
+def browserpage(request):
     return render_to_response(
         'library/api.html',
         context_instance=RequestContext(request),
@@ -93,7 +55,7 @@ def api_browserpage(request):
 @auth_required
 @allowed_methods("POST", "GET")
 @api_error
-def api_list(request, kind):
+def list(request, kind):
     try:
         cls = library.models.model_with_kind(kind)
     except ValueError:
@@ -149,7 +111,7 @@ def api_list(request, kind):
 @auth_required
 @allowed_methods("GET", "PUT", "POST", "DELETE")
 @api_error
-def api_item(request, kind, id):
+def item(request, kind, id):
     try:
         cls = library.models.model_with_kind(kind)
     except ValueError:
