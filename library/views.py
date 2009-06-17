@@ -5,6 +5,7 @@ from django.http import Http404, HttpResponse, HttpResponseNotFound, HttpRespons
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils import simplejson as json
+from google.appengine.ext import db
 
 from library.auth import auth_required
 import library.models
@@ -90,15 +91,9 @@ def api_list(request, kind):
         resp['Allow'] = 'GET, POST'
         return resp
 
-    # What kind are we talking about?
-    models_content = [getattr(library.models, x) for x in dir(library.models)]
     try:
-        cls = [x for x in models_content
-                   if isinstance(x, type)
-                   and issubclass(x, library.models.Model)
-                   and x is not library.models.Model
-                   and x.kind().lower() == kind.lower()][0]
-    except IndexError:
+        cls = library.models.model_with_kind(kind)
+    except ValueError:
         return HttpResponseNotFound(
             content='No such resource %r' % kind,
             content_type='text/plain',
@@ -146,4 +141,22 @@ def api_list(request, kind):
 @auth_required
 @api_error
 def api_item(request, kind, id):
-    pass
+    try:
+        cls = library.models.model_with_kind(kind)
+    except ValueError:
+        return HttpResponseNotFound(
+            content='No such resource %r' % '/'.join((kind, id)),
+            content_type='text/plain',
+        )
+
+    try:
+        obj = cls.get(id)
+    except (db.BadKeyError, db.KindError):
+        return HttpResponseNotFound(
+            content='No such resource %r' % '/'.join((kind, id)),
+            content_type='text/plain',
+        )
+
+    return HttpResponse(
+        content=json.dumps(obj.as_data(), indent=4),
+    )

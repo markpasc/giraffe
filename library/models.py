@@ -4,6 +4,15 @@ from django.utils.safestring import mark_safe
 from google.appengine.ext import db
 
 
+model_for_kind = {}
+
+def model_with_kind(kind):
+    try:
+        return model_for_kind[kind.lower()]
+    except KeyError:
+        raise ValueError("No such model with kind %r" % kind)
+
+
 class Query(db.Query):
 
     operators = {
@@ -50,7 +59,18 @@ class Query(db.Query):
         return self.filter(query, value)
 
 
+class ModelMeta(db.Expando.__metaclass__):
+
+    def __new__(cls, name, bases, attr):
+        newcls = super(ModelMeta, cls).__new__(cls, name, bases, attr)
+        if name != 'Model':
+            model_for_kind[newcls.kind().lower()] = newcls
+        return newcls
+
+
 class Model(db.Expando):
+
+    __metaclass__ = ModelMeta
 
     @classmethod
     def all(cls, **kwargs):
