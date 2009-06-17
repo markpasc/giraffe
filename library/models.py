@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
-from django.utils.safestring import mark_safe
 from django.template import Template, Context
+from django.utils.safestring import mark_safe
 from google.appengine.ext import db
 
 
@@ -55,6 +55,17 @@ class Model(db.Expando):
     @classmethod
     def all(cls, **kwargs):
         return Query(cls, **kwargs)
+
+    def as_data(self):
+        props = self.properties().keys() + self.dynamic_properties()
+        data = dict([(k, getattr(self, k)) for k in props])
+
+        try:
+            data['key'] = str(self.key())
+        except db.NotSavedError:
+            pass
+
+        return data
 
 
 class Person(Model):

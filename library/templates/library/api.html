@@ -1,0 +1,48 @@
+{% extends "library/base.html" %}
+
+{% block grid %}
+
+    <div id="api-request" class="span-10">
+        <form>
+            <p>
+                <select id="api-request-method">
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                </select>
+                <input id="api-request-path" value="/api">
+            </p>
+            <p><textarea id="api-request-body"></textarea></p>
+
+            <p>
+                <a id="api-request-button" class="button">
+                    Perform awesomeness
+                </a>
+            </p>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('#api-request-button').click(function (e) {
+            var method = $('#api-request-method').val();
+            $.ajax({
+                dataType: 'text',
+                method: method,
+                data: (method == "GET" ? null : $('#api-request-body').val()),
+                contentType: 'application/json',
+                processData: false,
+                url: $('#api-request-path').val(),
+                complete: function (xhr, status) {
+                    $('#api-result-body').text(xhr.responseText);
+                }
+            })
+        });
+    });
+    </script>
+
+    <div id="api-result" class="span-10 prefix-2">
+        <pre id="api-result-body"></pre>
+    </div>
+
+{% endblock %}

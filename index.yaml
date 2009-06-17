@@ -24,7 +24,7 @@ indexes:
   - name: when
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 12 times in query history.
 - kind: Blog
   properties:
   - name: person

@@ -2,7 +2,7 @@
 
 import os
 
-DEBUG = False
+DEBUG = True
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -60,7 +60,15 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'library.auth.AuthenticationMiddleware',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+#   'django.core.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+#    'django.core.context_processors.media',  # 0.97 only.
+#    'django.core.context_processors.request',
 )
 
 ROOT_URLCONF = 'urls'

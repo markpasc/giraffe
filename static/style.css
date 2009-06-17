@@ -8,6 +8,7 @@ body {
     background-color: #222222;
     color: #DDDDDD;
     width: 100%;
+    margin-bottom: 20px;
 }
 
 #title h1 {
@@ -29,4 +30,43 @@ body {
 .asset .meta {
     font-size: 1.0em;
     line-height: 1.0em;
+}
+
+/* api editor */
+
+#api-request-body {
+    width: 100%;
+    height: 390px;
+}
+
+#api-result-label {
+    line-height: 20px;
+}
+
+#api-result-body {
+    height: 390px;
+    overflow: auto;
+    border: 1px solid gray;
+}
+
+pre {
+    font-size: 1.2em;
+    line-height: 1.2em;
+}
+
+a.button {
+    background: #222 url(alert-overlay.png) repeat-x;
+    display: inline-block;
+    padding: 5px 10px 6px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 1;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    position: relative;
+    cursor: pointer;
 }
