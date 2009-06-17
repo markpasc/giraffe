@@ -1,5 +1,6 @@
 from functools import wraps
 
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from google.appengine.api import users
 
@@ -44,3 +45,19 @@ def auth_required(fn):
         return fn(request, *args, **kwargs)
 
     return check_for_auth
+
+
+def admin_only(fn):
+    @wraps(fn)
+    def check_for_admin(request, *args, **kwargs):
+        if request.user is not AnonymousUser:
+            email = request.user.email()
+            for admin in settings.ADMINS:
+                if admin[1] == email:
+                    return fn(request, *args, **kwargs)
+        # Send 'em to re-login.
+        this_url = request.get_full_path()
+        login_url = users.create_login_url(this_url)
+        return HttpResponseRedirect(login_url)
+
+    return check_for_admin

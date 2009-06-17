@@ -8,7 +8,7 @@ from django.template import RequestContext
 import django.utils.simplejson as json
 from google.appengine.ext import db
 
-from library.auth import auth_required
+from library.auth import admin_only
 import library.models
 
 
@@ -42,7 +42,7 @@ def api_error(fn):
     return try_that
 
 
-@auth_required
+@admin_only
 @allowed_methods("GET")
 @api_error
 def browserpage(request):
@@ -52,7 +52,7 @@ def browserpage(request):
     )
 
 
-@auth_required
+@admin_only
 @allowed_methods("POST", "GET")
 @api_error
 def list(request, kind):
@@ -108,7 +108,7 @@ def list(request, kind):
     return HttpResponseRedirect(item)
 
 
-@auth_required
+@admin_only
 @allowed_methods("GET", "PUT", "POST", "DELETE")
 @api_error
 def item(request, kind, id):

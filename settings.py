@@ -2,10 +2,10 @@
 
 import os
 
-DEBUG = True
+DEBUG = False
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Mark Paschal', 'markpasc@markpasc.org'),
 )
 
 MANAGERS = ADMINS
