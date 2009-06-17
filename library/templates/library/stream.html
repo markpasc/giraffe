@@ -1,6 +1,10 @@
 {% extends "library/base.html" %}
 {% load library %}
 
+{% block htmlhead %}
+<meta name="robots" content="noindex">
+{% endblock %}
+
 {% block content %}
 
     {% for action in actions %}

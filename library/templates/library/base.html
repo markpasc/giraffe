@@ -4,6 +4,7 @@
     <title>{% block htmltitle %}giraffe{% endblock %}</title>
     <link href="{% url static path="style.css" %}" rel="stylesheet" type="text/css" media="screen">
     <script type="text/javascript" src="{% url static path="jquery.js" %}"></script>
+    {% block htmlhead %}{% endblock %}
 </head><body>
 
     <div id="title">
