@@ -2,8 +2,7 @@
 
 import os
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+DEBUG = False
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -80,3 +79,12 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'library',
 )
+
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
+if 'TEMPLATE_DEBUG' not in locals():
+    TEMPLATE_DEBUG = DEBUG
