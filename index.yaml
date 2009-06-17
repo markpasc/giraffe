@@ -10,21 +10,21 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 4 times in query history.
+# Unused in query history -- copied from input.
 - kind: Action
   properties:
   - name: person
   - name: when
     direction: desc
 
-# Used 48 times in query history.
+# Unused in query history -- copied from input.
 - kind: Action
   properties:
   - name: who
   - name: when
     direction: desc
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Blog
   properties:
   - name: person
