@@ -96,6 +96,7 @@ def api_list(request, kind):
         cls = [x for x in models_content
                    if isinstance(x, type)
                    and issubclass(x, library.models.Model)
+                   and x is not library.models.Model
                    and x.kind().lower() == kind.lower()][0]
     except IndexError:
         return HttpResponseNotFound(
