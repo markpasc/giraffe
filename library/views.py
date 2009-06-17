@@ -1,7 +1,8 @@
 from functools import wraps
 import traceback
 
-from django.http import Http404, HttpResponse, HttpResponseNotFound, HttpResponseServerError
+from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils import simplejson as json
@@ -124,8 +125,11 @@ def api_list(request, kind):
             status=400,
         )
 
+    kwargs = dict([(k.encode('utf-8'), v) for k, v in data.iteritems()])
+
     try:
-        obj = cls(**data)
+        obj = cls(**kwargs)
+        obj.put()
     except Exception, exc:
         return HttpResponse(
             content="%s creating %s:\n\n%s\n\nGiven data: %s"
@@ -135,13 +139,15 @@ def api_list(request, kind):
             status=400,
         )
 
-    item = reverse('library.views.api_item',
-        {'kind': kind, 'id': obj.key()})
+    item = reverse(
+        'library.views.api_item',
+        kwargs={'kind': kind, 'id': obj.key()},
+    )
     return HttpResponseRedirect(item)
 
 
 @auth_required
-@allowed_methods("GET", "PUT")
+@allowed_methods("GET", "PUT", "POST", "DELETE")
 @api_error
 def api_item(request, kind, id):
     try:
@@ -154,15 +160,66 @@ def api_item(request, kind, id):
 
     try:
         obj = cls.get(id)
-    except (db.BadKeyError, db.KindError):
+        if obj is None:
+            raise ValueError()
+    except (db.BadKeyError, db.KindError, ValueError):
         return HttpResponseNotFound(
             content='No such resource %r' % '/'.join((kind, id)),
             content_type='text/plain',
         )
 
-    if request.method == "GET":
-        return HttpResponse(
-            content=json.dumps(obj.as_data(), indent=4),
-        )
+    if request.method == "DELETE":
+        try:
+            obj.delete()
+        except Exception, exc:
+            return HttpResponse(
+                content="%s deleting %s instance:\n\n%s"
+                    % (type(exc).__name__, cls.__name__, traceback.format_exc()),
+                content_type='text/plain',
+                status=400,
+            )
+        return HttpResponse(status=207)
 
-    raise NotImplementedError()
+    if request.method != "GET":
+        try:
+            data = json.loads(request.raw_post_data)
+        except Exception, exc:
+            return HttpResponse(
+                content="%s creating %s:\n\n%s\n\nGiven data: %s"
+                    % (type(exc).__name__, cls.__name__, traceback.format_exc(),
+                       request.raw_post_data),
+                content_type='text/plain',
+                status=400,
+            )
+
+        for k, v in data.iteritems():
+            try:
+                setattr(obj, k, v)
+            except Exception, exc:
+                return HttpResponse(
+                    content="%s setting %s instance attribute %s:\n\n%s"
+                        % (type(exc).__name__, cls.__name__, k,
+                           traceback.format_exc()),
+                    content_type='text/plain',
+                    status=400,
+                )
+
+        # If it was a PUT, delete everything that wasn't specified.
+        if request.method == "PUT":
+            for prop in obj.all_properties():
+                if prop not in data:
+                    delattr(obj, prop)
+
+        try:
+            obj.put()
+        except Exception, exc:
+            return HttpResponse(
+                content="%s saving modified %s instance:\n\n%s"
+                    % (type(exc).__name__, cls.__name__, traceback.format_exc()),
+                content_type='text/plain',
+                status=400,
+            )
+
+    return HttpResponse(
+        content=json.dumps(obj.as_data(), indent=4),
+    )

@@ -76,9 +76,11 @@ class Model(db.Expando):
     def all(cls, **kwargs):
         return Query(cls, **kwargs)
 
+    def all_properties(self):
+        return self.properties().keys() + self.dynamic_properties()
+
     def as_data(self):
-        props = self.properties().keys() + self.dynamic_properties()
-        data = dict([(k, getattr(self, k)) for k in props])
+        data = dict([(k, getattr(self, k)) for k in self.all_properties()])
 
         try:
             data['key'] = str(self.key())
