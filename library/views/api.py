@@ -102,8 +102,8 @@ def list(request, kind):
         )
 
     item = reverse(
-        'library.views.api_item',
-        kwargs={'kind': kind, 'id': obj.key()},
+        'library.views.api.item',
+        kwargs={'kind': kind, 'key': obj.key()},
     )
     return HttpResponseRedirect(item)
 
@@ -111,22 +111,33 @@ def list(request, kind):
 @admin_only
 @allowed_methods("GET", "PUT", "POST", "DELETE")
 @api_error
-def item(request, kind, id):
+def item(request, kind, key):
     try:
         cls = library.models.model_with_kind(kind)
     except ValueError:
         return HttpResponseNotFound(
-            content='No such resource %r' % '/'.join((kind, id)),
+            content='No such resource type %r' % kind,
             content_type='text/plain',
         )
 
     try:
-        obj = cls.get(id)
-        if obj is None:
-            raise ValueError()
-    except (db.BadKeyError, db.KindError, ValueError):
+        obj = cls.get(key)
+    except db.BadKeyError:
+        return HttpResponse(
+            content='Sequence %r is not a legitimate object key' % key,
+            content_type='text/plain',
+            status=400,
+        )
+    except db.KindError:
+        return HttpResponse(
+            content='Key %r is not for an object of type %r' % (key, kind),
+            content_type='text/plain',
+            status=400
+        )
+
+    if obj is None:
         return HttpResponseNotFound(
-            content='No such resource %r' % '/'.join((kind, id)),
+            content='No such %r resource %r' % (kind, key),
             content_type='text/plain',
         )
 

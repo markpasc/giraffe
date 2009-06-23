@@ -6,7 +6,7 @@ urlpatterns = patterns('',
 
     url(r'^api$', 'library.views.api.browserpage'),
     url(r'^api/(?P<kind>[^/+]+)$', 'library.views.api.list'),
-    url(r'^api/(?P<kind>[^/+]+)/(?P<id>.+)$', 'library.views.api.item'),
+    url(r'^api/(?P<kind>[^/+]+)/(?P<key>.+)$', 'library.views.api.item'),
 
     url(r'^login$',  'library.views.auth.login',  name="login"),
     url(r'^logout$', 'library.views.auth.logout', name="logout"),
