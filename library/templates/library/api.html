@@ -28,10 +28,11 @@
         $('#api-request-button').click(function (e) {
             var method = $('#api-request-method option:selected').val();
             var path = $('#api-request-path').val();
+            var method_has_body = method != "GET" && method != "DELETE";
             $.ajax({
                 dataType: 'text',
                 type: method,
-                data: (method == "GET" ? null : $('#api-request-body').val()),
+                data: (method_has_body ? $('#api-request-body').val() : null),
                 contentType: 'application/json',
                 processData: false,
                 url: path,
