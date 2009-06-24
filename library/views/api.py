@@ -1,4 +1,6 @@
+from cStringIO import StringIO
 from functools import wraps
+import sys
 import traceback
 
 from django.core.urlresolvers import reverse
@@ -61,6 +63,46 @@ def types(request):
         content=json.dumps(types, indent=4),
         content_type='application/json',
     )
+
+
+@admin_only
+@allowed_methods("POST")
+@api_error
+def code(request):
+    codestr = request.raw_post_data
+    codestr = codestr.replace('\r\n', '\n')
+    try:
+        code = compile(codestr, '<post>', 'exec')
+    except Exception, exc:
+        return HttpResponse(
+            content='%s compiling code:\n\n%s\n\nGiven code: %s'
+                % (type(exc).__name__, traceback.format_exc(), codestr),
+            content_type='text/plain',
+            status=400,
+        )
+
+    real_stdout = sys.stdout
+    real_stderr = sys.stderr
+    try:
+        spool = StringIO()
+        sys.stdout = spool
+        sys.stderr = spool
+        exec code in {}
+    except Exception, exc:
+        return HttpResponse(
+            content='%s executing code:\n\n%s'
+                % (type(exc).__name__, traceback.format_exc()),
+            content_type='text/plain',
+            status=400,
+        )
+    else:
+        return HttpResponse(
+            content=spool.getvalue(),
+            content_type='text/plain',
+        )
+    finally:
+        sys.stdout = real_stdout
+        sys.stderr = real_stderr
 
 
 @admin_only
