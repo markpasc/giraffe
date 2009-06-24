@@ -40,9 +40,22 @@ class Asset(Model):
     slug = db.StringProperty()
     content = db.BlobProperty()
     content_type = db.StringProperty()
+    privacy_groups = db.StringListProperty()
 
     published = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
+
+    def save_and_post(self):
+        self.save()
+
+        # Make an action.
+        act = Action(person=self.author, asset=self, verb=Action.verbs.post, when=self.published)
+        act.save()
+
+        # Post the action to the blogs.
+        for group in self.privacy_groups:
+            bl = Blog(person=self.author, action=act, privacy_group=group, posted=self.published)
+            bl.save()
 
 
 class Link(Model):
@@ -79,3 +92,4 @@ class Blog(Model):
     person = db.ReferenceProperty(Person)
     action = db.ReferenceProperty(Action)
     posted = db.DateTimeProperty(auto_now_add=True)
+    privacy_group = db.StringProperty()
