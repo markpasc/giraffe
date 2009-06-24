@@ -123,6 +123,25 @@ class Model(db.Expando):
     def all(cls, **kwargs):
         return Query(cls, **kwargs)
 
+    @classmethod
+    def get(cls, *args, **kwargs):
+        if not kwargs:
+            return super(Model, cls).get(*args)
+
+        all_kwargs = dict()
+        try:
+            all_kwargs['keys_only'] = kwargs.pop('keys_only')
+        except KeyError:
+            pass
+
+        q = cls.all(**all_kwargs).filter(**kwargs)
+        try:
+            obj = q[0]
+        except IndexError:
+            return
+        else:
+            return obj
+
     def all_properties(self):
         return self.properties().keys() + self.dynamic_properties()
 
