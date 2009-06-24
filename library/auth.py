@@ -100,7 +100,7 @@ class OpenIDStore(interface.OpenIDStore):
             q.filter(handle=handle)
 
         # No expired associations.
-        q.filter(expires__lte=int(time.time()))
+        q.filter(expires__gte=int(time.time()))
 
         # Get the futuremost association.
         q.order('-expires')
