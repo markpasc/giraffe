@@ -15,5 +15,7 @@ urlpatterns += patterns('library.views.api',
 
 urlpatterns += patterns('library.views.auth',
     url(r'^login$',  'login',  name="login"),
+    url(r'^login/start$', 'start_openid'),
+    url(r'^login/complete$', 'complete_openid'),
     url(r'^logout$', 'logout', name="logout"),
 )

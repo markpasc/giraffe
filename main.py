@@ -28,6 +28,7 @@ import logging
 from appengine_django import InstallAppengineHelperForDjango
 from appengine_django import have_django_zip
 from appengine_django import django_zip_path
+from appengine_django import PARENT_DIR
 InstallAppengineHelperForDjango()
 
 # Google App Engine imports.
@@ -40,6 +41,10 @@ def main():
     # Ensure the Django zipfile is in the path if required.
     if have_django_zip and django_zip_path not in sys.path:
         sys.path.insert(1, django_zip_path)
+
+    openid_zip_path = os.path.join(PARENT_DIR, 'openid.zip')
+    if openid_zip_path not in sys.path:
+        sys.path.insert(1, openid_zip_path)
 
     # Create a Django application for WSGI.
     application = django.core.handlers.wsgi.WSGIHandler()

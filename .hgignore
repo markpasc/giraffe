@@ -1,4 +1,5 @@
 \.pyc$
 ^django.zip$
+^openid.zip$
 ^markdown$
 ^appengine_django$

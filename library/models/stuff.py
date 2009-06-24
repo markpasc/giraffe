@@ -11,6 +11,7 @@ class Person(Model):
     openid = db.StringProperty()
     slug = db.StringProperty()
     name = db.StringProperty()
+    email = db.StringProperty()
     # userpic?
 
     def get_permalink_url(self):
