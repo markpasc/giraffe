@@ -1,4 +1,5 @@
 from functools import wraps
+import logging
 import time
 
 from django.conf import settings
@@ -7,6 +8,9 @@ from google.appengine.api import users
 from openid.store import interface, nonce
 
 import library.models as models
+
+
+log = logging.getLogger('library.auth')
 
 
 class _AnonymousUserClass(object):
@@ -86,6 +90,9 @@ class OpenIDStore(interface.OpenIDStore):
         for key in ('handle', 'secret', 'issued', 'lifetime', 'assoc_type'):
             setattr(a, key, getattr(association, key))
         a.save()
+        log.debug('Stored association %r %r %r %r %r for server %s (expires %r)',
+            association.handle, association.secret, association.issued,
+            association.lifetime, association.assoc_type, server_url, a.expires)
 
     def getAssociation(self, server_url, handle=None):
         q = models.Association.all().filter(server_url=server_url)
@@ -101,18 +108,27 @@ class OpenIDStore(interface.OpenIDStore):
         try:
             a = q[0]
         except IndexError:
+            log.debug('Could not find requested association %r for server %s)',
+                handle, server_url)
             return
         else:
+            log.debug('Found requested association %r for server %s',
+                handle, server_url)
             return a.as_openid_association()
 
     def removeAssociation(self, server_url, handle):
         q = models.Association.all().filter(server_url=server_url, handle=handle)
-        a = q[0]
-        if a is None:
+        try:
+            a = q[0]
+        except IndexError:
+            log.debug('Could not find requested association %r for server %s to delete',
+                handle, server_url)
             return False
-
-        a.delete()
-        return True
+        else:
+            a.delete()
+            log.debug('Found and deleted requested association %r for server %s',
+                handle, server_url)
+            return True
 
     def useNonce(self, server_url, timestamp, salt):
         now = int(time.time())
@@ -121,12 +137,21 @@ class OpenIDStore(interface.OpenIDStore):
 
         data = dict(server_url=server_url, timestamp=timestamp, salt=salt)
 
-        q = models.Squib.all().filter(**data)
-        if q[0]:
+        q = models.Squib.all(keys_only=True).filter(**data)
+        try:
+            s = q[0]
+        except IndexError:
+            pass
+        else:
+            log.debug('Discovered squib %r %r for server %s was already used',
+                timestamp, salt, server_url)
             return False
 
         s = models.Squib(**data)
         s.save()
+        log.debug('Noted new squib %r %r for server %s',
+            timestamp, salt, server_url)
+        return True
 
     def cleanup(self):
         self.cleanupAssociations()
