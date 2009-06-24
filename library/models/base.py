@@ -15,9 +15,31 @@ def model_with_kind(kind):
         raise ValueError("No such model with kind %r" % kind)
 
 
+class Constants(object):
+    class Immutable(Exception):
+        pass
+
+    def __init__(self, *args, **kwargs):
+        for arg in args:
+            self.__dict__.update(arg)
+        self.__dict__.update(kwargs)
+    def __getitem__(self, key):
+        return self.__dict__[key]
+    def __setitem__(self, key, value):
+        raise self.Immutable()
+    def __delitem__(self, key):
+        raise self.Immutable()
+    def __setattr__(self, key, value):
+        raise self.Immutable()
+    def __delattr__(self, key):
+        raise self.Immutable()
+
+constants = Constants
+
+
 class Query(db.Query):
 
-    operators = {
+    operators = constants({
         'exact': '=',
         None: '=',
         'lt': '<',
@@ -25,7 +47,7 @@ class Query(db.Query):
         'gt': '>',
         'gte': '>=',
         'in': 'in',
-    }
+    })
 
     def filter(self, *args, **kwargs):
         if args:

@@ -3,7 +3,7 @@ from django.template import Template, Context
 from django.utils.safestring import mark_safe
 from google.appengine.ext import db
 
-from library.models.base import Model
+from library.models.base import Model, constants
 
 
 class Person(Model):
@@ -27,11 +27,11 @@ class Person(Model):
 
 class Asset(Model):
 
-    object_types = {
-        'video': 'http://activitystrea.ms/schema/1.0/video',
-        'bookmark': 'http://activitystrea.ms/schema/1.0/bookmark',
-        'post': 'http://activitystrea.ms/schema/1.0/blog-entry',
-    }
+    object_types = constants(
+        video='http://activitystrea.ms/schema/1.0/video',
+        bookmark='http://activitystrea.ms/schema/1.0/bookmark',
+        post='http://activitystrea.ms/schema/1.0/blog-entry',
+    )
 
     author = db.ReferenceProperty(Person)
     object_type = db.StringProperty()
@@ -54,10 +54,10 @@ class Link(Model):
 
 class Action(Model):
 
-    verbs = {
-        'post': 'http://activitystrea.ms/schema/1.0/post',
-        'favorite': 'http://activitystrea.ms/schema/1.0/favorite',
-    }
+    verbs = constants(
+        post='http://activitystrea.ms/schema/1.0/post',
+        favorite='http://activitystrea.ms/schema/1.0/favorite',
+    )
 
     person = db.ReferenceProperty(Person)
     verb = db.StringProperty()
@@ -65,9 +65,9 @@ class Action(Model):
     when = db.DateTimeProperty(auto_now_add=True)
 
     def byline_html(self):
-        if self.verb == self.verbs['post']:
+        if self.verb == self.verbs.post:
             html = "posted by %s"
-        elif self.verb == self.verbs['favorite']:
+        elif self.verb == self.verbs.favorite:
             html = "saved as a favorite by %s"
         else:
             html = "acted upon by %s"
