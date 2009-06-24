@@ -17,6 +17,15 @@
     </div>
 
     <div class="grid showgrid">
+
+        {% if flash %}
+            <div class="span-24 last">
+                {% for value in flash.values %}
+                    <p class="flash">{{ value }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         {% block grid %}
         <div class="span-16">
             {% block content %}{% endblock %}

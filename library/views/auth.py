@@ -20,15 +20,15 @@ def login(request, nexturl=None):
 @auth_forbidden
 def start_openid(request):
     openid_url = request.POST.get('openid_url', None)
-    if openid_url is None:
-        # TODO: save an error flash
+    if not openid_url:
+        request.flash.put(loginerror="An OpenID as whom to sign in is required.")
         return HttpResponseRedirect(reverse('login'))
 
     csr = consumer.Consumer(request.session, OpenIDStore())
     try:
         ar = csr.begin(openid_url)
-    except discover.DiscoveryFailure:
-        # TODO: save an error flash
+    except discover.DiscoveryFailure, exc:
+        request.flash.put(loginerror=exc.message)
         return HttpResponseRedirect(reverse('login'))
 
     def whole_reverse(view):
@@ -50,7 +50,7 @@ def complete_openid(request):
     elif isinstance(resp, consumer.CancelResponse):
         return HttpResponseRedirect(reverse('home'))
     elif isinstance(resp, consumer.FailureResponse):
-        # TODO: save an error flash
+        request.flash.put(loginerror=resp.message)
         return HttpResponseRedirect(reverse('login'))
 
 

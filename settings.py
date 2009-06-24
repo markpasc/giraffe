@@ -60,6 +60,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'djangoflash.middleware.FlashMiddleware',
     'library.auth.AuthenticationMiddleware',
 )
 
@@ -67,6 +68,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #   'django.core.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
+    'djangoflash.context_processors.flash',
 #    'django.core.context_processors.media',  # 0.97 only.
 #    'django.core.context_processors.request',
 )
@@ -84,6 +86,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'appengine_django',
     'django.contrib.sessions',
+    'djangoflash',
     'django.contrib.markup',
     'library',
 )
