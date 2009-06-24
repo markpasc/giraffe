@@ -53,6 +53,17 @@ def browserpage(request):
 
 
 @admin_only
+@allowed_methods("GET")
+@api_error
+def types(request):
+    types = library.models.model_for_kind.keys()
+    return HttpResponse(
+        content=json.dumps(types, indent=4),
+        content_type='application/json',
+    )
+
+
+@admin_only
 @allowed_methods("POST", "GET")
 @api_error
 def list(request, kind):
