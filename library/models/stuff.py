@@ -13,12 +13,6 @@ class Person(Model):
     name = db.StringProperty()
     # userpic?
 
-    def blog(self):
-        return Blog.all().filter(person=self)
-
-    def actions(self):
-        return Action.all().filter(person=self)
-
     def get_permalink_url(self):
         if self.slug:
             return reverse('profile', kwargs={'slug': self.slug})
@@ -49,9 +43,6 @@ class Asset(Model):
 
     published = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
-
-    def links(self):
-        return Link.all().filter(asset=self)
 
 
 class Link(Model):

@@ -1,4 +1,9 @@
+import logging
+
 from google.appengine.ext import db
+
+
+log = logging.getLogger('library.models.base')
 
 
 model_for_kind = {}
@@ -60,8 +65,31 @@ class ModelMeta(db.Expando.__metaclass__):
 
     def __new__(cls, name, bases, attr):
         newcls = super(ModelMeta, cls).__new__(cls, name, bases, attr)
+
+        # Link back across reference properties.
+        for propname, prop in attr.items():
+            if isinstance(prop, db.ReferenceProperty):
+                try:
+                    rev_name = prop.reverse_name
+                except AttributeError:
+                    rev_name = "%ss" % name.lower()
+                referenced = prop.data_type
+
+                if hasattr(referenced, rev_name):
+                    continue
+
+                def dood(self):
+                    kwargs = {propname: self}
+                    return newcls.all().filter(**kwargs)
+
+                setattr(referenced, rev_name, property(dood))
+                log.debug('Added reverse property %s.%s for finding %s',
+                    referenced.__name__, rev_name, name)
+
+        # Register in the models set.
         if name != 'Model':
             model_for_kind[newcls.kind().lower()] = newcls
+
         return newcls
 
 
