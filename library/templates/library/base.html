@@ -9,8 +9,15 @@
 
     <div id="title">
         <div class="grid">
-            <div class="span-24">
+            <div class="span-16">
                 <h1><a href="{% url home %}"><img src="{% url static path="bee.png" %}" alt="Best Endtimes Ever"></a></h1>
+            </div>
+            <div class="span-7">
+                {% if request.user.is_anonymous %}
+                    <p><a href="{% url login %}">Sign in</a></p>
+                {% else %}
+                    <p>Sup, {{ request.user.name }}. <a href="{% url logout %}">Sign out</a></p>
+                {% endif %}
             </div>
             <br style="clear: both;">
         </div>

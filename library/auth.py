@@ -1,10 +1,14 @@
 from functools import wraps
 import logging
+import re
 import time
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from google.appengine.api import users
+from openid.consumer import consumer
+from openid.extensions import sreg
 from openid.store import interface, nonce
 
 import library.models as models
@@ -29,6 +33,8 @@ class _AnonymousUserClass(object):
     for x in ('user_id', 'email', 'nickname', 'openid'):
         locals()[x] = _cant_do_that
 
+    is_anonymous = True
+
 
 AnonymousUser = _AnonymousUserClass()
 
@@ -38,11 +44,14 @@ class AuthenticationMiddleware(object):
     def process_request(self, request):
         try:
             openid = request.session['openid']
-            person = models.Person.all().filter(openid=openid)[0]
+            person = models.Person.get(openid=openid)
             if person is None:
                 raise ValueError()
         except (KeyError, ValueError):
             request.user = AnonymousUser
+        else:
+            request.user = person
+            request.user.is_anonymous = False
 
 
 def auth_forbidden(fn):
@@ -60,7 +69,7 @@ def auth_required(fn):
     def check_for_auth(request, *args, **kwargs):
         if request.user is AnonymousUser:
             this_url = request.get_full_path()
-            login_url = users.create_login_url(this_url)
+            login_url = reverse('login')
             return HttpResponseRedirect(login_url)
         return fn(request, *args, **kwargs)
 
@@ -81,6 +90,33 @@ def admin_only(fn):
         return HttpResponseRedirect(login_url)
 
     return check_for_admin
+
+
+def make_person_from_response(resp):
+    if not isinstance(resp, consumer.SuccessResponse):
+        raise ValueError("Can't make a Person from an unsuccessful response")
+
+    # Find the person.
+    p = models.Person.get(openid=resp.identity_url)
+    if p is None:
+        p = Person(openid=resp.identity_url)
+
+    sr = sreg.SRegResponse.fromSuccessResponse(resp)
+    if sr is not None:
+        if 'nickname' in sr:
+            p.name = sr['nickname']
+        if 'email' in sr:
+            p.email = sr['email']
+
+    if p.name is None:
+        name = resp.identity_url
+        # Remove the leading scheme, if it's http.
+        name = re.sub(r'^http://', '', name)
+        # If it's just a domain, strip the trailing slash.
+        name = re.sub(r'^([^/]+)/$', r'\1', name)
+        p.name = name
+
+    p.save()
 
 
 class OpenIDStore(interface.OpenIDStore):

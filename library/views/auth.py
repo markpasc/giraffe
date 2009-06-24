@@ -4,8 +4,11 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from google.appengine.api import users
 from openid.consumer import consumer, discover
+from openid.extensions import sreg
 
-from library.auth import auth_required, auth_forbidden, AnonymousUser, OpenIDStore
+from library.auth import auth_required, auth_forbidden
+from library.auth import make_person_from_response
+from library.auth import AnonymousUser, OpenIDStore
 
 
 @auth_forbidden
@@ -31,6 +34,8 @@ def start_openid(request):
         request.flash.put(loginerror=exc.message)
         return HttpResponseRedirect(reverse('login'))
 
+    ar.addExtension(sreg.SRegRequest(optional=('nickname', 'fullname', 'email')))
+
     def whole_reverse(view):
         return request.build_absolute_uri(reverse(view))
 
@@ -43,19 +48,19 @@ def start_openid(request):
 def complete_openid(request):
     csr = consumer.Consumer(request.session, OpenIDStore())
     resp = csr.complete(request.GET, request.build_absolute_uri())
-    if isinstance(resp, consumer.SuccessResponse):
-        # YAY
-        request.session['openid'] = resp.identity_url
-        return HttpResponseRedirect(reverse('home'))
-    elif isinstance(resp, consumer.CancelResponse):
+    if isinstance(resp, consumer.CancelResponse):
         return HttpResponseRedirect(reverse('home'))
     elif isinstance(resp, consumer.FailureResponse):
         request.flash.put(loginerror=resp.message)
         return HttpResponseRedirect(reverse('login'))
+    elif isinstance(resp, consumer.SuccessResponse):
+        make_person_from_response(resp)
+        request.session['openid'] = resp.identity_url
+        return HttpResponseRedirect(reverse('home'))
 
 
+@auth_required
 def logout(request):
-    logout_url = reverse('home')
-    if request.user is not AnonymousUser:
-        logout_url = users.create_logout_url(logout_url)
-    return HttpResponseRedirect(logout_url)
+    del request.session['openid']
+    del request.user
+    return HttpResponseRedirect(reverse('home'))

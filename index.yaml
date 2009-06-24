@@ -24,7 +24,22 @@ indexes:
   - name: when
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 17 times in query history.
+- kind: Association
+  properties:
+  - name: handle
+  - name: server_url
+  - name: expires
+    direction: desc
+
+# Used 27 times in query history.
+- kind: Association
+  properties:
+  - name: server_url
+  - name: expires
+    direction: desc
+
+# Used 19 times in query history.
 - kind: Blog
   properties:
   - name: person
