@@ -82,6 +82,14 @@ class Query(db.Query):
         query = ' '.join((field, operator))
         return self.filter(query, value)
 
+    def __repr__(self):
+        clauses = list()
+        for clause in self.__query_sets:
+            clauses.extend(clause.items())
+        return "<Query for %s where %s in %s order>" % (self._model_class.__name__,
+            ', '.join([' '.join((k, str(v))) for k,v in clauses]),
+            ', '.join(self.__orderings))
+
 
 class ModelMeta(db.Expando.__metaclass__):
 
@@ -100,11 +108,13 @@ class ModelMeta(db.Expando.__metaclass__):
                 if hasattr(referenced, rev_name):
                     continue
 
-                def dood(self):
-                    kwargs = {propname: self}
-                    return newcls.all().filter(**kwargs)
+                def dooder(propname, cls):
+                    def dood(self):
+                        kwargs = {propname: self}
+                        return cls.all().filter(**kwargs)
+                    return dood
 
-                setattr(referenced, rev_name, property(dood))
+                setattr(referenced, rev_name, property(dooder(propname, newcls)))
                 log.debug('Added reverse property %s.%s for finding %s',
                     referenced.__name__, rev_name, name)
 

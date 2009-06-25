@@ -1,6 +1,8 @@
 <div class="asset">
     <h3>
-        {% block title %}{{ asset.title }}{% endblock %}
+        {% block title %}
+            <a href="{{ asset.get_permalink_url }}">{{ asset.title }}</a>
+        {% endblock %}
     </h3>
 
     {% block content %}
@@ -9,7 +11,11 @@
                 {% load markup %}
                 {{ asset.content|markdown }}
             {% else %}
-                {{ asset.content }}
+                {% ifequal asset.content_type "text/html" %}
+                    {% autoescape off %}{{ asset.content }}{% endautoescape %}
+                {% else %}
+                    {{ asset.content }}
+                {% endifequal %}
             {% endifequal %}
         {% endif %}
     {% endblock %}

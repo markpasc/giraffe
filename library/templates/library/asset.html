@@ -1,0 +1,15 @@
+{% extends "library/base.html" %}
+{% load library %}
+
+{% block htmlhead %}
+{% endblock %}
+
+{% block content %}
+
+    {% for action in actions %}
+        {% with action.asset as asset %}
+            {% include_asset_by_type %}
+        {% endwith %}
+    {% endfor %}
+
+{% endblock %}

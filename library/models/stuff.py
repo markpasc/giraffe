@@ -46,6 +46,9 @@ class Asset(Model):
     published = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
 
+    def get_permalink_url(self):
+        return reverse('asset', kwargs={'slug': self.slug})
+
     def save_and_post(self):
         self.save()
 
