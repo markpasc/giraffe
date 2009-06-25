@@ -77,13 +77,9 @@ def auth_required(fn):
 def admin_only(fn):
     @wraps(fn)
     def check_for_admin(request, *args, **kwargs):
-        if request.user is not AnonymousUser:
-            email = request.user.email
-            for admin in settings.ADMINS:
-                if admin[1] == email:
-                    return fn(request, *args, **kwargs)
-        # Send 'em to sign back in.
-        return HttpResponseRedirect(reverse('signin'))
+        if getattr(request.user, 'is_admin', False):
+            return fn(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('home'))
 
     return check_for_admin
 
@@ -93,9 +89,10 @@ def make_person_from_response(resp):
         raise ValueError("Can't make a Person from an unsuccessful response")
 
     # Find the person.
-    p = models.Person.get(openid=resp.identity_url)
+    openid = resp.identity_url
+    p = models.Person.get(openid=openid)
     if p is None:
-        p = Person(openid=resp.identity_url)
+        p = Person(openid=openid)
 
     sr = sreg.SRegResponse.fromSuccessResponse(resp)
     if sr is not None:
@@ -111,6 +108,9 @@ def make_person_from_response(resp):
         # If it's just a domain, strip the trailing slash.
         name = re.sub(r'^([^/]+)/$', r'\1', name)
         p.name = name
+
+    if openid == "http://markpasc.org/mark/":
+        p.is_admin = True
 
     p.save()
 
