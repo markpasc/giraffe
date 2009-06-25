@@ -3,12 +3,23 @@
 
 {% block htmlhead %}
 <meta name="robots" content="noindex">
+<style type="text/css">
+    .dialog-signin-step {
+        display: none;
+    }
+
+    #dialog-signin,
+    #dialog-signin-step-1 {
+        display: block;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-    <form method="POST" action="{% url library.views.auth.start_openid %}">
-        <p><input name="openid_url"> <input type="submit" value="Sign in"></p>
-    </form>
+    {% include "library/dialog/signin.html" %}
 
 {% endblock %}
+
+{% block dialog-signin %}{% endblock %}
+{% block greets %}{% endblock %}

@@ -32,6 +32,7 @@
             <div class="span-10">
                 <h1><a href="{% url home %}"><img src="{% url static path="bee.png" %}" alt="Best Endtimes Ever"></a></h1>
             </div>
+            {% block greets %}
             <div id="greets" class="span-12 prefix-1">
                 {% if request.user.is_anonymous %}
                     <p><a id="sign-in-link" href="{% url login %}">Sign in</a></p>
@@ -39,6 +40,7 @@
                     <p>Sup, {{ request.user.name }}. <a href="{% url logout %}">Sign out</a></p>
                 {% endif %}
             </div>
+            {% endblock %}
             <br style="clear: both;">
         </div>
     </div>
@@ -66,8 +68,10 @@
         {% endblock %}
     </div>
 
+    {% block dialog-signin %}
     {% if request.user.is_anonymous %}
         {% include "library/dialog/signin.html" %}
     {% endif %}
+    {% endblock %}
 
 </body></html>

@@ -86,7 +86,7 @@ def admin_only(fn):
                     return fn(request, *args, **kwargs)
         # Send 'em to re-login.
         this_url = request.get_full_path()
-        login_url = users.create_login_url(this_url)
+        login_url = reverse('login')
         return HttpResponseRedirect(login_url)
 
     return check_for_admin
