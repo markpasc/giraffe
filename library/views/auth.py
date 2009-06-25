@@ -6,7 +6,7 @@ from google.appengine.api import users
 from openid.consumer import consumer, discover
 from openid.extensions import sreg
 
-from library.auth import auth_required, auth_forbidden
+from library.auth import auth_required, auth_forbidden, log
 from library.auth import make_person_from_response
 from library.auth import AnonymousUser, OpenIDStore
 
@@ -24,8 +24,14 @@ def login(request, nexturl=None):
 def start_openid(request):
     openid_url = request.POST.get('openid_url', None)
     if not openid_url:
+        username = request.POST.get('openid_username', None)
+        pattern = request.POST.get('openid_pattern', None)
+        if username and pattern:
+            openid_url = pattern.replace('{name}', username)
+    if not openid_url:
         request.flash.put(loginerror="An OpenID as whom to sign in is required.")
         return HttpResponseRedirect(reverse('login'))
+    log.debug('Attempting to sign viewer in as %r', openid_url)
 
     csr = consumer.Consumer(request.session, OpenIDStore())
     try:

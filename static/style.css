@@ -19,7 +19,7 @@ body {
     text-transform: lowercase;
 }
 
-#title h1 img {
+#title h1 img, p img {
     vertical-align: middle;
 }
 
@@ -77,10 +77,12 @@ pre {
     line-height: 1.2em;
 }
 
+/* dialogs */
+
 a.button, #TB_window a.button, input[type="submit"] {
     font-family: Helvetica, Arial, sans-serif;
-	font-size: 12px; /* 12px */
-	line-height: 16px !important; /* 16px */
+    font-size: 12px; /* 12px */
+    line-height: 16px !important; /* 16px */
 
     background: #222 url(alert-overlay.png) repeat-x;
     color: #fff;
@@ -107,8 +109,29 @@ a.red-button, #TB_window a.red-button, input[type="submit"].red {
     background-color: #922;
 }
 
-/* dialogs */
-
-.dialog {
+.dialog, .hidden {
     display: none;
+}
+
+input.openid {
+    background: #fff url(signin/openid.png) no-repeat 2px center;
+    color: #000;
+    padding: 3px 3px 3px 20px;
+    border: 1px inset #999;
+    width: 20em;
+}
+
+input.typepad {
+    background-image: url(signin/typepad.png);
+    width: 12em;
+}
+
+input.livejournal {
+    background-image: url(signin/livejournal.png);
+    width: 12em;
+}
+
+input.dreamwidth {
+    background-image: url(signin/dreamwidth.png);
+    width: 12em;
 }
