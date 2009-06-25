@@ -12,9 +12,9 @@ from library.auth import AnonymousUser, OpenIDStore
 
 
 @auth_forbidden
-def login(request, nexturl=None):
+def signin(request, nexturl=None):
     return render_to_response(
-        'library/auth/login.html',
+        'library/signin.html',
         {},
         context_instance=RequestContext(request),
     )
@@ -66,7 +66,7 @@ def complete_openid(request):
 
 
 @auth_required
-def logout(request):
+def signout(request):
     del request.session['openid']
     del request.user
     return HttpResponseRedirect(reverse('home'))

@@ -68,9 +68,7 @@ def auth_required(fn):
     @wraps(fn)
     def check_for_auth(request, *args, **kwargs):
         if request.user is AnonymousUser:
-            this_url = request.get_full_path()
-            login_url = reverse('login')
-            return HttpResponseRedirect(login_url)
+            return HttpResponseRedirect(reverse('signin'))
         return fn(request, *args, **kwargs)
 
     return check_for_auth
@@ -84,10 +82,8 @@ def admin_only(fn):
             for admin in settings.ADMINS:
                 if admin[1] == email:
                     return fn(request, *args, **kwargs)
-        # Send 'em to re-login.
-        this_url = request.get_full_path()
-        login_url = reverse('login')
-        return HttpResponseRedirect(login_url)
+        # Send 'em to sign back in.
+        return HttpResponseRedirect(reverse('signin'))
 
     return check_for_admin
 
