@@ -22,6 +22,25 @@ body {
     vertical-align: middle;
 }
 
+/* hi */
+
+#title a:link, #title a:hover {
+    color: #99f;
+}
+
+#title a:visited, #title a:active {
+    color: #c9f;
+}
+
+#greets p {
+    font-size: 14px;
+    line-height: 28px;
+    margin: 0;
+    padding: 14px 0 6px;
+}
+
+/* stuff */
+
 .asset p {
     font-size: 1.2em;
     line-height: 1.2em;
