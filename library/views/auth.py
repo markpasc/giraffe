@@ -13,6 +13,7 @@ from openid.extensions import sreg
 from library.auth import auth_required, auth_forbidden, log
 from library.auth import make_person_from_response
 from library.auth import AnonymousUser, OpenIDStore
+from library.models import Person
 
 
 @auth_forbidden
@@ -100,7 +101,7 @@ class OAuthDance(object):
             token=token,
             http_url=self.access_token_url,
         )
-        req.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), csr)
+        req.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), csr, token)
 
         resp = fetch(req.to_url(), method=req.get_normalized_http_method())
         if resp.status_code != 200:
