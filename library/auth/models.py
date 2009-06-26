@@ -1,10 +1,18 @@
+import logging
+import re
+import time
+
 from google.appengine.ext import db
 import openid.association
 from openid.consumer import consumer
 from openid.extensions import sreg
 from openid.store import interface, nonce
 
-from library.models.base import Model, constants
+from library.models import Model, constants, Person
+
+
+
+log = logging.getLogger(__name__)
 
 
 class _AnonymousUserClass(object):
@@ -65,7 +73,7 @@ def make_person_from_response(resp):
 
     # Find the person.
     openid = resp.identity_url
-    p = models.Person.get(openid=openid)
+    p = Person.get(openid=openid)
     if p is None:
         p = Person(openid=openid)
 
@@ -93,7 +101,7 @@ def make_person_from_response(resp):
 class OpenIDStore(interface.OpenIDStore):
 
     def storeAssociation(self, server_url, association):
-        a = models.Association(server_url=server_url)
+        a = Association(server_url=server_url)
         for key in ('handle', 'secret', 'issued', 'lifetime', 'assoc_type'):
             setattr(a, key, getattr(association, key))
         a.save()
@@ -102,7 +110,7 @@ class OpenIDStore(interface.OpenIDStore):
             association.lifetime, association.assoc_type, server_url, a.expires)
 
     def getAssociation(self, server_url, handle=None):
-        q = models.Association.all().filter(server_url=server_url)
+        q = Association.all().filter(server_url=server_url)
         if handle is not None:
             q.filter(handle=handle)
 
@@ -124,7 +132,7 @@ class OpenIDStore(interface.OpenIDStore):
             return a.as_openid_association()
 
     def removeAssociation(self, server_url, handle):
-        q = models.Association.all().filter(server_url=server_url, handle=handle)
+        q = Association.all().filter(server_url=server_url, handle=handle)
         try:
             a = q[0]
         except IndexError:
@@ -144,7 +152,7 @@ class OpenIDStore(interface.OpenIDStore):
 
         data = dict(server_url=server_url, timestamp=timestamp, salt=salt)
 
-        q = models.Squib.all(keys_only=True).filter(**data)
+        q = Squib.all(keys_only=True).filter(**data)
         try:
             s = q[0]
         except IndexError:
@@ -154,7 +162,7 @@ class OpenIDStore(interface.OpenIDStore):
                 timestamp, salt, server_url)
             return False
 
-        s = models.Squib(**data)
+        s = Squib(**data)
         s.save()
         log.debug('Noted new squib %r %r for server %s',
             timestamp, salt, server_url)
@@ -166,10 +174,10 @@ class OpenIDStore(interface.OpenIDStore):
 
     def cleanupAssociations(self):
         now = int(time.time())
-        q = models.Association.all(keys_only=True).filter(expires__lt=now - nonce.SKEW)
+        q = Association.all(keys_only=True).filter(expires__lt=now - nonce.SKEW)
         db.delete(q.fetch(100))
 
     def cleanupNonces(self):
         now = int(time.time())
-        q = models.Squib.all(keys_only=True).filter(timestamp__lt=now - nonce.SKEW)
+        q = Squib.all(keys_only=True).filter(timestamp__lt=now - nonce.SKEW)
         db.delete(q.fetch(100))

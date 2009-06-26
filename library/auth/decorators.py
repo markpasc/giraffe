@@ -3,6 +3,8 @@ from functools import wraps
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
+from library.auth.models import AnonymousUser
+
 
 def auth_forbidden(fn):
     @wraps(fn)
