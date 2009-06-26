@@ -4,3 +4,4 @@
 ^markdown$
 ^appengine_django$
 ^djangoflash$
+^oauth.py$
