@@ -1,9 +1,12 @@
-<div id="dialog-signin" class="dialog">
+<div class="grid">
+<div id="dialog-signin" class="grid">
+    <div class="span-12 prefix-12">
+
     <div id="dialog-signin-step-1" class="dialog-signin-step">
         <p>Do you have a blog or web profile with <strong>OpenID</strong>? Enter it here:</p>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
-            <p><input class="openid" name="openid_url"> <input type="submit" value="Sign in"></p>
+            <p><input class="openid" name="openid_url"> <input type="submit" class="green" value="Sign in"></p>
         </form>
 
         <p><a href="#" id="dialog-signin-next-1" class="button red-button">I don't have an OpenID</a></p>
@@ -14,16 +17,16 @@
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
             <input type="hidden" name="openid_pattern" value="http://profile.typepad.com/{name}">
-            <p><input class="openid typepad" name="openid_username"> <input type="submit" value="Sign in with TypePad"></p>
+            <p><input class="openid typepad" name="openid_username"> <input type="submit" class="green" value="Sign in with TypePad"></p>
         </form>
 
         <form method="GET" action="{% url library.views.auth.start_twitter %}">
-            <p><input class="openid twitter" name="username"> <input type="submit" value="Sign in with Twitter"></p>
+            <p><input class="openid twitter" name="username"> <input type="submit" class="green" value="Sign in with Twitter"></p>
         </form>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
             <input type="hidden" name="openid_pattern" value="http://{name}.dreamwidth.org/">
-            <p><input class="openid dreamwidth" name="openid_username"> <input type="submit" value="Sign in with Dreamwidth"></p>
+            <p><input class="openid dreamwidth" name="openid_username"> <input type="submit" class="green" value="Sign in with Dreamwidth"></p>
         </form>
 
         <p><a href="#" id="dialog-signin-next-2" class="button red-button">I don't have any of those</a></p>
@@ -34,12 +37,12 @@
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
             <input type="hidden" name="openid_url" value="https://www.google.com/accounts/o8/id">
-            <p><img src="{% url static path="signin/google.png" %}"> <input type="submit" value="I have a Google account"></p>
+            <p><img src="{% url static path="signin/google.png" %}"> <input type="submit" class="green" value="I have a Google account"></p>
         </form>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
             <input type="hidden" name="openid_url" value="http://yahoo.com/">
-            <p><img src="{% url static path="signin/yahoo.png" %}"> <input type="submit" value="I have a Yahoo! account"></p>
+            <p><img src="{% url static path="signin/yahoo.png" %}"> <input type="submit" class="green" value="I have a Yahoo! account"></p>
         </form>
 
         <p><a href="#" id="dialog-signin-next-3" class="button red-button">I don't have either of those either</a></p>
@@ -55,7 +58,12 @@
             <li class="google"><a href="https://www.google.com/accounts/">Google</a></li>
             <li class="yahoo"><a href="http://login.yahoo.com/">Yahoo!</a></li>
         </ul>
+
+        <p><a href="#" id="dialog-signin-next-4" class="button red-button">Cancel</a></p>
     </div>
+
+    </div>
+</div>
 </div>
 
 <script type="text/javascript">
@@ -63,7 +71,8 @@ $(document).ready(function () {
     $('#sign-in-link').click(function () {
         $('.dialog-signin-step').hide();
         $('#dialog-signin-step-1').show();
-        return tb_show_inline(this, "dialog-signin", 400, 300);
+        $('#dialog-signin').show();
+        return false;
     });
     $('#dialog-signin-next-1').click(function () {
         $('.dialog-signin-step').hide();
@@ -78,6 +87,11 @@ $(document).ready(function () {
     $('#dialog-signin-next-3').click(function () {
         $('.dialog-signin-step').hide();
         $('#dialog-signin-step-4').show();
+        return false;
+    });
+    $('#dialog-signin-next-4').click(function () {
+        $('#dialog-signin').hide();
+        $('.dialog-signin-step').hide();
         return false;
     });
 });

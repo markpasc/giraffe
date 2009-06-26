@@ -30,20 +30,14 @@ body {
 
 /* hi */
 
-#title a:link, #title a:hover {
+#title a:link, #title a:hover,
+#dialog-signin a:link, #dialog-signin a:hover {
     color: #99f;
 }
 
-#title a:visited, #title a:active {
+#title a:visited, #title a:active,
+#dialog-signin a:visited, #dialog-signin a:active {
     color: #c9f;
-}
-
-#greets p {
-    font-size: 14px;
-    line-height: 28px;
-    margin: 0;
-    padding: 14px 0 6px;
-    text-align: right;
 }
 
 /* stuff */
@@ -80,7 +74,7 @@ textarea, pre {
 
 /* dialogs */
 
-a.button, #TB_window a.button, input[type="submit"] {
+a.button, a.button, #dialog-signin a.button, input[type="submit"] {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 1.0em; /* 12px */
     line-height: 16px !important; /* 16px */
@@ -94,6 +88,7 @@ a.button, #TB_window a.button, input[type="submit"] {
     font-weight: bold;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
+    border-radius: 8px;
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
     border: 0px;
@@ -102,16 +97,50 @@ a.button, #TB_window a.button, input[type="submit"] {
     cursor: pointer;
 }
 
-a.green-button, #TB_window a.green-button, input[type="submit"].green {
+a.green-button, #dialog-signin a.green-button, input[type="submit"].green {
     background-color: #292;
 }
 
-a.red-button, #TB_window a.red-button, input[type="submit"].red {
+a.red-button, #dialog-signin a.red-button, input[type="submit"].red {
     background-color: #922;
 }
 
 .dialog, .hidden {
     display: none;
+}
+
+/* signin */
+
+#greets p {
+    font-size: 14px;
+    line-height: 28px;
+    margin: 0;
+    padding: 14px 0 6px;
+    text-align: right;
+}
+
+#dialog-signin {
+    position: absolute;
+    top: 0;
+}
+
+.dialog-signin-step {
+    display: none;
+
+    background-color: #222222;
+    color: white;
+    padding: 4ex 2em;
+
+    -moz-border-radius-bottomright: 16px;
+    -moz-border-radius-bottomleft: 16px;
+    -webkit-border-radius-bottomright: 16px;
+    -webkit-border-radius-bottomleft: 16px;
+    border-radius-bottomright: 16px;
+    border-radius-bottomleft: 16px;
+}
+
+#dialog-signin ul {
+    margin-bottom: 1.6em;
 }
 
 input.openid {
