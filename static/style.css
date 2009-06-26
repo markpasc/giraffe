@@ -133,10 +133,10 @@ a.red-button, #dialog-signin a.red-button, input[type="submit"].red {
 
     -moz-border-radius-bottomright: 16px;
     -moz-border-radius-bottomleft: 16px;
-    -webkit-border-radius-bottomright: 16px;
-    -webkit-border-radius-bottomleft: 16px;
-    border-radius-bottomright: 16px;
-    border-radius-bottomleft: 16px;
+    -webkit-border-bottom-right-radius: 16px;
+    -webkit-border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 16px;
 }
 
 .dialog-signin-step p.last {
