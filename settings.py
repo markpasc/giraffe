@@ -89,6 +89,8 @@ INSTALLED_APPS = (
     'library',
 )
 
+TWITTER_KEY = (None, None)
+
 
 try:
     from local_settings import *

@@ -10,11 +10,15 @@
     </div>
 
     <div id="dialog-signin-step-2" class="dialog-signin-step">
-        <p>Do you have a <strong>TypePad</strong>, <strong>LiveJournal</strong>, or <strong>Dreamwidth</strong> profile? You can sign in with one of those.</p>
+        <p>Do you have a <strong>TypePad</strong>, <strong>Twitter</strong>, <strong>LiveJournal</strong>, or <strong>Dreamwidth</strong> profile? You can sign in with one of those.</p>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
             <input type="hidden" name="openid_pattern" value="http://profile.typepad.com/{name}">
             <p><input class="openid typepad" name="openid_username"> <input type="submit" value="Sign in with TypePad"></p>
+        </form>
+
+        <form method="GET" action="{% url library.views.auth.start_twitter %}">
+            <p><img src="{% url static path="signin/twitter.png" %}"> <input type="submit" value="Sign in with Twitter"></p>
         </form>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">

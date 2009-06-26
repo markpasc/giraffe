@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-import django.util.simplejson as json
+import django.utils.simplejson as json
 from google.appengine.api import users
 from google.appengine.api.urlfetch import fetch
 import oauth
@@ -75,9 +76,10 @@ class OAuthDance(object):
     def request_token(self, csr):
         req = oauth.OAuthRequest.from_consumer_and_token(csr,
             http_method="GET", http_url=self.request_token_url)
-        req.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), csr)
+        req.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), csr, None)
 
-        resp = fetch(req.to_url(), method=req.get_normalized_http_method())
+        resp = fetch(req.to_url(), method=req.get_normalized_http_method(),
+            deadline=10)
         if resp.status_code != 200:
             raise self.Homg('Oops fetching request token?! %d %r' % (resp.status_code, resp.content))
         token = oauth.OAuthToken.from_string(resp.content)
@@ -88,7 +90,7 @@ class OAuthDance(object):
         req = oauth.OAuthRequest.from_token_and_callback(
             token,
             callback=callback,
-            http_url=self.authorization_url,
+            http_url=self.authorize_url,
         )
         return req.to_url()
 
@@ -121,7 +123,7 @@ def start_twitter(request):
     token = dance.request_token(csr)
     request.session['twitter_request_token'] = str(token)
     auth_url = dance.authorize_token_url(token, reverse('library.views.auth.complete_twitter'))
-    return HttpResponseRedirect(redirect_url)
+    return HttpResponseRedirect(auth_url)
 
 
 @auth_forbidden
