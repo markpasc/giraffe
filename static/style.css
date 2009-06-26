@@ -23,6 +23,11 @@ body {
     vertical-align: middle;
 }
 
+#content {
+    font-size: 1.2em;
+    line-height: 1.2em;
+}
+
 /* hi */
 
 #title a:link, #title a:hover {
@@ -43,14 +48,9 @@ body {
 
 /* stuff */
 
-.asset p {
-    font-size: 1.2em;
-    line-height: 1.2em;
-}
-
 .asset .meta {
-    font-size: 1.0em;
-    line-height: 1.0em;
+    font-size: 0.9em;
+    line-height: 0.9em;
 }
 
 /* api editor */
@@ -72,9 +72,10 @@ body {
     border: 1px solid gray;
 }
 
-pre {
-    font-size: 1.2em;
-    line-height: 1.2em;
+textarea, pre {
+    font-family: "Anonymous Pro", Anonymous, monospace;
+    font-size: 1.0em;
+    line-height: 1.0em;
 }
 
 /* dialogs */
