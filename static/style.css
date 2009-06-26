@@ -139,6 +139,10 @@ a.red-button, #dialog-signin a.red-button, input[type="submit"].red {
     border-radius-bottomleft: 16px;
 }
 
+.dialog-signin-step p.last {
+    margin-bottom: 0;
+}
+
 #dialog-signin ul {
     margin-bottom: 1.6em;
 }
