@@ -11,7 +11,7 @@ from django.template import RequestContext
 import django.utils.simplejson as json
 from google.appengine.ext import db
 
-from library.auth import admin_only
+from library.auth.decorators import admin_only
 import library.models
 
 

@@ -1,73 +1,12 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 import django.utils.simplejson as json
-from google.appengine.api import users
 from google.appengine.api.urlfetch import fetch
 import oauth
-from openid.consumer import consumer, discover
-from openid.extensions import sreg
 
-from library.auth import auth_required, auth_forbidden, log
-from library.auth import make_person_from_response
-from library.auth import AnonymousUser, OpenIDStore
+from library.auth.decorators import auth_forbidden
 from library.models import Person
-
-
-@auth_forbidden
-def signin(request, nexturl=None):
-    return render_to_response(
-        'library/signin.html',
-        {},
-        context_instance=RequestContext(request),
-    )
-
-
-@auth_forbidden
-def start_openid(request):
-    openid_url = request.POST.get('openid_url', None)
-    if not openid_url:
-        username = request.POST.get('openid_username', None)
-        pattern = request.POST.get('openid_pattern', None)
-        if username and pattern:
-            openid_url = pattern.replace('{name}', username)
-    if not openid_url:
-        request.flash.put(loginerror="An OpenID as whom to sign in is required.")
-        return HttpResponseRedirect(reverse('login'))
-    log.debug('Attempting to sign viewer in as %r', openid_url)
-
-    csr = consumer.Consumer(request.session, OpenIDStore())
-    try:
-        ar = csr.begin(openid_url)
-    except discover.DiscoveryFailure, exc:
-        request.flash.put(loginerror=exc.message)
-        return HttpResponseRedirect(reverse('login'))
-
-    ar.addExtension(sreg.SRegRequest(optional=('nickname', 'fullname', 'email')))
-
-    def whole_reverse(view):
-        return request.build_absolute_uri(reverse(view))
-
-    return_to = whole_reverse('library.views.auth.complete_openid')
-    redirect_url = ar.redirectURL(whole_reverse('home'), return_to)
-    return HttpResponseRedirect(redirect_url)
-
-
-@auth_forbidden
-def complete_openid(request):
-    csr = consumer.Consumer(request.session, OpenIDStore())
-    resp = csr.complete(request.GET, request.build_absolute_uri())
-    if isinstance(resp, consumer.CancelResponse):
-        return HttpResponseRedirect(reverse('home'))
-    elif isinstance(resp, consumer.FailureResponse):
-        request.flash.put(loginerror=resp.message)
-        return HttpResponseRedirect(reverse('login'))
-    elif isinstance(resp, consumer.SuccessResponse):
-        make_person_from_response(resp)
-        request.session['openid'] = resp.identity_url
-        return HttpResponseRedirect(reverse('home'))
 
 
 class OAuthDance(object):
@@ -118,17 +57,17 @@ class TwitterDance(OAuthDance):
 
 
 @auth_forbidden
-def start_twitter(request):
+def start(request):
     csr = oauth.OAuthConsumer(*settings.TWITTER_KEY)
     dance = TwitterDance()
     token = dance.request_token(csr)
     request.session['twitter_request_token'] = str(token)
-    auth_url = dance.authorize_token_url(token, reverse('library.views.auth.complete_twitter'))
+    auth_url = dance.authorize_token_url(token, reverse('library.auth.views.twitter.complete'))
     return HttpResponseRedirect(auth_url)
 
 
 @auth_forbidden
-def complete_twitter(request):
+def complete(request):
     request_token_str = request.session['twitter_request_token']
     del request.session['twitter_request_token']
     request_token = oauth.OAuthToken.from_string(request_token_str)
@@ -138,11 +77,11 @@ def complete_twitter(request):
     token = dance.access_token(csr, request_token)
     request.session['twitter_access_token'] = str(token)
 
-    return HttpResponseRedirect(reverse('library.views.auth.confirm_twitter'))
+    return HttpResponseRedirect(reverse('library.auth.views.twitter.confirm'))
 
 
 @auth_forbidden
-def confirm_twitter(request):
+def confirm(request):
     access_token_str = request.session['twitter_access_token']
     del request.session['twitter_access_token']
     access_token = oauth.OAuthToken.from_string(access_token_str)
@@ -170,11 +109,4 @@ def confirm_twitter(request):
     person.save()
 
     request.session['openid'] = openid
-    return HttpResponseRedirect(reverse('home'))
-
-
-@auth_required
-def signout(request):
-    del request.session['openid']
-    del request.user
     return HttpResponseRedirect(reverse('home'))

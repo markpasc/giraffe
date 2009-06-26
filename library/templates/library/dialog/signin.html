@@ -5,7 +5,7 @@
     <div id="dialog-signin-step-1" class="dialog-signin-step">
         <p>Do you have a blog or web profile with <strong>OpenID</strong>? Enter it here:</p>
 
-        <form method="POST" action="{% url library.views.auth.start_openid %}">
+        <form method="POST" action="{% url library.auth.views.regular.start %}">
             <p><input class="openid" name="openid_url"> <input type="submit" class="green" value="Sign in"></p>
         </form>
 
@@ -15,16 +15,16 @@
     <div id="dialog-signin-step-2" class="dialog-signin-step">
         <p>Oh. Do you have a <strong>TypePad</strong>, <strong>Twitter</strong>, or <strong>Dreamwidth</strong> profile? You can sign in with one of those.</p>
 
-        <form method="POST" action="{% url library.views.auth.start_openid %}">
+        <form method="POST" action="{% url library.auth.views.regular.start %}">
             <input type="hidden" name="openid_pattern" value="http://profile.typepad.com/{name}">
             <p><input class="openid typepad" name="openid_username"> <input type="submit" class="green" value="Sign in with TypePad"></p>
         </form>
 
-        <form method="GET" action="{% url library.views.auth.start_twitter %}">
+        <form method="GET" action="{% url library.auth.views.twitter.start %}">
             <p><input class="openid twitter" name="username"> <input type="submit" class="green" value="Sign in with Twitter"></p>
         </form>
 
-        <form method="POST" action="{% url library.views.auth.start_openid %}">
+        <form method="POST" action="{% url library.auth.views.regular.start %}">
             <input type="hidden" name="openid_pattern" value="http://{name}.dreamwidth.org/">
             <p><input class="openid dreamwidth" name="openid_username"> <input type="submit" class="green" value="Sign in with Dreamwidth"></p>
         </form>
@@ -35,12 +35,12 @@
     <div id="dialog-signin-step-3" class="dialog-signin-step">
         <p>Hmm, well, do you have a <strong>Google</strong> or <strong>Yahoo!</strong> account?</p>
 
-        <form method="POST" action="{% url library.views.auth.start_openid %}">
+        <form method="POST" action="{% url library.auth.views.regular.start %}">
             <input type="hidden" name="openid_url" value="https://www.google.com/accounts/o8/id">
             <p><img src="{% url static path="signin/google.png" %}"> <input type="submit" class="green" value="I have a Google account"></p>
         </form>
 
-        <form method="POST" action="{% url library.views.auth.start_openid %}">
+        <form method="POST" action="{% url library.auth.views.regular.start %}">
             <input type="hidden" name="openid_url" value="http://yahoo.com/">
             <p><img src="{% url static path="signin/yahoo.png" %}"> <input type="submit" class="green" value="I have a Yahoo! account"></p>
         </form>
