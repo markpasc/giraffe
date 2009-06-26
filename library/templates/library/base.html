@@ -5,24 +5,6 @@
 
     <link href="{% url static path="style.css" %}" rel="stylesheet" type="text/css" media="screen">
     <script type="text/javascript" src="{% url static path="jquery.js" %}"></script>
-    <script type="text/javascript" src="{% url static path="thickbox.js" %}"></script>
-
-    <script type="text/javascript">
-        function tb_show_inline(that, id, width, height) {
-            var url = "#TB_inline?inlineId=" + id;
-            if (height) url += "&height=" + height;
-            if (width) url += "&width=" + width;
-            tb_show(that.title, url, false);
-            that.blur();
-            return false;
-        }
-
-        function tb_inline_shower(id, width, height) {
-            return function () {
-                return tb_show_inline(this, id, width, height);
-            };
-        }
-    </script>
 
     {% block htmlhead %}{% endblock %}
 </head><body>
