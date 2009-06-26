@@ -18,5 +18,7 @@ urlpatterns += patterns('library.views.auth',
     url(r'^signin$',  'signin',  name="signin"),
     url(r'^signin/start$', 'start_openid'),
     url(r'^signin/complete$', 'complete_openid'),
+    url(r'^signin/twitter/start$', 'start_twitter'),
+    url(r'^signin/twitter/complete$', 'complete_twitter'),
     url(r'^signout$', 'signout', name="signout"),
 )
