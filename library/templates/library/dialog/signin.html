@@ -10,7 +10,7 @@
     </div>
 
     <div id="dialog-signin-step-2" class="dialog-signin-step">
-        <p>Do you have a <strong>TypePad</strong>, <strong>Twitter</strong>, <strong>LiveJournal</strong>, or <strong>Dreamwidth</strong> profile? You can sign in with one of those.</p>
+        <p>Oh. Do you have a <strong>TypePad</strong>, <strong>Twitter</strong>, or <strong>Dreamwidth</strong> profile? You can sign in with one of those.</p>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
             <input type="hidden" name="openid_pattern" value="http://profile.typepad.com/{name}">
@@ -18,12 +18,7 @@
         </form>
 
         <form method="GET" action="{% url library.views.auth.start_twitter %}">
-            <p><img src="{% url static path="signin/twitter.png" %}"> <input type="submit" value="Sign in with Twitter"></p>
-        </form>
-
-        <form method="POST" action="{% url library.views.auth.start_openid %}">
-            <input type="hidden" name="openid_pattern" value="http://{name}.livejournal.com/">
-            <p><input class="openid livejournal" name="openid_username"> <input type="submit" value="Sign in with LiveJournal"></p>
+            <p><input class="openid twitter" name="username"> <input type="submit" value="Sign in with Twitter"></p>
         </form>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
@@ -35,7 +30,7 @@
     </div>
 
     <div id="dialog-signin-step-3" class="dialog-signin-step">
-        <p>Hmm, do you have a <strong>Google</strong> or <strong>Yahoo!</strong> account?</p>
+        <p>Hmm, well, do you have a <strong>Google</strong> or <strong>Yahoo!</strong> account?</p>
 
         <form method="POST" action="{% url library.views.auth.start_openid %}">
             <input type="hidden" name="openid_url" value="https://www.google.com/accounts/o8/id">
@@ -55,7 +50,7 @@
 
         <ul>
             <li class="typepad"><a href="http://www.typepad.com/connect/register">TypePad</a></li>
-            <li class="livejournal"><a href="http://www.livejournal.com/">LiveJournal</a></li>
+            <li class="twitter"><a href="http://twitter.com/">Twitter</a></li>
             <li class="dreamwidth"><a href="http://www.dreamwidth.org/">Dreamwidth</a></li>
             <li class="google"><a href="https://www.google.com/accounts/">Google</a></li>
             <li class="yahoo"><a href="http://login.yahoo.com/">Yahoo!</a></li>

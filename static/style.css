@@ -23,7 +23,7 @@ body {
     vertical-align: middle;
 }
 
-#content {
+#content, #TB_window {
     font-size: 1.2em;
     line-height: 1.2em;
 }
@@ -82,7 +82,7 @@ textarea, pre {
 
 a.button, #TB_window a.button, input[type="submit"] {
     font-family: Helvetica, Arial, sans-serif;
-    font-size: 12px; /* 12px */
+    font-size: 1.0em; /* 12px */
     line-height: 16px !important; /* 16px */
 
     background: #222 url(alert-overlay.png) repeat-x;
@@ -132,6 +132,11 @@ input.livejournal {
     width: 12em;
 }
 
+input.twitter {
+    background-image: url(signin/twitter.png);
+    width: 12em;
+}
+
 input.dreamwidth {
     background-image: url(signin/dreamwidth.png);
     width: 12em;
@@ -143,6 +148,10 @@ li.typepad {
 
 li.livejournal {
     list-style-image: url(signin/livejournal.png);
+}
+
+li.twitter {
+    list-style-image: url(signin/twitter.png);
 }
 
 li.dreamwidth {
