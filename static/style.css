@@ -31,18 +31,19 @@ body, html {
 
 #page {
     min-height: 100%;
-    margin: 0 auto -110px;
+    margin: 0 auto -60px;
     padding: 0;
 }
 
 #not-a-footer, #footer {
     clear: both;
-    height: 110px;
+    height: 60px;
 }
 
 #footer {
     background-color: #eee;
-    height: 109px;
+    height: 59px;
+    overflow: hidden;
     border-top: 1px solid #ccc;
     margin: 0 auto;
     padding: 0;
