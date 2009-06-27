@@ -9,45 +9,65 @@
     {% block htmlhead %}{% endblock %}
 </head><body>
 
-    <div id="title">
-        <div class="grid">
-            <div class="span-10">
-                <h1><a href="{% url home %}"><img src="{% url static path="bee.png" %}" alt="Best Endtimes Ever"></a></h1>
+    <div id="page">
+
+        <div id="title">
+            <div class="grid">
+                <div class="span-10">
+                    <h1><a href="{% url home %}"><img src="{% url static path="bee.png" %}" alt="Best Endtimes Ever"></a></h1>
+                </div>
+                {% block greets %}
+                <div id="greets" class="span-12 prefix-1">
+                    {% if request.user.is_anonymous %}
+                        <p><a id="sign-in-link" href="{% url signin %}">Sign in</a></p>
+                    {% else %}
+                        <p>Sup, {{ request.user.name }}. <a href="{% url signout %}">Sign out</a></p>
+                    {% endif %}
+                </div>
+                {% endblock %}
+                <br style="clear: both;">
             </div>
-            {% block greets %}
-            <div id="greets" class="span-12 prefix-1">
-                {% if request.user.is_anonymous %}
-                    <p><a id="sign-in-link" href="{% url signin %}">Sign in</a></p>
-                {% else %}
-                    <p>Sup, {{ request.user.name }}. <a href="{% url signout %}">Sign out</a></p>
-                {% endif %}
+        </div>
+
+        <div id="content" class="grid">
+
+            {% if flash %}
+                <div class="span-24 last">
+                    {% for value in flash.values %}
+                        <p class="flash">{{ value }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block grid %}
+            <div class="span-16">
+                {% block content %}{% endblock %}
+            </div>
+
+            <div class="span-5 prefix-2">
+                {% block sidebar %}
+                <!-- this is where the sidebar would go if there were one -->
+                {% endblock %}
             </div>
             {% endblock %}
-            <br style="clear: both;">
         </div>
+
+        <div id="not-a-footer"></div>
     </div>
 
-    <div id="content" class="grid showgrid">
-
-        {% if flash %}
-            <div class="span-24 last">
-                {% for value in flash.values %}
-                    <p class="flash">{{ value }}</p>
-                {% endfor %}
+    <div id="footer">
+        <div class="grid">
+            <div class="column-left span-8">
+                <p><img src="{% url static path="giraffe.png" %}" width="166" height="100" alt="Tall, tall giraffe"></p>
             </div>
-        {% endif %}
-
-        {% block grid %}
-        <div class="span-16">
-            {% block content %}{% endblock %}
+            <div class="column-mid span-8">
+                <!-- this is where the middle footer column would go if there were one -->
+                &nbsp;
+            </div>
+            <div class="column-right span-8 last">
+                <p><a href="http://adfreeblog.org/"><img src="{% url static path="adfree.png" %}" width="216" height="80" alt="Ad-free blog"></a></p>
+            </div>
         </div>
-
-        <div class="span-5 prefix-2">
-            {% block sidebar %}
-            <!-- this is where the sidebar would go if there were one -->
-            {% endblock %}
-        </div>
-        {% endblock %}
     </div>
 
     {% block dialog-signin %}

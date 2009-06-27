@@ -1,7 +1,9 @@
 @import url(ply.css);
 
-body {
+body, html {
     margin-top: 0;
+    margin-bottom: 0;
+    height: 100%;
 }
 
 #title {
@@ -25,6 +27,38 @@ body {
 #content, #TB_window {
     font-size: 1.2em;
     line-height: 1.2em;
+}
+
+#page {
+    min-height: 100%;
+    margin: 0 auto -110px;
+    padding: 0;
+}
+
+#not-a-footer, #footer {
+    clear: both;
+    height: 110px;
+}
+
+#footer {
+    background-color: #eee;
+    height: 109px;
+    border-top: 1px solid #ccc;
+    margin: 0 auto;
+    padding: 0;
+}
+
+#footer p {
+    margin: 0;
+    padding: 0;
+}
+
+#footer .column-mid {
+    text-align: center;
+}
+
+#footer .column-right {
+    text-align: right;
 }
 
 /* hi */
