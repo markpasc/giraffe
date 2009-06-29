@@ -13,11 +13,11 @@
 
         <div id="title">
             <div class="grid">
-                <div class="span-10">
+                <div class="span-6">
                     <h1><a href="{% url home %}"><img src="{% url static path="bee.png" %}" alt="Best Endtimes Ever"></a></h1>
                 </div>
                 {% block greets %}
-                <div id="greets" class="span-12 prefix-1">
+                <div id="greets" class="span-10 last">
                     {% if request.user.is_anonymous %}
                         <p><a id="sign-in-link" href="{% url signin %}">Sign in</a></p>
                     {% else %}
@@ -32,7 +32,7 @@
         <div id="content" class="grid">
 
             {% if flash %}
-                <div class="span-24 last">
+                <div class="span-16 last">
                     {% for value in flash.values %}
                         <p class="flash">{{ value }}</p>
                     {% endfor %}
@@ -43,12 +43,6 @@
             <div class="span-16">
                 {% block content %}{% endblock %}
             </div>
-
-            <div class="span-5 prefix-2">
-                {% block sidebar %}
-                <!-- this is where the sidebar would go if there were one -->
-                {% endblock %}
-            </div>
             {% endblock %}
         </div>
 
@@ -57,14 +51,14 @@
 
     <div id="footer">
         <div class="grid">
-            <div class="column-left span-8">
+            <div class="column-left span-5">
                 <p><img src="{% url static path="giraffe.png" %}" width="133" height="84" alt="contains giraffe technology"></p>
             </div>
-            <div class="column-mid span-8">
+            <div class="column-mid span-6">
                 <!-- this is where the middle footer column would go if there were one -->
                 &nbsp;
             </div>
-            <div class="column-right span-8 last">
+            <div class="column-right span-5 last">
                 <p><a href="http://adfreeblog.org/"><img src="{% url static path="adfree.png" %}" width="151" height="56" alt="Ad-free blog"></a></p>
             </div>
         </div>
