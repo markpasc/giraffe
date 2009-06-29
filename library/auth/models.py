@@ -5,11 +5,10 @@ import time
 from google.appengine.ext import db
 import openid.association
 from openid.consumer import consumer
-from openid.extensions import sreg
+from openid.extensions import sreg, ax
 from openid.store import interface, nonce
 
 from library.models import Model, constants, Person
-
 
 
 log = logging.getLogger(__name__)
@@ -83,6 +82,18 @@ def make_person_from_response(resp):
             p.name = sr['nickname']
         if 'email' in sr:
             p.email = sr['email']
+
+    fr = ax.FetchResponse.fromSuccessResponse(resp)
+    if fr is not None:
+        firstname = fr.getSingle('http://axschema.org/namePerson/first')
+        lastname  = fr.getSingle('http://axschema.org/namePerson/last')
+        email     = fr.getSingle('http://axschema.org/contact/email')
+        if firstname is not None and lastname is not None:
+            p.name = ' '.join((firstname, lastname))
+        elif firstname is not None:
+            p.name = firstname
+        if email is not None:
+            p.email = email
 
     if p.name is None:
         name = resp.identity_url

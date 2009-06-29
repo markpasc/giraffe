@@ -3,7 +3,7 @@ import logging
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from openid.consumer import consumer, discover
-from openid.extensions import sreg
+from openid.extensions import sreg, ax
 
 from library.auth.decorators import auth_forbidden
 from library.auth.models import OpenIDStore, make_person_from_response
@@ -32,7 +32,15 @@ def start(request):
         request.flash.put(error=exc.message)
         return HttpResponseRedirect(reverse('signin'))
 
+    # Ask for some stuff by sreg (in case it's supported).
     ar.addExtension(sreg.SRegRequest(optional=('nickname', 'fullname', 'email')))
+
+    # Ask for some stuff by Attribute Exchange (for google).
+    fr = ax.FetchRequest()
+    fr.add(ax.AttrInfo("http://axschema.org/namePerson/first", alias='firstname', required=True))
+    fr.add(ax.AttrInfo("http://axschema.org/namePerson/last", alias='lastname'))
+    fr.add(ax.AttrInfo("http://axschema.org/contact/email", alias='email', required=True))
+    ar.addExtension(fr)
 
     def whole_reverse(view):
         return request.build_absolute_uri(reverse(view))
