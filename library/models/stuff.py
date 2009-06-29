@@ -12,7 +12,7 @@ class Person(Model):
     slug = db.StringProperty()
     name = db.StringProperty()
     email = db.StringProperty()
-    # userpic?
+    userpic = db.StringProperty()
 
     def get_permalink_url(self):
         if self.slug:
