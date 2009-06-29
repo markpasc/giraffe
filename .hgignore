@@ -5,3 +5,4 @@
 ^appengine_django$
 ^djangoflash$
 ^oauth.py$
+^index.yaml$
