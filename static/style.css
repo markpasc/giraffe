@@ -69,12 +69,12 @@ body, html {
 /* hi */
 
 #title a:link, #title a:hover,
-#dialog-signin a:link, #dialog-signin a:hover {
+.dialog a:link, .dialog a:hover {
     color: #99f;
 }
 
 #title a:visited, #title a:active,
-#dialog-signin a:visited, #dialog-signin a:active {
+.dialog a:visited, .dialog a:active {
     color: #c9f;
 }
 
@@ -112,7 +112,11 @@ textarea, pre {
 
 /* dialogs */
 
-a.button, a.button, #dialog-signin a.button, input[type="submit"] {
+.hidden {
+    display: none;
+}
+
+a.button, .dialog a.button, input[type="submit"] {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 1.0em; /* 12px */
     line-height: 16px !important; /* 16px */
@@ -135,16 +139,20 @@ a.button, a.button, #dialog-signin a.button, input[type="submit"] {
     cursor: pointer;
 }
 
-a.green-button, #dialog-signin a.green-button, input[type="submit"].green {
+p.buttons {
+    margin-top: 1.6em;
+}
+
+a.green-button, .dialog a.green-button, input[type="submit"].green {
     background-color: #292;
 }
 
-a.red-button, #dialog-signin a.red-button, input[type="submit"].red {
+a.red-button, .dialog a.red-button, input[type="submit"].red {
     background-color: #922;
 }
 
-.dialog, .hidden {
-    display: none;
+a.ok-button, .dialog a.ok-button, input[type="submit"].ok-button {
+    float: right;
 }
 
 /* signin */
@@ -157,18 +165,14 @@ a.red-button, #dialog-signin a.red-button, input[type="submit"].red {
     text-align: right;
 }
 
-#dialog-signin {
+#dialogs .dialog {
+    display: none;
     position: absolute;
     top: 0;
-}
-
-.dialog-signin-step {
-    display: none;
 
     background-color: #222222;
     color: white;
     padding: 4ex 2em;
-
     -moz-border-radius-bottomright: 16px;
     -moz-border-radius-bottomleft: 16px;
     -webkit-border-bottom-right-radius: 16px;
@@ -177,7 +181,11 @@ a.red-button, #dialog-signin a.red-button, input[type="submit"].red {
     border-bottom-left-radius: 16px;
 }
 
-.dialog-signin-step p.last {
+.dialog-signin-step {
+    display: none;
+}
+
+.dialog p.last {
     margin-bottom: 0;
 }
 

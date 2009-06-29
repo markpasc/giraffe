@@ -1,0 +1,28 @@
+<div class="grid">
+<div id="dialog-editprofile" class="dialog span-8 prefix-8 last">
+    <div>
+        <form method="POST" action="{% url editprofile %}">
+            <p>Name: <input name="name" value="{{ request.user.name }}"></p>
+            <p>Userpic: <input name="userpic" value="{{ request.user.userpic|default:"" }}"></p>
+
+            <p class="last buttons">
+                <a href="#" id="dialog-editprofile-cancel" class="button red-button">Cancel</a>
+                <input type="submit" class="green ok-button" value="Save">
+            </p>
+        </form>
+    </div>
+</div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#dialog-editprofile-open').click(function () {
+        $('#dialog-editprofile').show();
+        return false;
+    });
+    $('#dialog-editprofile-cancel').click(function () {
+        $('#dialog-editprofile').hide();
+        return false;
+    });
+});
+</script>

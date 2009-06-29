@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('library.auth.views',
     url(r'^signin$',  'signin',  name="signin"),
     url(r'^signout$', 'signout', name="signout"),
+    url(r'^editprofile$', 'editprofile', name="editprofile"),
 )
 
 urlpatterns += patterns('library.auth.views.regular',
