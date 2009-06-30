@@ -19,6 +19,12 @@ class Constants(object):
     class Immutable(Exception):
         pass
 
+    def inverse(self):
+        values = dict()
+        for k, v in self.__dict__.iteritems():
+            values[v] = k
+        return type(self)(**values)
+
     def __init__(self, *args, **kwargs):
         for arg in args:
             self.__dict__.update(arg)

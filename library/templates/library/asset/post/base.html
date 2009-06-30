@@ -7,16 +7,7 @@
 
     {% block content %}
         {% if asset.content %}
-            {% ifequal asset.content_type "text/markdown" %}
-                {% load markup %}
-                {{ asset.content|markdown }}
-            {% else %}
-                {% ifequal asset.content_type "text/html" %}
-                    {% autoescape off %}{{ asset.content }}{% endautoescape %}
-                {% else %}
-                    {{ asset.content }}
-                {% endifequal %}
-            {% endifequal %}
+            {{ asset.content_as_html }}
         {% endif %}
     {% endblock %}
 

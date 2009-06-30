@@ -34,6 +34,8 @@ class Asset(Model):
         post='http://activitystrea.ms/schema/1.0/blog-entry',
     )
 
+    name_for_object_type = object_types.inverse()
+
     author = db.ReferenceProperty(Person, collection_name='assets')
     object_type = db.StringProperty()
 
@@ -51,6 +53,19 @@ class Asset(Model):
 
     def get_permalink_url(self):
         return reverse('asset', kwargs={'slug': self.slug})
+
+    def content_as_html(self):
+        template_for_type = {
+            'text/markdown': "{% load markup %}{{ asset.content|markdown }}",
+            'text/html': "{% autoescape off %}{{ asset.content }}{% endautoescape %}",
+            None: "{% asset.content %}",
+        }
+
+        code = template_for_type.get(self.content_type, template_for_type[None])
+        t = Template(code)
+        c = Context({ 'asset': self })
+        html = t.render(c)
+        return mark_safe(html)
 
     def save(self):
         if self.object_type is None:
