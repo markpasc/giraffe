@@ -34,7 +34,7 @@ class Asset(Model):
         post='http://activitystrea.ms/schema/1.0/blog-entry',
     )
 
-    author = db.ReferenceProperty(Person)
+    author = db.ReferenceProperty(Person, collection_name='assets')
     object_type = db.StringProperty()
 
     title = db.StringProperty()
@@ -63,7 +63,7 @@ class Asset(Model):
 
 
 class Link(Model):
-    asset = db.ReferenceProperty(Asset)
+    asset = db.ReferenceProperty(Asset, collection_name='links')
     href = db.StringProperty()
     rel = db.StringProperty()
     content_type = db.StringProperty()
@@ -76,9 +76,9 @@ class Action(Model):
         favorite='http://activitystrea.ms/schema/1.0/favorite',
     )
 
-    person = db.ReferenceProperty(Person)
+    person = db.ReferenceProperty(Person, collection_name='actions')
     verb = db.StringProperty()
-    asset = db.ReferenceProperty(Asset)
+    asset = db.ReferenceProperty(Asset, collection_name='actions')
     when = db.DateTimeProperty(auto_now_add=True)
 
     def byline_html(self):
@@ -93,7 +93,7 @@ class Action(Model):
 
 
 class Blog(Model):
-    person = db.ReferenceProperty(Person)
-    action = db.ReferenceProperty(Action)
+    person = db.ReferenceProperty(Person, collection_name='bloggings')
+    action = db.ReferenceProperty(Action, collection_name='bloggings')
     posted = db.DateTimeProperty(auto_now_add=True)
     privacy_group = db.StringProperty()
