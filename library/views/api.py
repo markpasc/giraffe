@@ -134,7 +134,21 @@ def list(request, kind):
             status=400,
         )
 
-    kwargs = dict([(k.encode('utf-8'), v) for k, v in data.iteritems()])
+    kwargs = dict()
+    for k, v in cls.properties().items():
+        if k not in data:
+            continue
+
+        value = data[k]
+
+        if isinstance(v, db.ReferenceProperty):
+            value = db.Key(value)
+        elif isinstance(v, db.DateTimeProperty):
+            if '.' in value:
+                value = value.split('.', 1)[0]
+            value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+
+        kwargs[k] = value
 
     try:
         obj = cls(**kwargs)
