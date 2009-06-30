@@ -134,7 +134,14 @@ class Model(db.Expando):
         return self.properties().keys() + self.dynamic_properties()
 
     def as_data(self):
-        data = dict([(k, getattr(self, k)) for k in self.all_properties()])
+        data = dict()
+        for k in self.all_properties():
+            try:
+                value = getattr(self, k)
+            except db.Error:
+                data[k] = None
+            else:
+                data[k] = value
 
         try:
             data['key'] = str(self.key())
