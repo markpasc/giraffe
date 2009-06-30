@@ -91,16 +91,40 @@ class Query(db.Query):
             ', '.join(self.__orderings))
 
 
+class ReverseReferenceProperty(db._ReverseReferenceProperty):
+
+    def __get__(self, model_instance, model_class):
+        """Fetches collection of model instances of this collection property."""
+        if model_instance is not None:
+            query = self.__model.all()
+            return query.filter(self.__property + ' =', model_instance.key())
+        else:
+            return self
+
+
 class ModelMeta(db.Expando.__metaclass__):
 
-    def __new__(cls, name, bases, attr):
-        newcls = super(ModelMeta, cls).__new__(cls, name, bases, attr)
+    def __init__(cls, name, bases, dct):
+        super(ModelMeta, cls).__init__(name, bases, dct)
+
+        # Plug in our own reverse reference properties, since Google's won't
+        # use our Query class.
+        for propname, prop in dct.items():
+            if isinstance(prop, db.ReferenceProperty):
+                refer_prop = getattr(cls, propname)
+                collection_name = refer_prop.collection_name
+                setattr(
+                    refer_prop.reference_class,
+                    refer_prop.collection_name,
+                    ReverseReferenceProperty(cls, propname),
+                )
+                log.debug('Added reverse property %s.%s for finding %s',
+                    refer_prop.reference_class.__name__,
+                    refer_prop.collection_name, name)
 
         # Register in the models set.
         if name != 'Model':
-            model_for_kind[newcls.kind().lower()] = newcls
-
-        return newcls
+            model_for_kind[cls.kind().lower()] = cls
 
 
 class Model(db.Expando):
