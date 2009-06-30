@@ -11,8 +11,9 @@ def stream(request, openid):
     except IndexError:
         raise Http404
 
-    blog = Blog.all().filter(person=me).order('-posted')[0:10]
-    actions = [x.action for x in blog]
+    blog = Blog.all().filter(person=me, privacy_group="public")
+    blog.order('-posted')
+    actions = [x.action for x in blog[0:10]]
 
     return render_to_response(
         'library/stream.html',
@@ -47,12 +48,14 @@ def asset(request, slug):
         raise Http404
 
     actions = asset.actions.filter(person=asset.author, verb=Action.verbs.post)
+    thread = asset.thread_members
 
     return render_to_response(
         'library/asset.html',
         {
             'person': asset.author,
             'actions': actions,
+            'thread': thread,
         },
         context_instance=RequestContext(request),
     )

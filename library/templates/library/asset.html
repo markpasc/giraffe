@@ -12,4 +12,10 @@
         {% endwith %}
     {% endfor %}
 
+    <h2>Comments</h2>
+
+    {% for asset in thread %}
+        {% include_asset_by_type %}
+    {% endfor %}
+
 {% endblock %}

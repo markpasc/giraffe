@@ -43,11 +43,23 @@ class Asset(Model):
     content_type = db.StringProperty()
     privacy_groups = db.StringListProperty()
 
+    in_reply_to = db.SelfReferenceProperty(collection_name='replies')
+    thread = db.SelfReferenceProperty(collection_name='thread_members')
+
     published = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
 
     def get_permalink_url(self):
         return reverse('asset', kwargs={'slug': self.slug})
+
+    def save(self):
+        if self.object_type is None:
+            self.object_type = self.object_types.post
+
+        if not self.privacy_groups:
+            self.privacy_groups = ["public"]
+
+        super(Asset, self).save()
 
     def save_and_post(self):
         self.save()
