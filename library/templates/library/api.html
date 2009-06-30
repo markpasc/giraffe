@@ -2,26 +2,35 @@
 
 {% block grid %}
 
-    <div id="api-request" class="span-10">
-        <form>
-            <p>
-                <select id="api-request-method">
-                    <option>GET</option>
-                    <option>POST</option>
-                    <option>PUT</option>
-                    <option>DELETE</option>
-                </select>
-                <input id="api-request-path" value="/api">
-            </p>
-            <p><textarea id="api-request-body"></textarea></p>
+    <form>
 
-            <p>
-                <a id="api-request-button" class="button">
-                    Perform awesomeness
-                </a>
-            </p>
-        </form>
-    </div>
+        <div class="span-16 last">
+            <div class="span-8">
+                <p>
+                    <select id="api-request-method">
+                        <option>GET</option>
+                        <option>POST</option>
+                        <option>PUT</option>
+                        <option>DELETE</option>
+                    </select>
+                    <input id="api-request-path" value="/api">
+                </p>
+            </div>
+            <div class="span-8 last">
+                <p id="api-result-about">&nbsp;</p>
+            </div>
+        </div>
+
+        <div id="api-request" class="span-16 last">
+            <p><textarea id="api-request-body"></textarea></p>
+            <p><pre id="api-result-body"></pre></p>
+        </div>
+
+        <div class="span-16 last">
+            <p class="buttons"><a id="api-request-button" class="button">Perform awesomeness</a></p>
+        </div>
+
+    </form>
 
     <script type="text/javascript">
     $(document).ready(function () {
@@ -44,10 +53,5 @@
         });
     });
     </script>
-
-    <div id="api-result" class="span-10 prefix-2">
-        <p id="api-result-about">&nbsp;</p>
-        <p><pre id="api-result-body"></pre></p>
-    </div>
 
 {% endblock %}
