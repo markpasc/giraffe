@@ -3,7 +3,7 @@ from django.template import Template, Context
 from django.utils.safestring import mark_safe
 from google.appengine.ext import db
 
-from library.models.base import Model, constants
+from library.models.base import Model, UtcDateTimeProperty, constants
 
 
 class Person(Model):
@@ -41,15 +41,15 @@ class Asset(Model):
 
     title = db.StringProperty()
     slug = db.StringProperty()
-    content = db.BlobProperty()
+    content = db.TextProperty()
     content_type = db.StringProperty()
     privacy_groups = db.StringListProperty()
 
     in_reply_to = db.SelfReferenceProperty(collection_name='replies')
     thread = db.SelfReferenceProperty(collection_name='thread_members')
 
-    published = db.DateTimeProperty(auto_now_add=True)
-    updated = db.DateTimeProperty(auto_now=True)
+    published = UtcDateTimeProperty(auto_now_add=True)
+    updated = UtcDateTimeProperty(auto_now=True)
 
     def get_permalink_url(self):
         return reverse('asset', kwargs={'slug': self.slug})
@@ -106,7 +106,7 @@ class Action(Model):
     person = db.ReferenceProperty(Person, collection_name='actions')
     verb = db.StringProperty()
     asset = db.ReferenceProperty(Asset, collection_name='actions')
-    when = db.DateTimeProperty(auto_now_add=True)
+    when = UtcDateTimeProperty(auto_now_add=True)
 
     def byline_html(self):
         if self.verb == self.verbs.post:
@@ -122,5 +122,5 @@ class Action(Model):
 class Blog(Model):
     person = db.ReferenceProperty(Person, collection_name='bloggings')
     action = db.ReferenceProperty(Action, collection_name='bloggings')
-    posted = db.DateTimeProperty(auto_now_add=True)
+    posted = UtcDateTimeProperty(auto_now_add=True)
     privacy_group = db.StringProperty()

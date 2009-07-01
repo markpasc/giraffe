@@ -1,8 +1,10 @@
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from library.auth.decorators import auth_required
 from library.models import Person, Asset, Action, Blog
+from library.views import allowed_methods
 
 
 def stream(request, openid):
@@ -53,9 +55,34 @@ def asset(request, slug):
     return render_to_response(
         'library/asset.html',
         {
-            'person': asset.author,
+            'asset': asset,
+            'blogger': asset.author,
             'actions': actions,
             'thread': thread,
         },
         context_instance=RequestContext(request),
     )
+
+
+@auth_required
+@allowed_methods("POST")
+def comment(request, slug):
+    asset = Asset.get(slug=slug)
+    if asset is None:
+        raise Http404
+
+    content = request.POST.get('content')
+
+    comment = Asset(author=request.user, in_reply_to=asset)
+    comment.content = content
+    comment.content_type = 'text/markdown'
+    if asset.thread:
+        comment.thread = asset.thread
+    else:
+        comment.thread = comment.in_reply_to
+    comment.save()
+
+    act = Action(person=request.user, verb=Action.verbs.post, asset=comment, when=comment.published)
+    act.save()
+
+    return HttpResponseRedirect(asset.get_permalink_url())

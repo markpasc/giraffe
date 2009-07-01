@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 
 from google.appengine.ext import db
@@ -179,3 +180,10 @@ class Model(db.Expando):
             pass
 
         return data
+
+
+class UtcDateTimeProperty(db.DateTimeProperty):
+
+    @staticmethod
+    def now():
+        return datetime.utcnow()
