@@ -66,49 +66,6 @@ class Squib(Model):
     salt = db.StringProperty()
 
 
-def make_person_from_response(resp):
-    if not isinstance(resp, consumer.SuccessResponse):
-        raise ValueError("Can't make a Person from an unsuccessful response")
-
-    # Find the person.
-    openid = resp.identity_url
-    p = Person.get(openid=openid)
-    if p is None:
-        p = Person(openid=openid)
-
-    sr = sreg.SRegResponse.fromSuccessResponse(resp)
-    if sr is not None:
-        if 'nickname' in sr:
-            p.name = sr['nickname']
-        if 'email' in sr:
-            p.email = sr['email']
-
-    fr = ax.FetchResponse.fromSuccessResponse(resp)
-    if fr is not None:
-        firstname = fr.getSingle('http://axschema.org/namePerson/first')
-        lastname  = fr.getSingle('http://axschema.org/namePerson/last')
-        email     = fr.getSingle('http://axschema.org/contact/email')
-        if firstname is not None and lastname is not None:
-            p.name = ' '.join((firstname, lastname))
-        elif firstname is not None:
-            p.name = firstname
-        if email is not None:
-            p.email = email
-
-    if p.name is None:
-        name = resp.identity_url
-        # Remove the leading scheme, if it's http.
-        name = re.sub(r'^http://', '', name)
-        # If it's just a domain, strip the trailing slash.
-        name = re.sub(r'^([^/]+)/$', r'\1', name)
-        p.name = name
-
-    if openid == "http://markpasc.org/mark/":
-        p.is_admin = True
-
-    p.save()
-
-
 class OpenIDStore(interface.OpenIDStore):
 
     def storeAssociation(self, server_url, association):
@@ -192,3 +149,46 @@ class OpenIDStore(interface.OpenIDStore):
         now = int(time.time())
         q = Squib.all(keys_only=True).filter(timestamp__lt=now - nonce.SKEW)
         db.delete(q.fetch(100))
+
+    @classmethod
+    def make_person_from_response(cls, resp):
+        if not isinstance(resp, consumer.SuccessResponse):
+            raise ValueError("Can't make a Person from an unsuccessful response")
+
+        # Find the person.
+        openid = resp.identity_url
+        p = Person.get(openid=openid)
+        if p is None:
+            p = Person(openid=openid)
+
+        sr = sreg.SRegResponse.fromSuccessResponse(resp)
+        if sr is not None:
+            if 'nickname' in sr:
+                p.name = sr['nickname']
+            if 'email' in sr:
+                p.email = sr['email']
+
+        fr = ax.FetchResponse.fromSuccessResponse(resp)
+        if fr is not None:
+            firstname = fr.getSingle('http://axschema.org/namePerson/first')
+            lastname  = fr.getSingle('http://axschema.org/namePerson/last')
+            email     = fr.getSingle('http://axschema.org/contact/email')
+            if firstname is not None and lastname is not None:
+                p.name = ' '.join((firstname, lastname))
+            elif firstname is not None:
+                p.name = firstname
+            if email is not None:
+                p.email = email
+
+        if p.name is None:
+            name = resp.identity_url
+            # Remove the leading scheme, if it's http.
+            name = re.sub(r'^http://', '', name)
+            # If it's just a domain, strip the trailing slash.
+            name = re.sub(r'^([^/]+)/$', r'\1', name)
+            p.name = name
+
+        if openid == "http://markpasc.org/mark/":
+            p.is_admin = True
+
+        p.save()

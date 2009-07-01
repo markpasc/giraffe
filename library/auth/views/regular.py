@@ -6,7 +6,7 @@ from openid.consumer import consumer, discover
 from openid.extensions import sreg, ax
 
 from library.auth.decorators import auth_forbidden
-from library.auth.models import OpenIDStore, make_person_from_response
+from library.auth.models import OpenIDStore
 
 
 log = logging.getLogger(__name__)
@@ -60,6 +60,6 @@ def complete(request):
         request.flash.put(error=resp.message)
         return HttpResponseRedirect(reverse('signin'))
     elif isinstance(resp, consumer.SuccessResponse):
-        make_person_from_response(resp)
+        OpenIDStore.make_person_from_response(resp)
         request.session['openid'] = resp.identity_url
         return HttpResponseRedirect(reverse('home'))
