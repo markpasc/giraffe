@@ -87,6 +87,8 @@ INSTALLED_APPS = (
     'djangoflash',
     'django.contrib.markup',
     'library',
+    'library.auth',
+    'library.api',
 )
 
 TWITTER_KEY = (None, None)
