@@ -100,6 +100,15 @@ def code(request):
 
 
 @admin_only
+@allowed_methods("GET")
+def myself(request):
+    kwargs = {'kind': 'person', 'key': request.user.key()}
+    item_url = reverse('library.api.views.item', kwargs=kwargs)
+    url = request.build_absolute_uri(item_url)
+    return HttpResponseRedirect(url)
+
+
+@admin_only
 @allowed_methods("POST", "GET")
 @api_error
 def list(request, kind):
