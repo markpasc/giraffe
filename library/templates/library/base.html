@@ -19,7 +19,7 @@
                 {% block greets %}
                 <div id="greets" class="span-10 last">
                     {% if request.user.is_anonymous %}
-                        <p><a id="sign-in-link" href="{% url signin %}">Sign in</a></p>
+                        <p><a class="sign-in-link" href="{% url signin %}">Sign in</a></p>
                     {% else %}
                         <p>Sup, <a href="#" id="dialog-editprofile-open">{{ request.user.name }}</a>. <a href="{% url signout %}">Sign out</a></p>
                     {% endif %}

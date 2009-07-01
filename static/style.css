@@ -4,6 +4,7 @@ body, html {
     margin-top: 0;
     margin-bottom: 0;
     height: 100%;
+    font-family: Helvetica, sans-serif;
 }
 
 .grid {
@@ -80,7 +81,7 @@ body, html {
 
 /* stuff */
 
-.asset .meta {
+.asset .meta, .comment .meta {
     font-size: 0.9em;
     line-height: 0.9em;
 }
@@ -108,6 +109,16 @@ textarea, pre {
     font-family: "Anonymous Pro", Anonymous, monospace;
     font-size: 1.0em;
     line-height: 1.0em;
+}
+
+/* comments */
+
+#post-comment textarea {
+    font-family: Helvetica, sans-serif;
+    font-size: 1em;
+    line-height: 1;
+    width: 100%;
+    height: 20ex;
 }
 
 /* dialogs */

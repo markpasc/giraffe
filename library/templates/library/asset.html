@@ -18,23 +18,27 @@
         {% include_asset_by_type comment %}
     {% endfor %}
 
-    <form method="post" action="{% url comment slug=asset.slug %}">
-        <div id="post-comment" class="comment span-16 last">
-            <div class="span-1">
-                <img src="{{ request.user.userpic }}" width="50" height="50">
+    {% if request.user.is_anonymous %}
+        <p>To add a comment, <a class="sign-in-link" href="{% url signin %}">sign in</a>.</p>
+    {% else %}
+        <form method="post" action="{% url comment slug=asset.slug %}">
+            <div id="post-comment" class="comment span-16 last">
+                <div class="span-1">
+                    <img src="{{ request.user.userpic }}" width="50" height="50">
+                </div>
+
+                <div class="span-14 prefix-1 last">
+
+                    <p class="meta">
+                        <a href="{{ request.user.get_permalink_url }}">{{ request.user.name }}</a> is writing now:
+                    </p>
+
+                    <p><textarea name="content"></textarea></p>
+
+                    <p><input type="submit" class="green" value="Post"></p>
+                </div>
             </div>
-
-            <div class="span-14 prefix-1 last">
-
-                <p class="meta">
-                    <a href="{{ request.user.get_permalink_url }}">{{ request.user.name }}</a> is writing now:
-                </p>
-
-                <textarea name="content"></textarea>
-
-                <input type="submit" class="green" value="Post">
-            </div>
-        </div>
-    </form>
+        </form>
+    {% endif %}
 
 {% endblock %}
