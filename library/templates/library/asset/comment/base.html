@@ -1,4 +1,5 @@
-<div class="comment span-16 last">
+{% load library %}
+<div id="comment-{{ asset.key }}" class="comment span-16 last">
     <div class="span-1">
         <img src="{{ asset.author.userpic }}" width="50" height="50">
     </div>
@@ -6,7 +7,7 @@
     <div class="span-14 prefix-1 last">
 
         <p class="meta">
-            <a href="{{ asset.author.get_permalink_url }}">{{ asset.author.name }}</a> wrote <a href="{{ asset.get_permalink_url }}">{{ asset.published|timesince }} ago</a>:
+            <a href="{{ asset.author.get_permalink_url }}">{{ asset.author.name }}</a> wrote <a href="{{ asset.get_permalink_url }}">{{ asset.published|fuzzysince }}</a>:
         </p>
 
         {{ asset.content_as_html }}

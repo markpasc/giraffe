@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.conf import settings
 from django.template import Library, Node, Variable, TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template.loader import get_template
@@ -41,3 +43,28 @@ def include_asset_by_type(parser, token):
     if len(bits) > 1:
         return IncludeAssetByTypeNode(bits[1])
     return IncludeAssetByTypeNode()
+
+
+@register.filter
+def fuzzysince(then):
+    now = datetime.utcnow()
+    if then < now:
+        since = now - then
+        if since <= timedelta(minutes=2):
+            return "just now"
+        if since <= timedelta(minutes=75):
+            return "%d minutes ago" % (since.seconds / 60,)
+        if since <= timedelta(hours=12):
+            return "%d hours ago" % (since.seconds / 3600,)
+    elif now < then:
+        until = then - now
+        if until <= timedelta(minutes=2):
+            return "now"
+        if until <= timedelta(minutes=75):
+            return "%d minutes from now" % (until.seconds / 60,)
+        if until <= timedelta(hours=6):
+            return "%d hours from now" % (until.seconds / 3600,)
+    else:
+        return "right now"
+
+    return then.strftime("at %Y-%m-%d %H:%M")
