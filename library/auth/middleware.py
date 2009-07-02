@@ -8,9 +8,10 @@ class AuthenticationMiddleware(object):
     def process_request(self, request):
         request.user = AnonymousUser
 
-        person = self.try_session_auth()
-        if person is None:
-            person = self.try_header_auth()
+        session_person = self.try_session_auth()
+        header_person = self.try_header_auth()
+
+        person = session_person or header_person
         if person is not None:
             request.user = person
             request.user.is_anonymous = False
