@@ -35,7 +35,7 @@
             {% endwith %}
 
             <content type="html">
-                {{ asset.content_as_html|escape }}
+                {{ asset.content_as_html|escapexml }}
             </content>
         </entry>
         {% endwith %}

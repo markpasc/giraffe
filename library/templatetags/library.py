@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+from xml.sax.saxutils import escape
 
 from django.conf import settings
 from django.template import Library, Node, Variable, TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
+from django.template.defaultfilters import stringfilter
 from django.template.loader import get_template
 
 
@@ -73,3 +75,10 @@ def fuzzysince(then):
 @register.filter
 def atomdate(when):
     return when.replace(microsecond=0).isoformat() + 'Z'
+
+
+@register.filter
+@stringfilter
+def escapexml(what):
+    return escape(what)
+escapexml.is_safe = True
