@@ -108,14 +108,23 @@ def request(request):
     try:
         consumer = request.consumer
     except AttributeError:
-        return HttpResponse(
+        resp = HttpResponse(
             content='Authorization required for this resource',
             content_type='text/plain',
             status=401,
-            headers={'WWW-Authenticate': 'OAuth realm="giraffe"'},
+        )
+        resp['WWW-Authenticate'] = 'OAuth realm="giraffe"'
+        return resp
+
+    try:
+        callback = request.oauth_params['oauth_callback']
+    except KeyError:
+        return HttpResponse(
+            content='Parameter oauth_callback is required when requesting a request token',
+            content_type='text/plain',
+            status=400,
         )
 
-    callback = request.oauth_params['oauth_callback']
     token = Token(callback=callback, consumer=consumer.id)
     token.save()
 
@@ -150,6 +159,14 @@ def authorize(request):
     token.authed_by = request.user
     token.save()
 
+    if token.callback == 'oob':
+        return render_to_response(
+            'library/authorized.html',
+            {
+                'token': request.POST['token'],
+            },
+            context_instance=RequestContext(request),
+        )
     return HttpResponseRedirect(token.callback)
 
 
@@ -160,11 +177,13 @@ def access(request):
         token = request.token
         person = token.authed_by
     except AttributeError:
-        return HttpResponseUnauthorized(
+        resp = HttpResponse(
             content='Authorization required for this resource',
             content_type='text/plain',
-            headers={'WWW-Authenticate': 'OAuth realm="giraffe"'},
+            status=401,
         )
+        resp['WWW-Authenticate'] = 'OAuth realm="giraffe"'
+        return resp
 
     newtoken = Token(consumer=consumer, person=person)
     newtoken.save()
