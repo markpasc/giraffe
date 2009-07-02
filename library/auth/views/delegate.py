@@ -1,7 +1,9 @@
 import binascii
 import hashlib
+import hmac
 from time import time
 from urllib import urlencode, quote
+from urlparse import urlparse, urlunparse
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -26,9 +28,9 @@ class OAuth(object):
         except KeyError:
             # That's okay, but there's nothing to unpack.
             return None, None
-        consumer = Consumer.get(oauthkey=consumer_key)
+        consumer = Consumer.get(keyid=consumer_key)
         if consumer is None:
-            raise cls.BadRequestError('Request is from an unknown consumer')
+            raise cls.BadRequestError('Request is from unknown consumer %r' % consumer_key)
 
         try:
             version = request['oauth_version']
@@ -60,7 +62,7 @@ class OAuth(object):
             # That's okay.
             token = None
         else:
-            token = Token.get(id=token_key, consumer=consumer)
+            token = Token.get(keyid=token_key, consumer=consumer)
             if token is None:
                 raise cls.BadRequestError('Request has an unknown token %r' % token_key)
 
@@ -86,9 +88,19 @@ class OAuth(object):
         if token is not None:
             key += quote(token.secret, '')
 
+        scheme_ports = {
+            'http':  ':80',
+            'https': ':443',
+        }
+        scheme, netloc, path = urlparse(url)[:3]
+        for cand_scheme, cand_port in scheme_ports.items():
+            if scheme == cand_scheme and netloc.endswith(cand_port):
+                netloc = netloc[:-len(cand_port)]
+        url = urlunparse((scheme, netloc, path, None, None, None))
+
         signed_params = sorted(signed_params)
         sign_base = urlencode(signed_params)
-        sign_base = '&'.join((method, url, sign_base))
+        sign_base = '&'.join([quote(x, '-._~') for x in (method, url, sign_base)])
 
         if signature != cls.sign(key, sign_base):
             raise cls.BadRequestError('Request is incorrectly signed (tried signing %r)'
@@ -125,11 +137,11 @@ def request(request):
             status=400,
         )
 
-    token = Token(callback=callback, consumer=consumer.id)
+    token = Token(callback=callback, consumer=consumer)
     token.save()
 
     token_data = {
-        'oauth_token': token.id,
+        'oauth_token': token.keyid,
         'oauth_token_secret': token.secret,
     }
 
@@ -142,10 +154,18 @@ def request(request):
 @auth_required
 @allowed_methods("GET")
 def ask(request):
+    try:
+        token_key = request.GET['oauth_token']
+    except AttributeError:
+        token_key = None
+    else:
+        token = Token.get(keyid=token_key)
+
     return render_to_response(
-        'library/authorize.html',
+        'library/ask.html',
         {
-            'token': request.GET.get('token'),
+            'token_key': token_key,
+            'token': token,
         },
         context_instance=RequestContext(request),
     )
@@ -154,9 +174,9 @@ def ask(request):
 @auth_required
 @allowed_methods("POST")
 def authorize(request):
-    token = Token.get(id=request.POST['token'])
+    token = Token.get(keyid=request.POST['token'])
 
-    token.authed_by = request.user
+    token.authed_by = request.user.key()
     token.save()
 
     if token.callback == 'oob':
@@ -175,7 +195,6 @@ def access(request):
     try:
         consumer = request.consumer
         token = request.token
-        person = token.authed_by
     except AttributeError:
         resp = HttpResponse(
             content='Authorization required for this resource',
@@ -185,13 +204,37 @@ def access(request):
         resp['WWW-Authenticate'] = 'OAuth realm="giraffe"'
         return resp
 
+    if token is None:
+        return HttpResponse(
+            content='No token!?',
+            content_type='text/plain',
+            status=400,
+        )
+
+    try:
+        person_key = token.authed_by
+    except AttributeError:
+        return HttpResponse(
+            content='Nobody has authorized your token %r' % (token.keyid,),
+            content_type='text/plain',
+            status=400,
+        )
+
+    person = Person.get(person_key)
+    if person is None:
+        return HttpResponse(
+            content='An invalid user has authorized your token %r' % (token.keyid,),
+            content_type='text/plain',
+            status=400,
+        )
+
     newtoken = Token(consumer=consumer, person=person)
     newtoken.save()
 
-    token.remove()
+    token.delete()
 
     token_data = {
-        'oauth_token': newtoken.id,
+        'oauth_token': newtoken.keyid,
         'oauth_token_secret': newtoken.secret,
     }
 

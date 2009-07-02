@@ -1,0 +1,31 @@
+{% extends "library/base.html" %}
+
+{% block content %}
+
+    <div class="span-16">
+
+    {% if token_key %}
+        {% if token %}
+            <form method="post" action="{% url library.auth.views.delegate.authorize %}">
+                <input type="hidden" name="token" value="{{ token_key }}">
+
+                {% with token.consumer as csr %}
+                <p><strong>{{ csr.owner.name }}</strong>'s app <strong>{{ csr.name }}</strong> would like to act on your behalf. Is that cool?</p>
+                {% endwith %}
+
+                <p class="buttons"><a class="button red-button" href="{% url home %}">Cancel</a> <input type="submit" class="ok-button green" value="Allow"></p>
+            </form>
+        {% else %}
+            <p>Hmm, someone sent you here with an invalid token <samp>{{ token_key }}</samp>. What do you make of that?</p>
+
+            <p class="buttons"><a class="button red-button" href="{% url home %}">Dunno</a></p>
+        {% endif %}
+    {% else %}
+        <p>Hmm, someone sent you here with no token at all. What do you make of that?</p>
+
+        <p class="buttons"><a class="button red-button" href="{% url home %}">Dunno</a></p>
+    {% endif %}
+
+    </div>
+
+{% endblock %}

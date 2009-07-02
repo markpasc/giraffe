@@ -19,6 +19,7 @@ urlpatterns += patterns('library.auth.views.twitter',
 
 urlpatterns += patterns('library.auth.views.delegate',
     url(r'^delegate/request$', 'request'),
+    url(r'^delegate/ask$', 'ask'),
     url(r'^delegate/authorize$', 'authorize'),
     url(r'^delegate/access$', 'access'),
 )

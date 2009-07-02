@@ -1,3 +1,7 @@
+from library.auth.models.regular import *
+from library.auth.models.delegate import *
+
+
 class _AnonymousUserClass(object):
 
     class Error(Exception):

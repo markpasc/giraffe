@@ -1,3 +1,6 @@
+import re
+from urllib import unquote
+
 from django.http import HttpResponse
 
 import library.models
@@ -35,8 +38,17 @@ class AuthenticationMiddleware(object):
         url = request.build_absolute_uri()
 
         if request.META.get('HTTP_AUTHORIZATION', '').startswith('OAuth '):
+
+            def unquote_value(v):
+                v = v[v.startswith('"') and 1 or 0:v.endswith('"') and -1 or None]
+                v = unquote(v)
+                return v
+
             preamble, auth_header = request.META['HTTP_AUTHORIZATION'].split(' ', 1)
-            auth_params = re.split(r'\s*,\s*', auth_header)
+            param_segments = re.split(r'\s*,\s*', auth_header)
+            param_segments = (x.split('=') for x in param_segments)
+            param_segments = ((k, unquote_value(v)) for k, v in param_segments)
+            auth_params = dict(param_segments)
         else:
             auth_params = request.POST or {}
 
