@@ -4,6 +4,7 @@ from xml.sax.saxutils import escape
 from django.conf import settings
 from django.template import Library, Node, Variable, TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template.defaultfilters import stringfilter
+from django.template.defaulttags import url, URLNode
 from django.template.loader import get_template
 
 
@@ -45,6 +46,23 @@ def include_asset_by_type(parser, token):
     if len(bits) > 1:
         return IncludeAssetByTypeNode(bits[1])
     return IncludeAssetByTypeNode()
+
+
+class AbsoluteURLNode(URLNode):
+
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def render(self, context):
+        output = self.nodelist.render(context)
+        return context['request'].build_absolute_uri(output)
+
+
+@register.tag
+def absoluteurl(parser, token):
+    nodelist = parser.parse(('endabsoluteurl',))
+    parser.delete_first_token()
+    return AbsoluteURLNode(nodelist)
 
 
 @register.filter
