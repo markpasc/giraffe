@@ -16,3 +16,9 @@ urlpatterns += patterns('library.auth.views.twitter',
     url(r'^signin/twitter/complete$', 'complete'),
     url(r'^signin/twitter/confirm$', 'confirm'),
 )
+
+urlpatterns += patterns('library.auth.views.delegate',
+    url(r'^delegate/request$', 'request'),
+    url(r'^delegate/authorize$', 'authorize'),
+    url(r'^delegate/access$', 'access'),
+)
