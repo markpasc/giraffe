@@ -3,12 +3,12 @@ import hashlib
 from time import time
 from urllib import urlencode, quote
 
-from django.http import HttpResponseUnauthorized, HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from library.auth.decorators import *
-from library.models.delegate import *
+from library.auth.models.delegate import *
 from library.views import allowed_methods
 
 
@@ -108,9 +108,10 @@ def request(request):
     try:
         consumer = request.consumer
     except AttributeError:
-        return HttpResponseUnauthorized(
+        return HttpResponse(
             content='Authorization required for this resource',
             content_type='text/plain',
+            status=401,
             headers={'WWW-Authenticate': 'OAuth realm="giraffe"'},
         )
 

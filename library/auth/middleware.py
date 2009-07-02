@@ -8,8 +8,8 @@ class AuthenticationMiddleware(object):
     def process_request(self, request):
         request.user = AnonymousUser
 
-        session_person = self.try_session_auth()
-        header_person = self.try_header_auth()
+        session_person = self.try_session_auth(request)
+        header_person = self.try_header_auth(request)
 
         person = session_person or header_person
         if person is not None:
@@ -28,14 +28,16 @@ class AuthenticationMiddleware(object):
         method = request.method
         url = request.build_absolute_uri()
 
-        if request.get('Authorization', '').startswith('OAuth '):
+        if request.META.get('HTTP_AUTHORIZATION', '').startswith('OAuth '):
             preamble, auth_header = request['Authorization'].split(' ', 1)
             auth_params = re.split(r'\s*,\s*', auth_header)
             consumer, token = OAuth.unpack(auth_params, method, url)
         else:
             auth_params = request.POST or {}
 
-        request.consumer, request.token = OAuth.unpack(auth_params, method, url)
-        request.oauth_params = auth_params
+        consumer, token = OAuth.unpack(auth_params, method, url)
+        request.consumer, request.token, request.oauth_params = consumer, token, auth_params
 
+        if token is None:
+            return
         return token.person

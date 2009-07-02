@@ -6,7 +6,7 @@ from openid.consumer import consumer, discover
 from openid.extensions import sreg, ax
 
 from library.auth.decorators import auth_forbidden
-from library.auth.models import OpenIDStore
+from library.auth.models.regular import OpenIDStore
 
 
 log = logging.getLogger(__name__)
