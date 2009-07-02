@@ -1,46 +1,52 @@
+from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from library.auth.decorators import auth_required
-from library.models import Person, Asset, Action, Blog
+from library.models import Person, Asset, Action
 from library.views import allowed_methods
 
 
-def stream(request, openid):
+def stream(request, openid, template=None, content_type=None):
     try:
         me = Person.all().filter(openid=openid)[0]
     except IndexError:
         raise Http404
 
-    blog = Blog.all().filter(person=me, privacy_group="public")
-    blog.order('-posted')
-    actions = [x.action for x in blog[0:10]]
+    blog = Action.all().filter(person=me, verb=Action.verbs.post)
+    blog.filter(privacy_groups="public")
+    blog.order('-when')
+    actions = blog[0:10]
 
     return render_to_response(
-        'library/stream.html',
+        template or 'library/stream.html',
         {
             'blogger': me,
             'actions': actions,
         },
         context_instance=RequestContext(request),
+        mimetype=content_type or settings.DEFAULT_CONTENT_TYPE,
     )
 
 
-def profile(request, slug):
+def profile(request, slug, template=None, content_type=None):
     person = Person.get(slug=slug)
     if person is None:
         raise Http404
 
-    actions = Action.all().filter(person=person).order('-when')[0:10]
+    profile = Action.all().filter(person=person)
+    profile.order('-when')
+    actions = profile[0:10]
 
     return render_to_response(
-        'library/profile.html',
+        template or 'library/profile.html',
         {
             'person': person,
             'actions': actions,
         },
         context_instance=RequestContext(request),
+        mimetype=content_type or settings.DEFAULT_CONTENT_TYPE,
     )
 
 

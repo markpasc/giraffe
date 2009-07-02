@@ -68,3 +68,8 @@ def fuzzysince(then):
         return "right now"
 
     return then.strftime("at %Y-%m-%d %H:%M")
+
+
+@register.filter
+def atomdate(when):
+    return when.replace(microsecond=0).isoformat() + 'Z'

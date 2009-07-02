@@ -32,6 +32,7 @@ class Asset(Model):
         video='http://activitystrea.ms/schema/1.0/video',
         bookmark='http://activitystrea.ms/schema/1.0/bookmark',
         post='http://activitystrea.ms/schema/1.0/blog-entry',
+        comment='http://www.bestendtimesever.com/acstrema/your-awesome-contribution',
     )
 
     name_for_object_type = object_types.inverse()
@@ -52,7 +53,9 @@ class Asset(Model):
     updated = UtcDateTimeProperty(auto_now=True)
 
     def get_permalink_url(self):
-        return reverse('asset', kwargs={'slug': self.slug})
+        if self.slug is not None:
+            return reverse('asset', kwargs={'slug': self.slug})
+        return reverse('asset', kwargs={'slug': self.key()})
 
     def content_as_html(self):
         template_for_type = {
@@ -80,13 +83,9 @@ class Asset(Model):
         self.save()
 
         # Make an action.
-        act = Action(person=self.author, asset=self, verb=Action.verbs.post, when=self.published)
+        act = Action(person=self.author, asset=self, verb=Action.verbs.post,
+            when=self.published, privacy_groups=self.privacy_groups)
         act.save()
-
-        # Post the action to the blogs.
-        for group in self.privacy_groups:
-            bl = Blog(person=self.author, action=act, privacy_group=group, posted=self.published)
-            bl.save()
 
 
 class Link(Model):
@@ -101,12 +100,15 @@ class Action(Model):
     verbs = constants(
         post='http://activitystrea.ms/schema/1.0/post',
         favorite='http://activitystrea.ms/schema/1.0/favorite',
+        comment='http://www.bestendtimesever.com/acstrema/you-awesomely-contributing',
     )
 
     person = db.ReferenceProperty(Person, collection_name='actions')
     verb = db.StringProperty()
     asset = db.ReferenceProperty(Asset, collection_name='actions')
     when = UtcDateTimeProperty(auto_now_add=True)
+
+    privacy_groups = db.StringListProperty()
 
     def byline_html(self):
         if self.verb == self.verbs.post:
@@ -117,10 +119,3 @@ class Action(Model):
             html = "acted upon by %s"
         html = html % self.person.as_html()
         return mark_safe(html)
-
-
-class Blog(Model):
-    person = db.ReferenceProperty(Person, collection_name='bloggings')
-    action = db.ReferenceProperty(Action, collection_name='bloggings')
-    posted = UtcDateTimeProperty(auto_now_add=True)
-    privacy_group = db.StringProperty()
