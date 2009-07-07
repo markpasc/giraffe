@@ -88,6 +88,14 @@ body, html {
 
 /* stuff */
 
+.asset h3 {
+    margin-top: 0;
+}
+
+.asset {
+    margin-bottom: 1.14em;
+}
+
 .asset .meta, .comment .meta {
     font-size: 0.9em;
     line-height: 0.9em;
