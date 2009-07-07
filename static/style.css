@@ -36,35 +36,42 @@ body, html {
 
 #page {
     min-height: 100%;
-    margin: 0 auto -60px;
+    margin: 0 auto -50px;
     padding: 0;
 }
 
 #not-a-footer, #footer {
     clear: both;
-    height: 60px;
+    height: 50px;
 }
 
 #footer {
     background-color: #eee;
-    height: 59px;
-    overflow: hidden;
+    height: 49px;
+    z-index: 4;
+    overflow: visible;
     border-top: 1px solid #ccc;
     margin: 0 auto;
     padding: 0;
 }
 
-#footer p {
-    margin: 0;
-    padding: 0;
+#footer .grid {
+    position: relative;
 }
 
-#footer .column-mid {
-    text-align: center;
+#footer-giraffe {
+    position: absolute;
+    overflow: hidden;
+    left: 0px;
+    top: -10px;
+    height: 59px;
+    width: 60px;
 }
 
-#footer .column-right {
-    text-align: right;
+#footer-adfree {
+    position: absolute;
+    right: 0px;
+    top: -10px;
 }
 
 /* hi */

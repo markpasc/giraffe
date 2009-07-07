@@ -51,16 +51,8 @@
 
     <div id="footer">
         <div class="grid">
-            <div class="column-left span-5">
-                <p><img src="{% url static path="giraffe.png" %}" width="133" height="84" alt="contains giraffe technology"></p>
-            </div>
-            <div class="column-mid span-6">
-                <!-- this is where the middle footer column would go if there were one -->
-                &nbsp;
-            </div>
-            <div class="column-right span-5 last">
-                <p><a href="http://adfreeblog.org/"><img src="{% url static path="adfree.png" %}" width="151" height="56" alt="Ad-free blog"></a></p>
-            </div>
+        <div id="footer-giraffe"><img src="{% url static path="giraffe.png" %}" width="133" height="84" alt="contains giraffe technology"></div>
+        <a href="http://adfreeblog.org/"><img id="footer-adfree" src="{% url static path="adfree.png" %}" width="151" height="56" alt="Ad-free blog"></a>
         </div>
     </div>
 
