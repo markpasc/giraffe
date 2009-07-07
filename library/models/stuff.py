@@ -33,6 +33,7 @@ class Asset(Model):
         bookmark='http://activitystrea.ms/schema/1.0/bookmark',
         post='http://activitystrea.ms/schema/1.0/blog-entry',
         comment='http://www.bestendtimesever.com/acstrema/your-awesome-contribution',
+        game='http://www.bestendtimesever.com/acstrema/pew-pew-laser-game',
     )
 
     name_for_object_type = object_types.inverse()
