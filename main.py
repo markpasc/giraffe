@@ -42,9 +42,10 @@ def main():
     if have_django_zip and django_zip_path not in sys.path:
         sys.path.insert(1, django_zip_path)
 
-    openid_zip_path = os.path.join(PARENT_DIR, 'openid.zip')
-    if openid_zip_path not in sys.path:
-        sys.path.insert(1, openid_zip_path)
+    for zipfile in ('openid.zip', 'remoteobjects.zip'):
+        zip_path = os.path.join(PARENT_DIR, zipfile)
+        if zip_path not in sys.path:
+            sys.path.insert(1, zip_path)
 
     # Create a Django application for WSGI.
     application = django.core.handlers.wsgi.WSGIHandler()

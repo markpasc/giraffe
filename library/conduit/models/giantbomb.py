@@ -7,8 +7,9 @@ from urlparse import urljoin, urlparse, urlunparse
 from django.conf import settings
 from remoteobjects import RemoteObject, fields
 
-from library.conduit.models.base import Conduit
-from library.models import Asset
+from library.conduit import conduits
+from library.conduit.models.base import Conduit, Result
+from library.models import Asset, Link
 
 
 class Bombdate(fields.Field):
@@ -48,14 +49,26 @@ class Bombject(RemoteObject):
         query = parse_qs(parts[4])
         query = dict([(k, v[0]) for k, v in query.iteritems()])
 
-        query.update(kwargs)
+        for k, v in kwargs.iteritems():
+            if v is None and k in query:
+                del query[k]
+            else:
+                query[k] = v
 
         parts[4] = urlencode(query)
         url = urlunparse(parts)
         return super(Bombject, self).get(url)
 
 
-class Game(Bombject):
+class Image(Bombject):
+    tiny_url = fields.Field()
+    small_url = fields.Field()
+    thumb_url = fields.Field()
+    screen_url = fields.Field()
+    super_url = fields.Field()
+
+
+class Game(Bombject, Result):
 
     id = fields.Field()
     name = fields.Field()
@@ -64,7 +77,7 @@ class Game(Bombject):
 
     summary = fields.Field(api_name='deck')
     description = fields.Field()
-    image = fields.Field()
+    image = fields.Object(Image)
     published = Bombdate(api_name='date_added')
     updated = Bombdate(api_name='date_last_updated')
 
@@ -74,13 +87,34 @@ class Game(Bombject):
     platforms = fields.Field()
     publishers = fields.Field()
 
+    links = ()
+
     @classmethod
     def get(cls, url, **kwargs):
         res = GameResult.get(url)
+        res = res.filter()
         return res.results[0]
 
-    def as_asset(self):
-        return Asset(
+    def update_from_dict(self, data):
+        super(Game, self).update_from_dict(data)
+
+        link = Link(
+            rel="alternate",
+            content_type="text/html",
+            href=self.site_detail_url,
+        )
+        self.links = [link]
+
+        if self.image:
+            link = Link(
+                rel="depiction",
+                content_type="image/jpeg",
+                href=self.image.super_url,
+            )
+            self.links.append(link)
+
+    def save_asset(self):
+        asset = Asset(
             object_type=Asset.object_types.game,
             title=self.name,
             content=self.summary,
@@ -89,6 +123,13 @@ class Game(Bombject):
             published=self.published,
             updated=self.updated,
         )
+        asset.save()
+
+        for link in self.links:
+            link.asset = asset
+            link.save()
+
+        return asset
 
 
 class GameResult(Bombject):
@@ -110,12 +151,16 @@ class GameResult(Bombject):
 
 class GiantBomb(Conduit):
 
-    def lookup(self, id):
-        obj = Game.get('/game/%s/' % (id,))
-        return obj.as_asset()
+    @classmethod
+    def lookup(cls, id):
+        return Game.get('/game/%s/' % (id,))
 
-    def search(self, query=None, **kwargs):
+    @classmethod
+    def search(cls, query=None):
         assert query is not None
         obj = GameResult.get('/search/').filter(resources='game')
         obj = obj.filter(query=query)
-        return [game.as_asset() for game in obj.results]
+        return obj.results
+
+
+conduits.add(GiantBomb)
