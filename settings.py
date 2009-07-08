@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     'library',
     'library.auth',
     'library.api',
+    'library.conduit',
 )
 
 TWITTER_KEY = (None, None)

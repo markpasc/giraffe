@@ -1,0 +1,43 @@
+{% extends "library/base.html" %}
+
+{% block content %}
+
+{% for conduit in conduits %}
+<h1>{{ conduit }}</h1>
+{% endfor %}
+
+<form id="search" method="post" action="{% url library.conduit.views.do_search %}">
+    <p>
+        <input name="query">
+        <input type="submit" class="green" value="Search">
+    </p>
+</form>
+
+<div id="search-results">
+</div>
+
+<script type="text/javascript">
+
+    $('#search').bind('submit', function () {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: $(this).serialize(),
+            dataType: 'json',
+            beforeSend: function (xhr) {
+                $('#search-results').empty();
+            },
+            success: function (data, textStatus) {
+                $.each(data, function () {
+                    var p = $('<p/>');
+                    p.text(this.name);
+                    $('#search-results').append(p);
+                });
+            },
+        });
+        return false;
+    });
+
+</script>
+
+{% endblock %}

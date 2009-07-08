@@ -10,6 +10,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 import django.utils.simplejson as json
 from google.appengine.ext import db
+import remoteobjects
 
 from library.auth.decorators import admin_only
 import library.models
@@ -19,6 +20,8 @@ from library.views import allowed_methods
 def json_encoder(obj):
     if isinstance(obj, library.models.Model):
         return obj.as_data()
+    if isinstance(obj, remoteobjects.RemoteObject):
+        return obj.to_dict()
     if isinstance(obj, datetime):
         return obj.isoformat()
     raise TypeError("%s instance %r is not json serializable"
