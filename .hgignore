@@ -1,6 +1,7 @@
 \.pyc$
 ^django.zip$
 ^openid.zip$
+^remoteobjects.zip$
 ^markdown$
 ^appengine_django$
 ^djangoflash$
