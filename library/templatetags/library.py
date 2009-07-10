@@ -1,19 +1,32 @@
+from __future__ import absolute_import
+
+import cgi
 from datetime import datetime, timedelta
+from functools import wraps
 from xml.sax.saxutils import escape
 
 from django.conf import settings
-from django.template import Library, Node, Variable, TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
+from django.template import Library, Node, Variable, Context, TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template.defaultfilters import stringfilter
 from django.template.defaulttags import url, URLNode
 from django.template.loader import get_template
+
+from library.models.stuff import Asset
 
 
 register = Library()
 
 
+def is_safe(fn):
+    fn.is_safe = True
+    return fn
+
+
 class IncludeAssetByTypeNode(Node):
 
-    def __init__(self, format='post'):
+    def __init__(self, format=None):
+        if format is None:
+            format = 'post'
         self.format = format
 
     def render(self, context):
@@ -96,7 +109,93 @@ def atomdate(when):
 
 
 @register.filter
+@is_safe
 @stringfilter
 def escapexml(what):
     return escape(what)
-escapexml.is_safe = True
+
+
+from HTMLParser import HTMLParser
+
+def when_no_object(fn):
+    @wraps(fn)
+    def do_when_no_object(self, *args, **kwargs):
+        if self.object is None:
+            return fn(self, *args, **kwargs)
+    return do_when_no_object
+
+class AssetizingParser(HTMLParser):
+
+    def reset(self):
+        HTMLParser.reset(self)
+        self.content = list()
+        self.object = None
+
+    def handle_starttag(self, tag, attrs):
+        if self.object is not None:
+            if tag == 'param':
+                param = dict(attrs)
+                self.object[param.get('name')] = param.get('value')
+            return
+
+        if tag == 'object':
+            params = dict(attrs)
+            if params.get('type') == 'text/x-asset':
+                self.object = dict()
+                return
+
+        self.content.extend(('<', tag))
+        if attrs:
+            self.content.append(' ')
+            for attr in attrs:
+                self.content.extend((attr[0], '="', cgi.escape(attr[1], True), '"'))
+        self.content.append('>')
+
+    def handle_endtag(self, tag):
+        if self.object is not None:
+            if tag == 'object':
+                asset = Asset.get(self.object['key'])
+                context = Context({'asset': asset})
+
+                node = IncludeAssetByTypeNode(self.object.get('format'))
+                html = node.render(context)
+
+                self.content.append(html)
+                self.object = None
+            return
+
+        self.content.extend(('</', tag, '>'))
+
+    @when_no_object
+    def handle_data(self, data):
+        self.content.append(data)
+
+    @when_no_object
+    def handle_charref(self, name):
+        self.content.extend(('&#', name, ';'))
+
+    @when_no_object
+    def handle_entityref(self, name):
+        self.content.extend(('&', name, ';'))
+
+    @when_no_object
+    def handle_comment(self, data):
+        self.content.extend(('<!--', data, '-->'))
+
+    def result(self):
+        return ''.join(self.content)
+
+    @classmethod
+    def assetize(cls, text):
+        self = cls()
+        self.feed(text)
+        self.close()
+        return self.result()
+
+
+@register.filter
+@is_safe
+@stringfilter
+def assetize(what):
+    # Parse html, replacing the text/x-asset objects with other subtemplates.
+    return AssetizingParser.assetize(what)

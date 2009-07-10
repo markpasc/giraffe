@@ -60,9 +60,9 @@ class Asset(Model):
 
     def content_as_html(self):
         template_for_type = {
-            'text/markdown': "{% load markup %}{{ asset.content|markdown }}",
-            'text/html': "{% autoescape off %}{{ asset.content }}{% endautoescape %}",
-            None: "{% asset.content %}",
+            'text/markdown': "{% load library %}{% load markup %}{{ asset.content|markdown|assetize }}",
+            'text/html': "{% load library %}{% autoescape off %}{{ asset.content|assetize }}{% endautoescape %}",
+            None: "{{ asset.content }}",
         }
 
         code = template_for_type.get(self.content_type, template_for_type[None])
