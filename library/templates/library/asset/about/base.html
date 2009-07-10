@@ -9,8 +9,14 @@
 
     <h4>
         {% block title %}
-            <a href="{{ asset.get_permalink_url }}">{{ asset.title }}</a>
-            <a href="{{ asset.get_permalink_url }}" class="arrow">&#10148;</a>
+            {% with asset.get_permalink_url as permalink %}
+                {% if permalink %}
+                    <a href="{{ permalink }}">{{ asset.title }}</a>
+                    <a href="{{ permalink }}" class="arrow">&#10148;</a>
+                {% else %}
+                    {{ asset.title }}
+                {% endif %}
+            {% endwith %}
         {% endblock %}
     </h4>
 

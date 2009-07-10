@@ -56,7 +56,8 @@ class Asset(Model):
     def get_permalink_url(self):
         if self.slug is not None:
             return reverse('asset', kwargs={'slug': self.slug})
-        return reverse('asset', kwargs={'slug': self.key()})
+        for link in self.links.filter(rel='alternate', content_type='text/html'):
+            return link.href
 
     def content_as_html(self):
         template_for_type = {
