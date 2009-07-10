@@ -1,0 +1,23 @@
+<div class="asset-about asset-{{ asset.key }}">
+    {% with asset.links.rel__thumbnail.width__lt__200.0 as thumb %}
+        {% if thumb %}
+            <div class="picture">
+                <img src="{{ thumb.href }}" width="{{ thumb.width }}" height="{{ thumb.height }}">
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <h4>
+        {% block title %}
+            <a href="{{ asset.get_permalink_url }}">{{ asset.title }}</a>
+            <a href="{{ asset.get_permalink_url }}" class="arrow">&#10148;</a>
+        {% endblock %}
+    </h4>
+
+    {% block content %}
+        {% if asset.content %}
+            {{ asset.content_as_html }}
+        {% endif %}
+    {% endblock %}
+</div>
+<br style="clear: both">

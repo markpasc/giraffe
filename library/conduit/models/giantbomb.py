@@ -5,6 +5,8 @@ from urllib import urlencode
 from urlparse import urljoin, urlparse, urlunparse
 
 from django.conf import settings
+from google.appengine.api.urlfetch import fetch
+from google.appengine.api import images
 from remoteobjects import RemoteObject, fields
 
 from library.conduit import conduits
@@ -106,12 +108,20 @@ class Game(Bombject, Result):
         self.links = [link]
 
         if self.image:
-            link = Link(
-                rel="depiction",
-                content_type="image/jpeg",
-                href=self.image.super_url,
-            )
-            self.links.append(link)
+            for urlspec in ('super_url', 'thumb_url', 'small_url'):
+                url = getattr(self.image, urlspec)
+
+                # Get it.
+                resp = fetch(url)
+                image = images.Image(resp.content)
+
+                self.links.append(Link(
+                    rel="thumbnail",
+                    content_type="image/jpeg",
+                    href=url,
+                    width=image.width,
+                    height=image.height,
+                ))
 
     def save_asset(self):
         asset = Asset(

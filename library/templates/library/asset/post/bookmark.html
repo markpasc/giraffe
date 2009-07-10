@@ -3,6 +3,6 @@
 {% block title %}
     {% with asset.links.rel__related.0 as related_link %}
         <a href="{{ related_link.href }}">{{ asset.title }}</a>
-        <a href="{{ related_link.href }}">&#10148;</a>
+        <a href="{{ related_link.href }}" class="arrow">&#10148;</a>
     {% endwith %}
 {% endblock %}

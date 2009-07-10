@@ -30,6 +30,8 @@ class Constants(object):
         for arg in args:
             self.__dict__.update(arg)
         self.__dict__.update(kwargs)
+    def __contains__(self, key):
+        return key in self.__dict__
     def __getitem__(self, key):
         return self.__dict__[key]
     def __setitem__(self, key, value):
@@ -54,6 +56,14 @@ class Query(db.Query):
         'gt': '>',
         'gte': '>=',
         'in': 'in',
+    })
+
+    conversions = constants({
+        'lt': int,
+        'lte': int,
+        'gt': int,
+        'gte': int,
+        'in': list,
     })
 
     def filter(self, *args, **kwargs):
@@ -85,8 +95,13 @@ class Query(db.Query):
         except ValueError:
             field, operator, value = parts[0], 'exact', parts[1]
 
+        if operator in self.conversions:
+            conversion = self.conversions[operator]
+            value = conversion(value)
+
         operator = self.operators[operator]
         query = ' '.join((field, operator))
+        log.debug('Reinterpreting filter %r as %r %r', name, query, value)
         return self.filter(query, value)
 
     def __repr__(self):
