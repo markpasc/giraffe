@@ -101,6 +101,20 @@ body, html {
     line-height: 0.9em;
 }
 
+.asset-about .picture {
+    float: left;
+    clear: left;
+    margin: 0 1em 2ex 0;
+}
+
+a.arrow, a.arrow:link, a.arrow:visited {
+    text-decoration: none;
+}
+
+a.arrow:hover, a.arrow:active {
+    text-decoration: underline;
+}
+
 /* api editor */
 
 #api-request-body {
