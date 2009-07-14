@@ -91,6 +91,7 @@ class Asset(Model):
 
 
 class Link(Model):
+
     asset = db.ReferenceProperty(Asset, collection_name='links')
     href = db.StringProperty()
     rel = db.StringProperty()
