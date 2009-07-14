@@ -1,3 +1,5 @@
+{% load library %}
+
 <div class="asset">
     <h3>
         {% block title %}
@@ -13,7 +15,11 @@
 
     <p class="meta">
         {% block byline %}{{ action.byline_html }}{% endblock %}
-        {% block timestamp %}at {{ asset.published }}{% endblock %}
+        {% block timestamp %}
+            <a href="{{ asset.get_permalink_url }}">
+                {{ asset.published|fuzzysince }}
+            </a>
+        {% endblock %}
         {% block tags %}
             {% if asset.tags %}
                 in {% for tag in asset.tags %}{{ tag }} {% endfor %}

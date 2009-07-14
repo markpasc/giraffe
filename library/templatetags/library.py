@@ -100,7 +100,7 @@ def fuzzysince(then):
     else:
         return "right now"
 
-    return then.strftime("at %Y-%m-%d %H:%M")
+    return then.strftime("at %H:%M on %d %b %Y")
 
 
 @register.filter
