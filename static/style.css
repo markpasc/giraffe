@@ -1,5 +1,10 @@
 @import url(ply.css);
 
+html {
+    font-size: 75%;
+    line-height: 1.2em;
+}
+
 body, html {
     margin-top: 0;
     margin-bottom: 0;
@@ -15,12 +20,12 @@ body, html {
     background-color: #222222;
     color: #DDDDDD;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 3em;
 }
 
 #title h1 {
     margin: 0;
-    padding: 10px 0;
+    padding: 0.5em 0;
     line-height: 1.5;
     text-transform: lowercase;
 }
@@ -29,20 +34,17 @@ body, html {
     vertical-align: middle;
 }
 
-#content, #TB_window {
-    font-size: 1.2em;
-    line-height: 1.2em;
-}
-
 #page {
     min-height: 100%;
-    margin: 0 auto -50px;
+    margin: 0 auto -100px;
     padding: 0;
 }
 
+/* footer */
+
 #not-a-footer, #footer {
     clear: both;
-    height: 50px;
+    height: 100px;
 }
 
 #footer {
@@ -51,7 +53,7 @@ body, html {
     z-index: 4;
     overflow: visible;
     border-top: 1px solid #ccc;
-    margin: 0 auto;
+    margin: 50px auto 0;
     padding: 0;
 }
 
@@ -92,19 +94,27 @@ body, html {
     margin-top: 0;
 }
 
+.asset h3 a, .asset h3 a:link, .asset h3 a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+.asset h3 a:hover, .asset h3 a:active {
+    text-decoration: underline;
+}
+
 .asset {
-    margin-bottom: 1.14em;
+    margin-bottom: 3em;
 }
 
 .asset .meta, .comment .meta {
-    font-size: 0.9em;
-    line-height: 0.9em;
+    font-size: 0.8333em;
 }
 
 .asset-about .picture {
     float: left;
     clear: left;
-    margin: 0 1em 2ex 0;
+    margin: 0 1em 1em 0;
 }
 
 a.arrow, a.arrow:link, a.arrow:visited {
@@ -113,6 +123,38 @@ a.arrow, a.arrow:link, a.arrow:visited {
 
 a.arrow:hover, a.arrow:active {
     text-decoration: underline;
+}
+
+/* asset text */
+
+.asset blockquote {
+    padding: 1em;
+    margin: 0 0 1.6em 0;
+
+    font-size: 1.2em;
+    line-height: 1.5em;
+
+    background: #cfc;
+    border: 3px solid #f0f0f0;
+    border-width: 0 2px 2px 0;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.asset blockquote p {
+    margin: 0;
+}
+
+.asset blockquote p+p {
+    margin-bottom: 0.8em;
+}
+
+.asset ul, .asset ol, .asset dl {
+    margin-bottom: 1.6em;
+}
+
+.asset ul li+li, .asset ol li+li, .asset dl dd+dt {
+    margin-top: 0.8em;
 }
 
 /* api editor */
@@ -134,7 +176,7 @@ a.arrow:hover, a.arrow:active {
     border: 1px solid gray;
 }
 
-textarea, pre {
+textarea, pre, code, tt, samp {
     font-family: "Anonymous Pro", Anonymous, monospace;
     font-size: 1.0em;
     line-height: 1.0em;
