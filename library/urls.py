@@ -7,6 +7,11 @@ urlpatterns = patterns('library.views.pages',
     url(r'^asset/(?P<slug>[^/]*)/comments$', 'comment', name="comment"),
 )
 
+urlpatterns += patterns('library.views.images',
+    url(r'^image$', 'post'),
+    url(r'^image/(?P<key>[^/.]*)\.(?P<ext>[^/]*)$', 'get'),
+)
+
 urlpatterns += patterns('library.views.pages',
     url(r'^feed$', 'stream',
         {'openid': 'http://markpasc.org/mark/',

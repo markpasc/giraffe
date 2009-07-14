@@ -29,9 +29,10 @@ class Person(Model):
 class Asset(Model):
 
     object_types = constants(
-        video='http://activitystrea.ms/schema/1.0/video',
         bookmark='http://activitystrea.ms/schema/1.0/bookmark',
         post='http://activitystrea.ms/schema/1.0/blog-entry',
+        image='http://activitystrea.ms/schema/1.0/image',
+        video='http://activitystrea.ms/schema/1.0/video',
         comment='http://www.bestendtimesever.com/acstrema/your-awesome-contribution',
         game='http://www.bestendtimesever.com/acstrema/pew-pew-laser-game',
     )
@@ -122,3 +123,10 @@ class Action(Model):
             html = "acted upon by %s"
         html = html % self.person.as_html()
         return mark_safe(html)
+
+
+class Image(Model):
+
+    content = db.BlobProperty()
+    content_type = db.StringProperty()
+    slug = db.StringProperty()
