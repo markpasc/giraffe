@@ -175,7 +175,7 @@ def list(request, kind):
         )
 
     item = reverse(
-        'library.views.api.item',
+        'library.api.views.item',
         kwargs={'kind': kind, 'key': obj.key()},
     )
     return HttpResponseRedirect(item)
