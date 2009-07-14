@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import mimetypes
 import sys
 
 import oauth
@@ -118,7 +119,10 @@ class OAuthClient(httplib2.Http):
         token = oauth.OAuthToken.from_string(content)
         return token
 
-    def signed_request(self, uri, method="GET", headers=None, csr=None, token=None, **kwargs):
+    def signed_request(self, uri, method=None, headers=None, csr=None, token=None, **kwargs):
+        if method is None:
+            method = "GET"
+
         req = oauth.OAuthRequest.from_consumer_and_token(csr, token,
             http_method=method, http_url=uri)
         req.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), csr, token)
@@ -131,7 +135,7 @@ class OAuthClient(httplib2.Http):
         return self.request(uri=uri, method=method, headers=headers, **kwargs)
 
 
-def main(url=None, consumer=None, token=None, verbose=False):
+def main(url=None, consumer=None, token=None, method=None, filename=None, verbose=False):
     if consumer is None:
         print "The consumer info is required"
         return
@@ -159,7 +163,19 @@ def main(url=None, consumer=None, token=None, verbose=False):
         print "Your new access token:  %s:%s" % (token.key, token.secret)
         return
 
-    resp, content = h.signed_request(uri=url, csr=csr, token=token)
+    body, headers = None, {}
+    if filename is not None:
+        try:
+            body = file(filename, 'rb').read()
+        except IOError, exc:
+            print "Could not read file %s: %s" % (filename, exc)
+        else:
+            content_type = mimetypes.guess_type(filename)[0]
+            if content_type is not None:
+                headers['content-type'] = content_type
+
+    resp, content = h.signed_request(uri=url, method=method, body=body,
+        headers=headers, csr=csr, token=token)
 
     for k, v in resp.items():
         print '%s: %s' % (k, v)
