@@ -92,7 +92,7 @@ def code(request):
 @allowed_methods("GET")
 def myself(request):
     kwargs = {'kind': 'person', 'key': request.user.key()}
-    item_url = reverse('library.api.views.item', kwargs=kwargs)
+    item_url = reverse('api.views.item', kwargs=kwargs)
     url = request.build_absolute_uri(item_url)
     return HttpResponseRedirect(url)
 
@@ -161,7 +161,7 @@ def list(request, kind):
         )
 
     item = reverse(
-        'library.api.views.item',
+        'api.views.item',
         kwargs={'kind': kind, 'key': obj.key()},
     )
     return HttpResponseRedirect(item)
