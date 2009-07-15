@@ -30,9 +30,12 @@ def json_encoder(obj):
 @admin_only
 @allowed_methods("GET")
 @api_error
-def browserpage(request):
+def shell(request, template=None):
+    if template is None:
+        template = 'api/shell.html'
+
     return render_to_response(
-        'api/shell.html',
+        template,
         context_instance=RequestContext(request),
     )
 
