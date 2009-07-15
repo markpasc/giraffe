@@ -3,6 +3,8 @@ import logging
 
 from google.appengine.ext import db
 
+import api.encoder
+
 
 log = logging.getLogger('library.models.base')
 
@@ -202,3 +204,6 @@ class UtcDateTimeProperty(db.DateTimeProperty):
     @staticmethod
     def now():
         return datetime.utcnow()
+
+
+api.encoder.register(Model, 'as_data')

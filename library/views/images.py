@@ -1,9 +1,8 @@
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 
-from library.api.views import api_error
+from api.decorators import api_error, allowed_methods
 from library.auth.decorators import auth_required
-from library.views import allowed_methods
 from library.models import Image
 
 

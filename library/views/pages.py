@@ -3,9 +3,9 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from api.decorators import allowed_methods
 from library.auth.decorators import auth_required
 from library.models import Person, Asset, Action
-from library.views import allowed_methods
 
 
 def stream(request, openid, template=None, content_type=None):

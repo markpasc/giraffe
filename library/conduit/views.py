@@ -3,7 +3,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 import django.utils.simplejson as json
 
-from library.api.views import api_error, json_encoder
+from api.views import api_error, allowed_methods
+from api.encoder import encoder
 from library.conduit import conduits
 from library.views import allowed_methods
 
@@ -25,6 +26,6 @@ def do_search(request):
     for conduit in conduits:
         results = conduit.search(**post)
         return HttpResponse(
-            content=json.dumps(results, indent=4, default=json_encoder),
+            content=json.dumps(results, indent=4, default=encoder),
             content_type="application/json",
         )

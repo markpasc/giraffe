@@ -9,9 +9,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from api.decorators import allowed_methods
 from library.auth.decorators import *
 from library.auth.models.delegate import *
-from library.views import allowed_methods
 
 
 class OAuth(object):

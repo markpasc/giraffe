@@ -3,8 +3,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from api.decorators import allowed_methods
 from library.auth.decorators import auth_required, auth_forbidden
-from library.views import allowed_methods
 
 
 @auth_forbidden

@@ -9,6 +9,7 @@ from google.appengine.api.urlfetch import fetch
 from google.appengine.api import images
 from remoteobjects import RemoteObject, fields
 
+import api.encoder
 from library.conduit import conduits
 from library.conduit.models.base import Conduit, Result
 from library.models import Asset, Link
@@ -174,3 +175,5 @@ class GiantBomb(Conduit):
 
 
 conduits.add(GiantBomb)
+
+api.encoder.register(RemoteObject, 'to_dict')
