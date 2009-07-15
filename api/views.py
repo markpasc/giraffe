@@ -1,20 +1,19 @@
 from cStringIO import StringIO
 from datetime import datetime
-from functools import wraps
 import sys
 import traceback
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 import django.utils.simplejson as json
 from google.appengine.ext import db
 import remoteobjects
 
+from api.decorators import api_error, allowed_methods
 from library.auth.decorators import admin_only
 import library.models
-from library.views import allowed_methods
 
 
 def json_encoder(obj):
@@ -26,19 +25,6 @@ def json_encoder(obj):
         return obj.isoformat()
     raise TypeError("%s instance %r is not json serializable"
         % (type(obj).__name__, obj))
-
-
-def api_error(fn):
-    @wraps(fn)
-    def try_that(request, *args, **kwargs):
-        try:
-            return fn(request, *args, **kwargs)
-        except Exception, exc:
-            return HttpResponseServerError(
-                content=traceback.format_exc(),
-                content_type='text/plain',
-            )
-    return try_that
 
 
 @admin_only
