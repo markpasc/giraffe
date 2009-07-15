@@ -1,0 +1,9 @@
+{% extends "library/asset/embed/base.html" %}
+
+{% block content %}
+    {% with asset.links.rel__alternate.width__lt__631.0 as image %}
+        {% if image %}
+            <img src="{{ image.href }}" width="{{ image.width }}" height="{{ image.height }}">
+        {% endif %}
+    {% endwith %}
+{% endblock %}

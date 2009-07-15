@@ -1,0 +1,14 @@
+<div class="asset-embed asset-{{ asset.key }}">
+
+    {% block content %}
+    {% with asset.links.rel__thumbnail.width__lt__200.0 as thumb %}
+        {% if thumb %}
+            <div class="picture">
+                <img src="{{ thumb.href }}" width="{{ thumb.width }}" height="{{ thumb.height }}">
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% endblock %}
+
+</div>
+<br style="clear: both">
