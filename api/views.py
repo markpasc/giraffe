@@ -11,20 +11,10 @@ import django.utils.simplejson as json
 from google.appengine.ext import db
 import remoteobjects
 
+from api.encoder import encoder
 from api.decorators import api_error, allowed_methods
 from library.auth.decorators import admin_only
 import library.models
-
-
-def json_encoder(obj):
-    if isinstance(obj, library.models.Model):
-        return obj.as_data()
-    if isinstance(obj, remoteobjects.RemoteObject):
-        return obj.to_dict()
-    if isinstance(obj, datetime):
-        return obj.isoformat()
-    raise TypeError("%s instance %r is not json serializable"
-        % (type(obj).__name__, obj))
 
 
 @admin_only
@@ -46,7 +36,7 @@ def shell(request, template=None):
 def types(request):
     types = library.models.model_for_kind.keys()
     return HttpResponse(
-        content=json.dumps(types, indent=4, default=json_encoder),
+        content=json.dumps(types, indent=4, default=encoder),
         content_type='application/json',
     )
 
@@ -119,7 +109,7 @@ def list(request, kind):
         resp = [x.as_data() for x in objs]
 
         return HttpResponse(
-            content=json.dumps(resp, indent=4, default=json_encoder),
+            content=json.dumps(resp, indent=4, default=encoder),
             content_type='application/json',
         )
 
@@ -158,7 +148,7 @@ def list(request, kind):
         return HttpResponse(
             content="%s creating %s:\n\n%s\n\nGiven data: %s"
                 % (type(exc).__name__, cls.__name__, traceback.format_exc(),
-                   json.dumps(data, indent=4, default=json_encoder)),
+                   json.dumps(data, indent=4, default=encoder)),
             content_type='text/plain',
             status=400,
         )
@@ -256,5 +246,5 @@ def item(request, kind, key):
             )
 
     return HttpResponse(
-        content=json.dumps(obj.as_data(), indent=4, default=json_encoder),
+        content=json.dumps(obj.as_data(), indent=4, default=encoder),
     )
