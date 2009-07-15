@@ -20,9 +20,16 @@ class LocalConsumer(oauth.OAuthConsumer):
     access_token_url = 'http://localhost:8000/delegate/access'
 
 
+class BeeConsumer(oauth.OAuthConsumer):
+    request_token_url = 'http://www.bestendtimesever.com/delegate/request'
+    authorize_url = 'http://www.bestendtimesever.com/delegate/ask'
+    access_token_url = 'http://www.bestendtimesever.com/delegate/access'
+
+
 consumers = {
     'twitter': TwitterConsumer,
     'local': LocalConsumer,
+    'bee': BeeConsumer,
 }
 
 
@@ -122,15 +129,26 @@ class OAuthClient(httplib2.Http):
     def signed_request(self, uri, method=None, headers=None, csr=None, token=None, **kwargs):
         if method is None:
             method = "GET"
+        verbose = kwargs.pop('verbose', False)
 
         req = oauth.OAuthRequest.from_consumer_and_token(csr, token,
             http_method=method, http_url=uri)
-        req.sign_request(oauth.OAuthSignatureMethod_HMAC_SHA1(), csr, token)
+        signer = oauth.OAuthSignatureMethod_HMAC_SHA1()
+        req.set_parameter('oauth_signature_method', signer.get_name())
+        if verbose:
+            print "Signature base string: %r" % (signer.build_signature_base_string(req, csr, token),)
+        req.sign_request(signer, csr, token)
 
         if headers is None:
             headers = req.to_header()
         else:
             headers.update(req.to_header())
+
+        if verbose:
+            print "%s %s" % (method, uri)
+            for k, v in headers.items():
+                print "%s: %s" % (k, v)
+            print
 
         return self.request(uri=uri, method=method, headers=headers, **kwargs)
 
@@ -173,9 +191,10 @@ def main(url=None, consumer=None, token=None, method=None, filename=None, verbos
             content_type = mimetypes.guess_type(filename)[0]
             if content_type is not None:
                 headers['content-type'] = content_type
+            headers['content-length'] = str(len(body))
 
     resp, content = h.signed_request(uri=url, method=method, body=body,
-        headers=headers, csr=csr, token=token)
+        headers=headers, csr=csr, token=token, verbose=verbose)
 
     for k, v in resp.items():
         print '%s: %s' % (k, v)
