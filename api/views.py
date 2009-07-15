@@ -46,7 +46,7 @@ def api_error(fn):
 @api_error
 def browserpage(request):
     return render_to_response(
-        'library/api/shell.html',
+        'api/shell.html',
         context_instance=RequestContext(request),
     )
 

@@ -1,0 +1,51 @@
+<form>
+
+    <div class="span-16 last">
+        <div class="span-8">
+            <p>
+                <select id="api-request-method">
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                    <option>DELETE</option>
+                </select>
+                <input id="api-request-path" value="/api">
+            </p>
+        </div>
+        <div class="span-8 last">
+            <p id="api-result-about">&nbsp;</p>
+        </div>
+    </div>
+
+    <div id="api-request" class="span-16 last">
+        <p><textarea id="api-request-body"></textarea></p>
+        <p><pre id="api-result-body"></pre></p>
+    </div>
+
+    <div class="span-16 last">
+        <p class="buttons"><a id="api-request-button" class="button">Perform awesomeness</a></p>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#api-request-button').click(function (e) {
+        var method = $('#api-request-method option:selected').val();
+        var path = $('#api-request-path').val();
+        var method_has_body = method != "GET" && method != "DELETE";
+        $.ajax({
+            dataType: 'text',
+            type: method,
+            data: (method_has_body ? $('#api-request-body').val() : null),
+            contentType: 'application/json',
+            processData: false,
+            url: path,
+            complete: function (xhr, status) {
+                $('#api-result-about').text(method + " " + path);
+                $('#api-result-body').text(xhr.responseText);
+            }
+        });
+    });
+});
+</script>

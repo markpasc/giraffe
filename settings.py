@@ -86,9 +86,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'djangoflash',
     'django.contrib.markup',
+    'api',
     'library',
     'library.auth',
-    'library.api',
     'library.conduit',
 )
 
