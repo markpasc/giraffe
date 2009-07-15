@@ -1,0 +1,5 @@
+<div class="asset-thumb asset-{{ asset.key }}">
+    {% with asset.links.rel__alternate.height__lt__301.0 as thumb %}
+        <img src="{{ thumb.href }}" width="{{ thumb.width }}" height="{{ thumb.height }}" alt="{{ asset.title }}">
+    {% endwith %}
+</div>
