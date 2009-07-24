@@ -1,27 +1,69 @@
 <div class="grid">
-<div id="dialog-editprofile" class="dialog span-8 prefix-8 last">
-    <div>
-        <form method="POST" action="{% url editprofile %}">
-            <p>Name: <input name="name" value="{{ request.user.name }}"></p>
-            <p>Userpic: <input name="userpic" value="{{ request.user.userpic|default:"" }}"></p>
+    <div id="dialog-editprofile" class="dialog span-8 prefix-8 last">
+        <div>
+            <form method="POST" action="{% url editprofile %}">
+                <div class="span-2">
+                    <a href="#" id="dialog-editprofile-userpic"><img src="{% if asset.author.userpic %}{{ asset.author.userpic }}{% else %}{% url static path="blank.png" %}{% endif %}" class="userpic" width="50" height="50"></a>
+                </div>
 
-            <p class="last buttons">
-                <a href="#" id="dialog-editprofile-cancel" class="button red-button">Cancel</a>
-                <input type="submit" class="green ok-button" value="Save">
-            </p>
-        </form>
+                <div class="span-6 last">
+                    <p>Name: <input name="name" value="{{ request.user.name }}"></p>
+                </div>
+
+                <div class="span-8">
+                <p class="last buttons">
+                    <a href="#" id="dialog-editprofile-cancel" class="button red-button">Cancel</a>
+                    <input type="submit" class="green ok-button" value="Save">
+                </p>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+
+    <div id="dialog-edituserpic" class="dialog span-8 prefix-8 last">
+        <div>
+            <form method="POST" action="{% url edituserpic %}">
+                <div class="span-2">
+                    <img src="{% if asset.author.userpic %}{{ asset.author.userpic }}{% else %}{% url static path="blank.png" %}{% endif %}" class="userpic" width="50" height="50">
+                </div>
+
+                <div class="span-6 last">
+                    <p>Upload new userpic: <input name="file" type="file"></p>
+                    <center>– or –</center>
+                    <p>Use web userpic: <input name="url" value="http://"></p>
+                </div>
+
+                <div class="span-8">
+                <p class="last buttons">
+                    <a href="#" id="dialog-edituserpic-cancel" class="button red-button">Cancel</a>
+                    <input type="submit" class="green ok-button" value="Save">
+                </p>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
 $(document).ready(function () {
+
+    $('#dialog-editprofile-userpic').click(function () {
+        $('#dialog-editprofile').hide();
+        $('#dialog-edituserpic').show();
+        return false;
+    });
+
     $('#dialog-editprofile-open').click(function () {
         $('#dialog-editprofile').show();
         return false;
     });
     $('#dialog-editprofile-cancel').click(function () {
         $('#dialog-editprofile').hide();
+        return false;
+    });
+    $('#dialog-edituserpic-cancel').click(function () {
+        $('#dialog-edituserpic').hide();
+        $('#dialog-editprofile').show();
         return false;
     });
 });

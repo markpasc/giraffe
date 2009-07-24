@@ -88,6 +88,10 @@ body, html {
     color: #c9f;
 }
 
+img.userpic {
+    background-image: url(boxlines.png);
+}
+
 /* stuff */
 
 .asset h3 {
