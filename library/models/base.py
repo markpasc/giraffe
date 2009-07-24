@@ -9,15 +9,6 @@ import api.encoder
 log = logging.getLogger('library.models.base')
 
 
-model_for_kind = {}
-
-def model_with_kind(kind):
-    try:
-        return model_for_kind[kind.lower()]
-    except KeyError:
-        raise ValueError("No such model with kind %r" % kind)
-
-
 class Constants(object):
     class Immutable(Exception):
         pass
@@ -148,7 +139,11 @@ class ModelMeta(db.Expando.__metaclass__):
 
         # Register in the models set.
         if name != 'Model':
-            model_for_kind[cls.kind().lower()] = cls
+            try:
+                api_type = cls.api_type
+            except AttributeError:
+                api_type = cls.kind().lower()
+            api.register_type(cls, api_type)
 
 
 class Model(db.Expando):

@@ -43,6 +43,8 @@ class Squib(Model):
     timestamp = db.IntegerProperty()
     salt = db.StringProperty()
 
+    api_type = 'openid_squib'
+
 
 class OpenIDStore(interface.OpenIDStore):
 

@@ -4,6 +4,7 @@ urlpatterns = patterns('library.auth.views',
     url(r'^signin$',  'signin',  name="signin"),
     url(r'^signout$', 'signout', name="signout"),
     url(r'^editprofile$', 'editprofile', name="editprofile"),
+    url(r'^editprofile$', 'editprofile', name="edituserpic"),
 )
 
 urlpatterns += patterns('library.auth.views.regular',

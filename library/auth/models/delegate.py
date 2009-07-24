@@ -37,3 +37,5 @@ class Squib(Model):
     consumer = db.ReferenceProperty(Consumer)
     timestamp = db.DateTimeProperty(auto_now_add=True)
     value = db.ByteStringProperty()
+
+    api_type = 'oauth_squib'

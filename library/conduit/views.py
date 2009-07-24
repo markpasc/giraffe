@@ -6,7 +6,6 @@ import django.utils.simplejson as json
 from api.views import api_error, allowed_methods
 from api.encoder import encoder
 from library.conduit import conduits
-from library.views import allowed_methods
 
 
 def search(request):
