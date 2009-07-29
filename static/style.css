@@ -138,11 +138,7 @@ a.arrow:hover, a.arrow:active {
     font-size: 1.2em;
     line-height: 1.5em;
 
-    background: #cfc;
-    border: 3px solid #f0f0f0;
-    border-width: 0 2px 2px 0;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    background: #ffff66;
 }
 
 .asset blockquote p {
@@ -150,7 +146,7 @@ a.arrow:hover, a.arrow:active {
 }
 
 .asset blockquote p+p {
-    margin-bottom: 0.8em;
+    margin-top: 0.8em;
 }
 
 .asset ul, .asset ol, .asset dl {
