@@ -94,6 +94,7 @@ INSTALLED_APPS = (
 
 TWITTER_KEY = (None, None)
 GIANT_BOMB_KEY = None
+NETFLIX_KEY = (None, None)
 
 
 try:
