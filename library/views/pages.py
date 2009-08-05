@@ -95,8 +95,9 @@ def comment(request, slug):
     return HttpResponseRedirect(asset.get_permalink_url())
 
 
-def by_method(**views_by_method):
-    @allowed_methods(*[meth.lower() for meth in views_by_method.keys()])
+def by_method(**kwargs):
+    views_by_method = dict((k.lower(), v) for k, v in kwargs.items())
+    @allowed_methods(*[meth.upper() for meth in views_by_method.keys()])
     def invoke(request, *args, **kwargs):
         view = views_by_method[request.method.lower()]
         return view(request, *args, **kwargs)
