@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -5,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from api.decorators import allowed_methods
+from library import forms
 from library.auth.decorators import auth_required, admin_only
 from library.models import Person, Asset, Action
 
@@ -105,19 +108,35 @@ def by_method(**kwargs):
 
 
 @admin_only
-def post_page(request):
+@allowed_methods("GET", "POST")
+def post(request):
+    if request.method == 'POST':
+        form = forms.PostForm(request.POST)
+        logging.debug('slug is %r', request.POST['slug'])
+    else:
+        form = forms.PostForm()
+
+    if form.is_valid():
+        post = Asset(author=request.user)
+        post.content_type = form.cleaned_data['content_type']
+        post.content = form.cleaned_data['content']
+
+        if form.cleaned_data['title']:
+            post.title = form.cleaned_data['title']
+
+        if form.cleaned_data['slug']:
+            post.slug = form.cleaned_data['slug']
+        elif post.title:
+            post.slug = re.sub(r'[\W_]+', '-', post.title.lower())
+
+        post.save_and_post()
+        return HttpResponseRedirect(reverse('home'))
+
     return render_to_response(
         'library/post.html',
         {
             'blogger': request.user,
+            'form': form,
         },
         context_instance=RequestContext(request),
     )
-
-
-@admin_only
-def save_post(request):
-    return HttpResponseRedirect(reverse('home'))
-
-
-post = by_method(get=post_page, post=save_post)

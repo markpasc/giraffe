@@ -184,7 +184,16 @@ textarea, pre, code, tt, samp {
 
 /* posting */
 
-#post-input {
+#post-title:hover, #post-title:focus,
+#post-slug-url:hover #post-slug, #post-slug:hover, #post-slug:focus {
+    background-color: #cfc;
+}
+
+#post-slug {
+    min-width: 4em;
+}
+
+#post-content {
     min-height: 4em;
 
     background: #f6f6f6;
