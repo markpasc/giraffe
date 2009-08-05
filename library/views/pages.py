@@ -1,10 +1,11 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from api.decorators import allowed_methods
-from library.auth.decorators import auth_required
+from library.auth.decorators import auth_required, admin_only
 from library.models import Person, Asset, Action
 
 
@@ -92,3 +93,30 @@ def comment(request, slug):
     act.save()
 
     return HttpResponseRedirect(asset.get_permalink_url())
+
+
+def by_method(**views_by_method):
+    @allowed_methods(*[meth.lower() for meth in views_by_method.keys()])
+    def invoke(request, *args, **kwargs):
+        view = views_by_method[request.method.lower()]
+        return view(request, *args, **kwargs)
+    return invoke
+
+
+@admin_only
+def post_page(request):
+    return render_to_response(
+        'library/post.html',
+        {
+            'blogger': request.user,
+        },
+        context_instance=RequestContext(request),
+    )
+
+
+@admin_only
+def save_post(request):
+    return HttpResponseRedirect(reverse('home'))
+
+
+post = by_method(get=post_page, post=save_post)

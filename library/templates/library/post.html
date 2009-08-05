@@ -1,0 +1,23 @@
+{% extends "library/base.html" %}
+
+{% block content %}
+
+    <form method="post" action="{% url library.views.pages.post %}">
+        <div id="post-input">
+            <p></p>
+        </div>
+        <p><input type="submit" value="Post"></p>
+    </form>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var input = $('#post-input').get(0);
+            input.contentEditable = true;
+            input.focus();
+            window.getSelection().collapse($('#post-input p').get(0), 0);
+        });
+
+    </script>
+
+{% endblock %}
