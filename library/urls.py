@@ -5,10 +5,11 @@ urlpatterns = patterns('library.views.pages',
     url(r'^profile/(?P<slug>[^/]*)$', 'profile', name="profile"),
     url(r'^asset/(?P<slug>[^/]*)$', 'asset', name="asset"),
     url(r'^asset/(?P<slug>[^/]*)/comments$', 'comment', name="comment"),
+    url(r'^post$',      'post',),
 )
 
-urlpatterns += patterns('library.views.pages',
-    url(r'^post$',      'post',),
+urlpatterns += patterns('',
+    url(r'^shell$', 'api.views.shell', {'template': 'library/shell.html'}),
 )
 
 urlpatterns += patterns('library.views.images',
