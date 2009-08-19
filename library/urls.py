@@ -1,7 +1,10 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('library.views.pages',
-    url(r'^$', 'stream', {'openid': 'http://markpasc.org/mark/'}, name="home"),
+    url(r'^$', 'stream',
+        {'openid': 'http://markpasc.org/mark/',
+         'empty_ok': True},
+        name="home"),
     url(r'^profile/(?P<slug>[^/]*)$', 'profile', name="profile"),
     url(r'^asset/(?P<slug>[^/]*)$', 'asset', name="asset"),
     url(r'^asset/(?P<slug>[^/]*)/comments$', 'comment', name="comment"),

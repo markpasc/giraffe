@@ -12,16 +12,19 @@ from library.auth.decorators import auth_required, admin_only
 from library.models import Person, Asset, Action
 
 
-def stream(request, openid, template=None, content_type=None):
+def stream(request, openid, template=None, content_type=None, empty_ok=False):
     try:
         me = Person.all().filter(openid=openid)[0]
     except IndexError:
-        raise Http404
-
-    blog = Action.all().filter(person=me, verb=Action.verbs.post)
-    blog.filter(privacy_groups="public")
-    blog.order('-when')
-    actions = blog[0:10]
+        if not empty_ok:
+            raise Http404
+        me = None
+        actions = list()
+    else:
+        blog = Action.all().filter(person=me, verb=Action.verbs.post)
+        blog.filter(privacy_groups="public")
+        blog.order('-when')
+        actions = blog[0:10]
 
     return render_to_response(
         template or 'library/stream.html',
