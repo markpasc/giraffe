@@ -106,7 +106,7 @@ def list(request, kind):
     # Show a list if it's a GET.
     if request.method == "GET":
         q = cls.all()
-        objs = q[0:10]
+        objs = q[0:30]
         resp = [x.as_data() for x in objs]
 
         return HttpResponse(
