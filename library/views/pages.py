@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
@@ -72,6 +72,10 @@ def asset(request, slug):
         },
         context_instance=RequestContext(request),
     )
+
+
+def asset_redirect(request, slug):
+    return HttpResponsePermanentRedirect(reverse('asset', kwargs={'slug': slug}))
 
 
 @auth_required

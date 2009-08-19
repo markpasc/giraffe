@@ -5,6 +5,7 @@ urlpatterns = patterns('library.views.pages',
     url(r'^profile/(?P<slug>[^/]*)$', 'profile', name="profile"),
     url(r'^asset/(?P<slug>[^/]*)$', 'asset', name="asset"),
     url(r'^asset/(?P<slug>[^/]*)/comments$', 'comment', name="comment"),
+    url(r'^\d{4}/\d{2}/(?P<slug>[^/]*)\.html$', 'asset_redirect'),
     url(r'^post$',      'post',),
 )
 
