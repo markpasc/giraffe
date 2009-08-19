@@ -1,10 +1,10 @@
-<form id="api-form">
+<form id="api-form" class="api-form-GET">
 
     <div class="span-16 last">
         <div class="span-8">
             <p>
                 <select id="api-request-method">
-                    <option>GET</option>
+                    <option selected="selected">GET</option>
                     <option>POST</option>
                     <option>PUT</option>
                     <option>DELETE</option>
@@ -30,6 +30,14 @@
 
 <script type="text/javascript">
 $(document).ready(function () {
+    $('#api-request-method').change(function (e) {
+        var form = $('#api-form');
+        $('#api-request-method option').each(function (i, val) {
+            form.removeClass("api-form-" + $(val).val());
+        })
+        form.addClass("api-form-" + $('#api-request-method option:selected').val());
+    });
+
     $('#api-request-button').click(function (e) {
         var method = $('#api-request-method option:selected').val();
         var path = $('#api-request-path').val();
