@@ -148,7 +148,7 @@ class AssetizingParser(HTMLParser):
         if attrs:
             self.content.append(' ')
             for attr in attrs:
-                self.content.extend((attr[0], '="', cgi.escape(attr[1], True), '"'))
+                self.content.extend((attr[0], '="', cgi.escape(attr[1], True), '" '))
         self.content.append('>')
 
     def handle_endtag(self, tag):
