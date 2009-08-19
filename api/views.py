@@ -11,6 +11,7 @@ import django.utils.simplejson as json
 from google.appengine.ext import db
 import remoteobjects
 
+import api
 from api.decorators import api_error, allowed_methods
 from api.encoder import encoder
 from library.auth.decorators import admin_only
@@ -95,7 +96,7 @@ def myself(request):
 @api_error
 def list(request, kind):
     try:
-        cls = library.models.model_with_kind(kind)
+        cls = api.model_for_kind[kind]
     except ValueError:
         return HttpResponseNotFound(
             content='No such resource %r' % kind,
@@ -165,7 +166,7 @@ def list(request, kind):
 @api_error
 def item(request, kind, key):
     try:
-        cls = library.models.model_with_kind(kind)
+        cls = api.model_for_kind[kind]
     except ValueError:
         return HttpResponseNotFound(
             content='No such resource type %r' % kind,
