@@ -176,4 +176,4 @@ class GiantBomb(Conduit):
 
 conduits.add(GiantBomb)
 
-api.encoder.register(RemoteObject, 'to_dict')
+api.encoder.register(RemoteObject, lambda ro: ro.to_dict())

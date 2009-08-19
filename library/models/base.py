@@ -201,4 +201,4 @@ class UtcDateTimeProperty(db.DateTimeProperty):
         return datetime.utcnow()
 
 
-api.encoder.register(Model, 'as_data')
+api.encoder.register(Model, lambda ml: ml.as_data())
