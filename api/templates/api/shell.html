@@ -1,4 +1,4 @@
-<form>
+<form id="api-form">
 
     <div class="span-16 last">
         <div class="span-8">
@@ -34,6 +34,11 @@ $(document).ready(function () {
         var method = $('#api-request-method option:selected').val();
         var path = $('#api-request-path').val();
         var method_has_body = method != "GET" && method != "DELETE";
+
+        $('#api-result-about').addClass('api-result-working');
+        $('#api-result-about').text(method + " " + path);
+        $('#api-result-body').text("");
+
         $.ajax({
             dataType: 'text',
             type: method,
@@ -42,6 +47,7 @@ $(document).ready(function () {
             processData: false,
             url: path,
             complete: function (xhr, status) {
+                $('#api-result-about').removeClass('api-result-working');
                 $('#api-result-about').text(method + " " + path);
                 $('#api-result-body').text(xhr.responseText);
             }
