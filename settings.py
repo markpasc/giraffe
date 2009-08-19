@@ -2,7 +2,7 @@
 
 import os
 
-DEBUG = True
+DEBUG = False
 
 ADMINS = (
     ('Mark Paschal', 'markpasc@markpasc.org'),
