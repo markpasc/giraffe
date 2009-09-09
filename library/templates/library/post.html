@@ -8,9 +8,6 @@
         {{ form.title.errors }}
         <h2 id="post-title">untitled</h2>
 
-        {{ form.slug.errors }}
-        <p id="post-slug-url">{% absoluteurl %}{% url asset slug="" %}{% endabsoluteurl %}<span id="post-slug"> </span></p>
-
         {{ form.content.errors }}
         <div id="post-content">
             <p></p>
@@ -23,6 +20,8 @@
         <input id="post-input-content_type" type="hidden" name="content_type">
 
         <p class="buttons"><input type="submit" value="Post"></p>
+        {{ form.slug.errors }}
+        <p id="post-slug-url">{% absoluteurl %}{% url asset slug="" %}{% endabsoluteurl %}<span id="post-slug"> </span></p>
     </form>
 
     <script type="text/javascript">

@@ -246,6 +246,18 @@ textarea, pre, code, tt, samp {
 
 /* posting */
 
+#post-title {
+    margin-top: 0;
+}
+
+#post-form p+p {
+    margin-top: 1.6em;
+}
+
+#post-content p+p {
+    margin-top: -0.8em;
+}
+
 #post-title:hover, #post-title:focus,
 #post-slug-url:hover #post-slug, #post-slug:hover, #post-slug:focus {
     background-color: #cfc;
@@ -264,6 +276,11 @@ textarea, pre, code, tt, samp {
     border-left: 1px solid #aaa;
     padding: 0.8em 1em;
     outline: none;
+}
+
+#post-form .buttons {
+    width: 10ex;
+    float: left;
 }
 
 /* comments */
