@@ -30,7 +30,7 @@
 				}
 
 				var $textarea	=	jQuery(this),
-					$twin		=	jQuery('<div />').css({'position': 'absolute','display':'none'}),
+					$twin		=	jQuery('<div />').css({'position': 'absolute','display':'none', 'whiteSpace': 'pre-wrap'}),
 					lineHeight	=	parseInt($textarea.css('line-height'),10) || parseInt($textarea.css('font-size'),'10'),
 					minheight	=	parseInt($textarea.css('height'),10) || lineHeight*3,
 					maxheight	=	parseInt($textarea.css('max-height'),10) || Number.MAX_VALUE,
@@ -59,13 +59,13 @@
 				function update() {
 
 					// Get curated content from the textarea.
-					var textareaContent = $textarea.val().replace(/<|>/g, ' ').replace(/\n/g, '<br />').replace(/&/g,"&amp;");
-					var twinContent = $twin.html();
+					var textareaContent = $textarea.val();
+					var twinContent = $twin.text();
 
-					if(textareaContent+'&nbsp;' != twinContent){
+					if(textareaContent != twinContent){
 
 						// Add an extra white space so new rows are added when you are at the end of a row.
-						$twin.html(textareaContent+'&nbsp;');
+						$twin.text(textareaContent);
 
 						// Change textarea height if twin plus the height of one line differs more than 3 pixel from textarea height
 						if(Math.abs($twin.height()+lineHeight - $textarea.height()) > 3){
