@@ -250,25 +250,20 @@ textarea, pre, code, tt, samp {
     margin-top: 0;
 }
 
-#post-form p+p {
+#post-title input {
+    font-family: Helvetica, sans-serif;
+    font-weight: inherit;
+    font-size: 1.0em;
+    width: 20em;
+}
+
+#post-form p {
     margin-top: 1.6em;
-}
-
-#post-content p+p {
-    margin-top: -0.8em;
-}
-
-#post-title:hover, #post-title:focus,
-#post-slug-url:hover #post-slug, #post-slug:hover, #post-slug:focus {
-    background-color: #cfc;
-}
-
-#post-slug {
-    min-width: 4em;
 }
 
 #post-content {
     min-height: 4em;
+    width: 100%;
 
     background: #f6f6f6;
     border: 1px solid #ccc;
