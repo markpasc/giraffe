@@ -42,10 +42,9 @@
 				$twin.appendTo($textarea.parent());
 				
 				// Copy the essential styles (mimics) from the textarea to the twin
-				var i = mimics.length;
-				while(i--){
-					$twin.css(mimics[i].toString(),$textarea.css(mimics[i].toString()));
-				}
+				$.each(mimics, function (i, mimic) {
+				    $twin.css(mimic, $textarea.css(mimic));
+				});
 				
 				// Sets a given height and overflow state on the textarea
 				function setHeightAndOverflow(height, overflow){
