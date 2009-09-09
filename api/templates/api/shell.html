@@ -19,7 +19,7 @@
 
     <div id="api-request" class="span-16 last">
         <p><textarea id="api-request-body"></textarea></p>
-        <p><pre id="api-result-body"></pre></p>
+        <p><div id="api-result-body"></div></p>
     </div>
 
     <div class="span-16 last">
@@ -37,6 +37,46 @@ $(document).ready(function () {
         })
         form.addClass("api-form-" + $('#api-request-method option:selected').val());
     });
+
+    function jsonToDom(data) {
+        if (null === data) {
+            return $('<span/>').addClass('null').text('null');
+        }
+
+        if ($.isArray(data)) {
+            var result = $('<ol/>');
+            $.each(data, function (i, val) {
+                var item = $('<li/>');
+                item.append(jsonToDom(val));
+                result.append(item);
+            });
+            return result;
+        }
+
+        if ('object' == typeof(data)) {
+            var result = $('<dl/>');
+            $.each(data, function (name, val) {
+                var term = $('<dt/>');
+                term.text(name);
+                result.append(term);
+
+                var dfn = $('<dd/>');
+                dfn.append(jsonToDom(val));
+                result.append(dfn);
+            });
+            return result;
+        }
+
+        if ('string' == typeof(data)) {
+            return $('<span/>').addClass('string').text('"' + data + '"');
+        }
+
+        if ('number' == typeof(data)) {
+            return $('<span/>').addClass('number').text(data);
+        }
+
+        return $('<span/>').addClass('other').text(data);
+    }
 
     $('#api-request-button').click(function (e) {
         var method = $('#api-request-method option:selected').val();
@@ -57,7 +97,17 @@ $(document).ready(function () {
             complete: function (xhr, status) {
                 $('#api-result-about').removeClass('api-result-working');
                 $('#api-result-about').text(method + " " + path);
-                $('#api-result-body').text(xhr.responseText);
+
+                if (xhr.status != 200 || xhr.getResponseHeader('Content-Type').indexOf('application/json')) {
+                    $('#api-result-body').addClass('text')
+                        .text(xhr.responseText);
+                    return;
+                }
+
+                var result = eval(xhr.responseText);
+                $('#api-result-body').removeClass('text')
+                    .empty()
+                    .append(jsonToDom(result));
             }
         });
     });

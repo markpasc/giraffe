@@ -183,6 +183,48 @@ a.arrow:hover, a.arrow:active {
     border: 1px solid gray;
 }
 
+#api-result-body.text {
+    white-space: pre-wrap;
+}
+
+#api-result-body .other, #api-result-body .number, #api-result-body .null {
+    color: #000080;
+    font-weight: bold;
+}
+
+#api-result-body .string {
+    color: #008000;
+
+    font-family: "Anonymous Pro", Anonymous, monospace;
+    font-size: 1.0em;
+    line-height: 1.0em;
+}
+
+#api-result-body ol {
+    margin-left: 0;
+    padding-left: 3ex;
+}
+
+#api-result-body ol li {
+    list-style-type: disc;
+}
+
+#api-result-body dl dt {
+    clear: left;
+    float: left;
+    width: 14ex;
+    margin-right: 1ex;
+    overflow: hidden;
+}
+
+#api-result-body dl dt:after {
+    content: ":";
+}
+
+#api-result-body dl dd ol, #api-result-body dl dd dl {
+    clear: left;
+}
+
 .api-form-POST #api-request-body, .api-form-POST #api-result-body,
 .api-form-PUT #api-request-body, .api-form-PUT #api-result-body {
     height: 200px;
