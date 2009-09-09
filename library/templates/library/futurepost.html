@@ -1,0 +1,57 @@
+{% extends "library/base.html" %}
+{% load library %}
+
+{% block content %}
+
+    <form id="post-form" method="post" action="{% url library.views.pages.post %}">
+
+        {{ form.title.errors }}
+        <h2 id="post-title">untitled</h2>
+
+        {{ form.content.errors }}
+        <div id="post-content">
+            <p></p>
+        </div>
+
+        <input id="post-input-title" type="hidden" name="title">
+        <input id="post-input-slug" type="hidden" name="slug">
+        <input id="post-input-content" type="hidden" name="content">
+        {{ form.content_type.errors }}
+        <input id="post-input-content_type" type="hidden" name="content_type">
+
+        <p class="buttons"><input type="submit" value="Post"></p>
+        {{ form.slug.errors }}
+        <p id="post-slug-url">{% absoluteurl %}{% url asset slug="" %}{% endabsoluteurl %}<span id="post-slug"> </span></p>
+    </form>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            function preventEnter (e) {
+                return e.which != 13;
+            }
+
+            $('#post-title').keypress(preventEnter).get(0).contentEditable = true;
+            $('#post-slug').keypress(preventEnter).get(0).contentEditable = true;
+
+            $('#post-slug-url').click(function () {
+                $('#post-slug').focus();
+            });
+
+            $('#post-form').submit(function () {
+                $('#post-input-title').val($('#post-title').text());
+                $('#post-input-slug').val($('#post-slug').text().replace(/\s+$/, ''));
+                $('#post-input-content').val($('#post-content').html());
+                $('#post-input-content_type').val('text/html');
+                return true;  // really submit
+            });
+
+            var input = $('#post-content').get(0);
+            input.contentEditable = true;
+            input.focus();
+            window.getSelection().collapse($('#post-content p').get(0), 0);
+        });
+
+    </script>
+
+{% endblock %}
