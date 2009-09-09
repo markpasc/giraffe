@@ -35,7 +35,7 @@ def shell(request, template=None):
 @allowed_methods("GET")
 @api_error
 def types(request):
-    types = library.models.model_for_kind.keys()
+    types = api.model_for_kind.keys()
     return HttpResponse(
         content=json.dumps(types, indent=4, default=encoder),
         content_type='application/json',
