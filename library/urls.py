@@ -21,8 +21,13 @@ urlpatterns += patterns('library.views.images',
     url(r'^image/(?P<key>[^/.]*)\.(?P<ext>[^/]*)$', 'get'),
 )
 
+urlpatterns += patterns('',
+    url(r'^feed$', 'django.views.generic.simple.redirect_to',
+        {'url': 'http://feeds2.feedburner.com/bestendtimesever'}),
+)
+
 urlpatterns += patterns('library.views.pages',
-    url(r'^feed$', 'stream',
+    url(r'^feeeed$', 'stream',
         {'openid': 'http://markpasc.org/mark/',
          'template': 'library/stream_feed.xml',
          'content_type': 'application/atom+xml'},
