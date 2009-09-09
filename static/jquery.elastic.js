@@ -48,9 +48,9 @@
 
 				// Sets a given height and overflow state on the textarea
 				function setHeightAndOverflow(height, overflow){
-					curratedHeight = Math.floor(parseInt(height,10));
-					if($textarea.height() != curratedHeight){
-						$textarea.css({'height': curratedHeight + 'px','overflow':overflow});
+					var curatedHeight = Math.floor(parseInt(height,10));
+					if($textarea.height() != curatedHeight){
+						$textarea.css({'height': curatedHeight + 'px','overflow':overflow});
 
 					}
 				}
