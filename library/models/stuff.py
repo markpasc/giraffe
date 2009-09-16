@@ -35,6 +35,7 @@ class Asset(Model):
         video='http://activitystrea.ms/schema/1.0/video',
         comment='http://www.bestendtimesever.com/acstrema/your-awesome-contribution',
         game='http://www.bestendtimesever.com/acstrema/pew-pew-laser-game',
+        movie='http://www.bestendtimesever.com/acstrema/eyeball-eyeball-movie-thing',
     )
 
     name_for_object_type = object_types.inverse()

@@ -8,3 +8,4 @@
 ^oauth.py$
 ^index.yaml$
 jquery-dev\.js$
+^remoteobjects
