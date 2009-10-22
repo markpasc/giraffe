@@ -1,6 +1,8 @@
 {% extends "library/base.html" %}
 {% load library %}
 
+{% block htmltitle %}{% for action in actions %}{{ action.asset.title }} &middot; {% endfor %}{{ block.super }}{% endblock %}
+
 {% block htmlhead %}
 {% endblock %}
 
