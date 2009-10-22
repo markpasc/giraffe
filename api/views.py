@@ -106,6 +106,8 @@ def list(request, kind):
     # Show a list if it's a GET.
     if request.method == "GET":
         q = cls.all()
+        if kind == 'asset':
+            q = q.order('-published')
         objs = q[0:30]
         resp = [x.as_data() for x in objs]
 
