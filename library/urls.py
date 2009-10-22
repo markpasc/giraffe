@@ -17,7 +17,8 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('library.views.images',
-    url(r'^image$', 'post'),
+    url(r'^upload_image$', 'browser_post'),
+    url(r'^image$', 'raw_post'),
     url(r'^image/(?P<key>[^/.]*)\.(?P<ext>[^/]*)$', 'get'),
 )
 

@@ -1,0 +1,13 @@
+{% extends "library/base.html" %}
+{% load library %}
+
+{% block content %}
+
+    <form id="upload-form" method="post" action="{% url library.views.images.browser_post %}" enctype="multipart/form-data">
+
+        <p><input type="file" name="image"></p>
+        <p class="buttons"><input type="submit" value="Upload"></p>
+
+    </form>
+
+{% endblock %}
