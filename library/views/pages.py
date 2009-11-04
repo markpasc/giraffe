@@ -12,7 +12,12 @@ from library.auth.decorators import auth_required, admin_only
 from library.models import Person, Asset, Action
 
 
-def stream(request, openid, template=None, content_type=None, empty_ok=False):
+def stream(request, openid, template=None, content_type=None, empty_ok=False, page=None):
+    if page is None:
+        page = 1
+    else:
+        page = int(page)
+
     try:
         me = Person.all().filter(openid=openid)[0]
     except IndexError:
@@ -24,13 +29,16 @@ def stream(request, openid, template=None, content_type=None, empty_ok=False):
         blog = Action.all().filter(person=me, verb=Action.verbs.post)
         blog.filter(privacy_groups="public")
         blog.order('-when')
-        actions = blog[0:10]
+        first = (page - 1) * 10
+        actions = blog[first:first+11]
 
     return render_to_response(
         template or 'library/stream.html',
         {
             'blogger': me,
-            'actions': actions,
+            'actions': actions[:10],
+            'prevpage': 0 if page <= 1 else page - 1,
+            'nextpage': page + 1 if len(actions) > 10 else 0,
         },
         context_instance=RequestContext(request),
         mimetype=content_type or settings.DEFAULT_CONTENT_TYPE,

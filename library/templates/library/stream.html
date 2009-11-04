@@ -14,4 +14,12 @@
         {% endwith %}
     {% endfor %}
 
+    {% if prevpage or nextpage %}
+    <p>
+        {% if prevpage %}<a href="{% url home_paged page=prevpage %}">&larr; Later</a>{% endif %}
+        {% if prevpage and nextpage %}&middot;{% endif %}
+        {% if nextpage %}<a href="{% url home_paged page=nextpage %}">Earlier &rarr;</a>{% endif %}
+    </p>
+    {% endif %}
+
 {% endblock %}
