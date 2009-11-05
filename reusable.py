@@ -1,9 +1,11 @@
 import inspect
+import os
 import re
 import sys
 
 from django.conf import settings
 from django.conf.urls.defaults import *
+import django.views.static
 
 
 setting_name_re = re.compile(r'^[A-Z_]+$')
@@ -40,7 +42,7 @@ def urls_for_apps(exclude=None):
 
         import reusable
 
-        urlpatterns = patterns(...)  # extra non-app patterns
+        urlpatterns = patterns(...)  # other project patterns
 
         urlpatterns += reusable.urls_for_apps()
 
@@ -131,3 +133,54 @@ def include_app_settings(skip_local=False):
         for maybe_setting in dir(app_settings):
             if setting_name_re.match(maybe_setting):
                 caller_locals[maybe_setting] = getattr(app_settings, maybe_setting)
+
+
+def serve_static_files(request, path, document_root, static_dir='static',
+    show_indexes=False):
+    """Serves static files from your apps.
+
+    Include this view in your project urlconf thus::
+
+        import reusable
+
+        urlpatterns = patterns('',
+            ...  # other project patterns
+            url(r'^static/(?P<path>.*)$', 'reusable.serve_static_files',
+                {'document_root': '/path/to/project/media',
+                 'static_dir': 'static'},
+                name="static"),
+        )
+
+    Having done so, if the first path component of the static file path
+    matches the name of an app in your `INSTALLED_APPS` setting that contains
+    a directory named the same as your `static_dir` parameter, the file will
+    be served out of your app's static files directory instead of the path
+    named in your `document_root` parameter.
+
+    That is, having installed a reusable app named ``kittens`` with a static
+    file named ``style.css``, with this view enabled as above you could serve
+    that file as::
+
+        {% url static path="kittens/style.css" %}
+
+    Django would serve the file as ``/static/kittens/style.css``, but read it
+    from wherever on the system the ``kittens`` app was installed.
+
+    As this implementation uses `django.views.static.serve`, the same caveats
+    apply: *do not* use this view in production.
+
+    """
+    try:
+        first_dir, rest = path.split('/', 1)
+    except ValueError:
+        pass
+    else:
+        if first_dir in sys.modules:
+            module = sys.modules[first_dir]
+            app_path = os.path.dirname(module.__file__)
+            static_path = os.path.join(app_path, static_dir)
+            if os.path.isdir(static_path):
+                path = rest
+                document_root = static_path
+
+    return django.views.static.serve(request, rest, static_path, show_indexes)
