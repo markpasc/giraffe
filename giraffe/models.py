@@ -9,6 +9,24 @@ class TypeURI(models.Model):
         else:
             return self.uri
 
+    @classmethod
+    def get(cls, uri):
+
+        # Does the thing already exist?
+        objs = cls.objects.filter(uri = uri)
+
+        if len(objs) > 0:
+            return objs[0]
+
+        # Otherwise, we need to create it.
+        try:
+            obj = cls(uri = uri)
+            obj.save()
+            return obj
+        except ValidationError:
+            # Someone else created it in the mean time
+            return cls.objects.filter(uri = uri)[0]
+
 # A collection of objects that all represent the same
 # thing are collected into a single bundle.
 class ObjectBundle(models.Model):
