@@ -28,7 +28,29 @@ def register_derived_type(new_uri, base_uri):
             register_toplevel_type[base_uri]
             types[new_uri] = types[base_uri] + 1
 
+def _type_index(uri):
+    return types[uri]
 
+def _compare_types(uri1, uri2):
+    return types[uri1] - types[uri2]
+
+def find_most_derived_type(uris):
+    uris_we_know = filter(lambda uri: uri in types, uris)
+    if len(uris_we_know) > 0:
+        return max(uris_we_know, key = _type_index)
+    else:
+        return None
+
+def find_least_derived_type(uris):
+    uris_we_know = filter(lambda uri: uri in types, uris)
+    if len(uris_we_know) > 0:
+        return min(uris_we_know, key = _type_index)
+    else:
+        return None
+
+def sort_types_by_derivedness(uris):
+    uris_we_know = filter(lambda uri: uri in types, uris)
+    return sorted(uris_we_know, _compare_types)
 
 class ConflictError(Exception):
     pass
