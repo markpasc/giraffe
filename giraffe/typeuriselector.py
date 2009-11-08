@@ -26,6 +26,7 @@ def register_derived_type(new_uri, base_uri):
         else:
             # Let's register the base type first.
             register_toplevel_type[base_uri]
+            types[new_uri] = types[base_uri] + 1
 
 
 
