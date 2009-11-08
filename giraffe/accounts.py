@@ -55,7 +55,10 @@ class WebsiteAccountHandler(AccountHandler):
         return account.username
 
     def activity_feed_urls_for_account(self, account):
-        return [ account.user_id ]
+        if account.user_id != "":
+            return [ account.user_id ]
+        else:
+            return []
 
     def handled_domains(self):
         return [ "" ]
