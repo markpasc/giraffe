@@ -7,6 +7,7 @@ to the feed parsing code.
 
 from giraffe import models
 from giraffe import urlpoller
+from giraffe import atom
 
 # TODO: Always call this on startup so that the urlpoller
 # is always primed to poll?
@@ -16,15 +17,24 @@ from giraffe import urlpoller
 def init():
     accounts = models.Account.objects.all()
 
-    # Ultimately this will be replaced by a real callback
-    # that feeds into the feed consumer code.
-    def dummy_callback(url, result):
-        print "We fetched the feed "+url+", though for now we're doing nothing with it."
-
     for account in accounts:
-        feed_urls = account.activity_feed_urls()
-        for feed_url in feed_urls:
-            urlpoller.register_url(feed_url, dummy_callback)
+        # Use a nested function to create a new scope where our
+        # callback can see the correct "account". Blech.
+        def dummy(account):
+            feed_urls = account.activity_feed_urls()
+
+            def callback(url, result):
+                print "Got an activity feed update for "+str(account)+" at "+url
+                # "result" is a sufficiently file-like object that
+                # we can just pass it right into AtomActivityStream as-is.
+                activity_stream = atom.AtomActivityStream(result)
+
+                for atom_activity in activity_stream.activities:
+                    activity = atom_activity.make_real_activity()
+
+            for feed_url in feed_urls:
+                urlpoller.register_url(feed_url, callback)
+        dummy(account)
 
 def refresh_feeds():
     urlpoller.poll()

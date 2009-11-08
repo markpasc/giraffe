@@ -3,6 +3,7 @@ Functionality that deals with Atom feeds containing activities and objects.
 """
 
 from lxml import etree
+from giraffe import models
 
 ATOM_PREFIX = "{http://www.w3.org/2005/Atom}"
 ACTIVITY_PREFIX = "{http://activitystrea.ms/spec/1.0/}"
@@ -31,6 +32,13 @@ class AtomActivity:
     actor_elem = None
     source_elem = None
 
+    def make_real_activity(self):
+        activity = models.Activity()
+
+        # Turn our verb URI strings into TypeURI objects
+        verb_objs = map(lambda uri : models.TypeURI.get(uri), self.verbs)
+
+        return None
 
 class AtomActivityStream:
     """
