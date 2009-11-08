@@ -46,12 +46,21 @@ DEFAULT_HANDLER = AccountHandler()
 
 class WebsiteAccountHandler(AccountHandler):
 
+    # For a "website" account, the domain is the empty string,
+    # the username contains the URL of the website home page
+    # and the user_id contains the URL of the main feed for that
+    # site.
+
     def profile_url_for_account(self, account):
-        return account.user_id
+        return account.username
 
     def activity_feed_urls_for_account(self, account):
-        # FIXME: Do autodiscovery here?
-        return []
+        return [ account.user_id ]
+
+    def handled_domains(self):
+        return [ "" ]
+
+AccountHandler.register(WebsiteAccountHandler());
 
 class TwitterAccountHandler(AccountHandler):
 
