@@ -118,3 +118,5 @@ class PolledURL(models.Model):
     last_fetch_status = models.IntegerField(null=True, blank=True)
     last_fetch_etag = models.CharField(max_length=256, blank=True)
 
+    def __unicode__(self):
+        return self.url
