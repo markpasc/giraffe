@@ -1,0 +1,15 @@
+- sign in
+- configure elsewhere accounts
+- configure profile information
+- display profile
+- display activity stream
+- activity stream feed
+- subscribe to activity stream feeds
+	- pubsubhubbub
+- api for posting events in
+	- atompub
+- relationships
+- lists
+
+- have to use a crosspost duplicate instead of reproducing with id if we add in a source?
+- 
