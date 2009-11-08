@@ -78,8 +78,8 @@ class Account(models.Model):
     def __unicode__(self):
         if self.domain == "":
             # This record represents an arbitrary feed with no real "account" attached,
-            # so let's just return its user_id, which is a URL.
-            return self.user_id
+            # so let's just return its username, which is a URL.
+            return self.username
         else:
             if self.username == "":
                 # If we only have a user_id then we'll begrudgingly use that.
