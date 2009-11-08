@@ -99,6 +99,23 @@ class TypePadProfilesAccountHandler(AccountHandler):
 AccountHandler.register(TypePadProfilesAccountHandler());
 
 
+class LiveJournalAccountHandler(AccountHandler):
+
+    def provider_name(self):
+        return "LiveJournal"
+
+    def handled_domains(self):
+        return [ "livejournal.com" ]
+
+    def profile_url_for_account(self, account):
+        return "http://%s.livejournal.com/info" % account.username
+
+    def activity_feed_urls_for_account(self, account):
+        return [ "http://%s.livejournal.com/data/atom" % account.username ]
+
+AccountHandler.register(LiveJournalAccountHandler());
+
+
 class FacebookAccountHandler(AccountHandler):
 
     def provider_name(self):
