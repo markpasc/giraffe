@@ -19,7 +19,10 @@ class SocialGraphNode:
         self.uri = uri
 
     def json_obj(self):
-        return self.nodes[self.uri]
+        if self.uri in self.nodes:
+            return self.nodes[self.uri]
+        else:
+            return { "attributes": {}, "claimed_nodes": [] }
 
     def attributes(self):
         return self.json_obj()["attributes"]
