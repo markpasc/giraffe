@@ -52,8 +52,7 @@ def poll():
 
         if not url.url in callbacks:
             # Don't bother polling if we have no callback to deliver the result to
-            #continue
-            pass
+            continue
 
         _poll(url)
 
