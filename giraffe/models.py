@@ -1,4 +1,5 @@
 from django.db import models
+from giraffe import accounts
 
 class TypeURI(models.Model):
     uri = models.CharField(max_length=256, unique=True)
@@ -86,6 +87,29 @@ class Account(models.Model):
             else:
                 # username@domain is the ideal case
                 return self.username+"@"+self.domain
+
+    def handler(self):
+        return accounts.AccountHandler.for_domain(self.domain)
+
+    def display_username(self):
+        return self.handler().display_username_for_account(self)
+
+    def activity_feed_urls(self):
+        return self.handler().activity_feed_urls_for_account(self)
+
+    def provider_name(self):
+        return self.handler().provider_name()
+
+    def profile_url(self):
+        return self.handler().profile_url_for_account(self)
+
+    def profile_link_html(self):
+        profile_url = self.profile_url()
+        if profile_url is not None:
+            return "<a href='%s'>%s</a>" % (profile_url, profile_url)
+        else:
+            return None
+    profile_link_html.allow_tags = True
 
 class PolledURL(models.Model):
     url = models.CharField(max_length=256, db_index = True, unique = True)

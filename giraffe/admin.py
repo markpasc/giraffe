@@ -25,12 +25,18 @@ class PolledURLAdmin(admin.ModelAdmin):
     list_filter = [ "notifications_enabled" ]
     search_fields = [ "url" ]
 
+class AccountAdmin(admin.ModelAdmin):
+    list_display = [ "person", "__unicode__", "provider_name", "profile_link_html" ]
+    list_display_links = [ "__unicode__" ]
+    search_fields = [ "username", "user_id", "domain" ]
+    list_filter = [ "person" ]
+
 admin.site.register(models.TypeURI, TypeURIAdmin)
 admin.site.register(models.ObjectBundle)
 admin.site.register(models.Object, ObjectAdmin)
 admin.site.register(models.Activity, ActivityAdmin)
 admin.site.register(models.Person)
-admin.site.register(models.Account)
+admin.site.register(models.Account, AccountAdmin)
 admin.site.register(models.PolledURL, PolledURLAdmin)
 
 
