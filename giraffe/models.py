@@ -87,4 +87,10 @@ class Account(models.Model):
                 # username@domain is the ideal case
                 return self.username+"@"+self.domain
 
+class PolledURL(models.Model):
+    url = models.CharField(max_length=256, db_index = True, unique = True)
+    notifications_enabled = models.BooleanField()
+    last_fetch_time = models.DateTimeField(null=True, db_index = True)
+    last_fetch_status = models.IntegerField(null=True, blank=True)
+    last_fetch_etag = models.CharField(max_length=256, blank=True)
 

@@ -20,12 +20,18 @@ class ObjectBundleAdmin(admin.ModelAdmin):
 class TypeURIAdmin(admin.ModelAdmin):
     list_display = [ "uri" ]
 
+class PolledURLAdmin(admin.ModelAdmin):
+    list_display = [ "url", "notifications_enabled", "last_fetch_time", "last_fetch_status" ]
+    list_filter = [ "notifications_enabled" ]
+    search_fields = [ "url" ]
+
 admin.site.register(models.TypeURI, TypeURIAdmin)
 admin.site.register(models.ObjectBundle)
 admin.site.register(models.Object, ObjectAdmin)
 admin.site.register(models.Activity, ActivityAdmin)
 admin.site.register(models.Person)
 admin.site.register(models.Account)
+admin.site.register(models.PolledURL, PolledURLAdmin)
 
 
 
