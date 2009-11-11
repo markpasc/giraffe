@@ -60,6 +60,10 @@ class Object(models.Model):
     def __unicode__(self):
         return self.foreign_id
 
+    @property
+    def account(self):
+        return self.accounts.get()
+
 
 class Activity(models.Model):
 
@@ -82,7 +86,6 @@ class Activity(models.Model):
 class Person(models.Model):
 
     # TODO: Do we want to foreign-key into django.contrib.auth?
-    object_bundle = models.ForeignKey(ObjectBundle, related_name="people")
     display_name = models.CharField(max_length=75)
 
     def __unicode__(self):
@@ -98,6 +101,7 @@ class Account(models.Model):
     domain = models.CharField(max_length=75, blank=True, db_index = True)
     username = models.CharField(max_length=75, blank=True, db_index = True)
     user_id = models.CharField(max_length=75, blank=True, db_index = True)
+    representations = models.ManyToManyField(Object, through="ObjectToAccount", related_name="accounts")
 
     def __unicode__(self):
         if self.domain == "":
@@ -150,3 +154,8 @@ class PolledURL(models.Model):
     class Meta:
         verbose_name = 'polled URL'
         verbose_name_plural = 'polled URLs'
+
+
+class ObjectToAccount(models.Model):
+    object = models.ForeignKey(Object, unique = True)
+    account = models.ForeignKey(Account)
