@@ -68,7 +68,7 @@ def include_app_urls(exclude=None):
     )
 
 
-def include_app_settings(skip_local=False):
+def include_app_settings(exclude=None, skip_local=False):
     """Injects all Django settings from installed apps' `settings` modules
     into the caller's context.
 
@@ -93,7 +93,7 @@ def include_app_settings(skip_local=False):
     """
     caller_locals = inspect.currentframe().f_back.f_locals
 
-    included_apps = set()
+    included_apps = set() if exclude is None else set(exclude)
     def modules():
         """Generate a list of modules from which to install settings.
 
