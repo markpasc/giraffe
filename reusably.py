@@ -62,8 +62,9 @@ def include_app_urls(exclude=None):
         exclude = ()
 
     return patterns('',
-        *[(r'^', include(app_module(app, 'urls'))) for app in settings.INSTALLED_APPS
-            if app not in exclude and app_module(app, 'urls') is not None]
+        *[(r'^', include(app_module(app, 'urls'))) for app in
+            reversed(settings.INSTALLED_APPS) if app not in exclude
+            and app_module(app, 'urls') is not None]
     )
 
 
