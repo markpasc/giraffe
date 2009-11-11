@@ -1,7 +1,10 @@
 from django.db import models
+
 from giraffe import accounts
 
+
 class TypeURI(models.Model):
+
     uri = models.CharField(max_length=256, unique=True)
 
     def __unicode__(self):
@@ -28,15 +31,20 @@ class TypeURI(models.Model):
             # Someone else created it in the mean time
             return cls.objects.filter(uri = uri)[0]
 
-# A collection of objects that all represent the same
-# thing are collected into a single bundle.
+
 class ObjectBundle(models.Model):
+
+    """A collection of objects that all represent the same thing."""
+
     # TODO: Do we need some concept of a "primary" or "original"
     # object that we infer from the cross-posting metadata?
+
     def __unicode__(self):
         return str(self.pk)
 
+
 class Object(models.Model):
+
     foreign_id = models.CharField(max_length=256, db_index = True)
     title = models.CharField(max_length=256)
     permalink_url = models.CharField(max_length=256)
@@ -48,11 +56,13 @@ class Object(models.Model):
     def __unicode__(self):
         return self.foreign_id
 
+
 class Activity(models.Model):
+
     foreign_id = models.CharField(max_length=256, db_index = True)
     actor = models.ForeignKey(Object, related_name="activities_with_actor")
     object = models.ForeignKey(Object, related_name="activities_with_object")
-    target = models.ForeignKey(Object, related_name="activities_with_target" , null=True)
+    target = models.ForeignKey(Object, related_name="activities_with_target", null=True)
     source = models.ForeignKey(Object, related_name="activities_with_source")
     verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
     occurred_time = models.DateTimeField()
@@ -61,7 +71,9 @@ class Activity(models.Model):
     def __unicode__(self):
         return self.foreign_id
 
+
 class Person(models.Model):
+
     # TODO: Do we want to foreign-key into django.contrib.auth?
     object_bundle = models.ForeignKey(ObjectBundle, related_name="people")
     display_name = models.CharField(max_length=75)
@@ -69,7 +81,9 @@ class Person(models.Model):
     def __unicode__(self):
         return self.display_name
 
+
 class Account(models.Model):
+
     person = models.ForeignKey(Person, related_name="accounts")
     domain = models.CharField(max_length=75, blank=True, db_index = True)
     username = models.CharField(max_length=75, blank=True, db_index = True)
@@ -111,7 +125,9 @@ class Account(models.Model):
             return None
     profile_link_html.allow_tags = True
 
+
 class PolledURL(models.Model):
+
     url = models.CharField(max_length=256, db_index = True, unique = True)
     notifications_enabled = models.BooleanField()
     last_fetch_time = models.DateTimeField(null=True, db_index = True)
