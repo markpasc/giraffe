@@ -34,7 +34,7 @@ def app_module(app, name):
         return modname
 
 
-def urls_for_apps(exclude=None):
+def include_app_urls(exclude=None):
     """Collects urlconfs for all installed apps that have them.
 
     Append this function to your project urlconf to automatically include the
@@ -44,7 +44,7 @@ def urls_for_apps(exclude=None):
 
         urlpatterns = patterns(...)  # other project patterns
 
-        urlpatterns += reusably.urls_for_apps()
+        urlpatterns += reusably.include_app_urls()
 
     All app urlconfs are included at the root in the order they are supplied
     in `INSTALLED_APPS`; therefore if several apps try to claim a particular
