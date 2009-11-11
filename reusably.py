@@ -40,11 +40,11 @@ def urls_for_apps(exclude=None):
     Append this function to your project urlconf to automatically include the
     patterns from all your enabled apps' urlconfs thus::
 
-        import reusable
+        import reusably
 
         urlpatterns = patterns(...)  # other project patterns
 
-        urlpatterns += reusable.urls_for_apps()
+        urlpatterns += reusably.urls_for_apps()
 
     All app urlconfs are included at the root in the order they are supplied
     in `INSTALLED_APPS`; therefore if several apps try to claim a particular
@@ -73,8 +73,8 @@ def include_app_settings(skip_local=False):
 
     Call this function at the end of your `settings` module thus::
 
-        import reusable
-        reusable.include_app_settings()
+        import reusably
+        reusably.include_app_settings()
 
     All settings in the `settings` modules of packages named in the
     ``INSTALLED_APPS`` setting are included; if an app has no such package,
@@ -141,11 +141,9 @@ def serve_static_files(request, path, document_root, static_dir='static',
 
     Include this view in your project urlconf thus::
 
-        import reusable
-
         urlpatterns = patterns('',
             ...  # other project patterns
-            url(r'^static/(?P<path>.*)$', 'reusable.serve_static_files',
+            url(r'^static/(?P<path>.*)$', 'reusably.serve_static_files',
                 {'document_root': '/path/to/project/media',
                  'static_dir': 'static'},
                 name="static"),
