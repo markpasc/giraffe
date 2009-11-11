@@ -31,6 +31,10 @@ class TypeURI(models.Model):
             # Someone else created it in the mean time
             return cls.objects.filter(uri = uri)[0]
 
+    class Meta:
+        verbose_name = 'type URI'
+        verbose_name_plural = 'type URIs'
+
 
 class ObjectBundle(models.Model):
 
@@ -71,6 +75,9 @@ class Activity(models.Model):
     def __unicode__(self):
         return self.foreign_id
 
+    class Meta:
+        verbose_name_plural = 'activities'
+
 
 class Person(models.Model):
 
@@ -80,6 +87,9 @@ class Person(models.Model):
 
     def __unicode__(self):
         return self.display_name
+
+    class Meta:
+        verbose_name_plural = 'people'
 
 
 class Account(models.Model):
@@ -136,3 +146,7 @@ class PolledURL(models.Model):
 
     def __unicode__(self):
         return self.url
+
+    class Meta:
+        verbose_name = 'polled URL'
+        verbose_name_plural = 'polled URLs'
