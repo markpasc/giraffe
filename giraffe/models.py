@@ -64,6 +64,10 @@ class Object(models.Model):
     def account(self):
         return self.accounts.get()
 
+    @classmethod
+    def by_foreign_id(cls, id):
+        return cls.objects.get(foreign_id=id)
+
 
 class Activity(models.Model):
 

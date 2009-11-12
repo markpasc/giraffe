@@ -13,6 +13,9 @@ ATOM_ENTRY = ATOM_PREFIX + "entry"
 ATOM_ID = ATOM_PREFIX + "id"
 ATOM_AUTHOR = ATOM_PREFIX + "author"
 ATOM_SOURCE = ATOM_PREFIX + "source"
+ATOM_TITLE = ATOM_PREFIX + "title"
+ATOM_LINK = ATOM_PREFIX + "link"
+ATOM_PUBLISHED = ATOM_PREFIX + "published"
 ACTIVITY_SUBJECT = ACTIVITY_PREFIX + "subject"
 ACTIVITY_OBJECT = ACTIVITY_PREFIX + "object"
 ACTIVITY_OBJECT_TYPE = ACTIVITY_PREFIX + "object-type"
@@ -20,6 +23,62 @@ ACTIVITY_VERB = ACTIVITY_PREFIX + "verb"
 ACTIVITY_TARGET = ACTIVITY_PREFIX + "target"
 ACTIVITY_ACTOR = ACTIVITY_PREFIX + "actor"
 POST_VERB = "http://activitystrea.ms/schema/1.0/post"
+
+def atomactivity_to_real_activity(atom_activity):
+    activity = models.Activity()
+
+    # Turn our verb URI strings into TypeURI objects
+    verb_objs = map(lambda uri : models.TypeURI.get(uri), atom_activity.verbs)
+
+    actor = atom_entry_to_real_object(atom_activity.actor_elem)
+    object = atom_entry_to_real_object(atom_activity.object_elem)
+    target = atom_entry_to_real_object(atom_activity.target_elem)
+
+    return None
+
+def atom_entry_to_real_object(elem):
+
+    if elem is None:
+        return None
+
+    id_elem = elem.find(ATOM_ID)
+    if id_elem is None:
+        return None
+
+    id = id_elem.text
+
+    # Do we already have this object?
+    object_bundle = None
+    try:
+        object = models.Object.by_foreign_id(id)
+    except models.Object.DoesNotExist:
+        object = models.Object()
+        object_bundle = models.ObjectBundle()
+
+    object_types = map(lambda elem : elem.text, elem.findall(ACTIVITY_OBJECT_TYPE))
+    object_type_objs = map(lambda uri : models.TypeURI.get(uri), object_types)
+
+    title_elem = elem.find(ATOM_TITLE)
+    title = title_elem.text
+
+    object.foreign_id = id
+    object.title = title
+    object.published_time = "2009-03-25 00:00:00"
+    for link_elem in elem.findall(ATOM_LINK):
+        type = link_elem.get("type")
+        rel = link_elem.get("rel")
+        if rel is None or rel == "alternate":
+            if type is None or type == "text/html":
+                object.permalink_url = link_elem.get("href")
+                break
+
+    if object_bundle is not None:
+        object_bundle.save()
+        object.bundle = object_bundle
+
+    object.save()
+
+    return object
 
 class AtomActivity:
     """
@@ -33,12 +92,7 @@ class AtomActivity:
     source_elem = None
 
     def make_real_activity(self):
-        activity = models.Activity()
-
-        # Turn our verb URI strings into TypeURI objects
-        verb_objs = map(lambda uri : models.TypeURI.get(uri), self.verbs)
-
-        return None
+        return atomactivity_to_real_activity(self)
 
 class AtomActivityStream:
     """
