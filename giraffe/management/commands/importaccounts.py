@@ -3,11 +3,14 @@
 # to seed the accounts table with real data.
 # It's not written very well.
 
+import cgi
+import urlparse
+
 import django.core.management.base
 
 from giraffe import models
 from giraffe import socialgraphapi
-import urlparse
+
 
 def import_node(node, person):
     account = uri_to_account(node.uri)
@@ -81,7 +84,7 @@ def uri_to_account(uri):
         parts = urlparse.urlparse(uri)
         domain = parts.netloc
         query = parts.query
-        query_vars = urlparse.parse_qs(query)
+        query_vars = cgi.parse_qs(query)
 
         account.domain = domain
 
