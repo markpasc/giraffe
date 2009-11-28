@@ -11,7 +11,7 @@ class ObjectAdmin(admin.ModelAdmin):
 
 class ActivityAdmin(admin.ModelAdmin):
     date_hierarchy = "occurred_time"
-    list_display = [ "foreign_id", "actor", "object", "target", "occurred_time" ]
+    list_display = [ "actor", "object", "target", "occurred_time" ]
     list_filter = [ "verbs" ]
 
 class ObjectBundleAdmin(admin.ModelAdmin):
