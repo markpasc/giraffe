@@ -130,3 +130,20 @@ class FacebookAccountHandler(AccountHandler):
 AccountHandler.register(FacebookAccountHandler());
 
 
+class CliqsetAccountHandler(AccountHandler):
+
+    def provider_name(self):
+        return "Cliqset"
+
+    def handled_domains(self):
+        return [ "cliqset.com" ]
+
+    def profile_url_for_account(self, account):
+        return "http://cliqset.com/user/%s" % account.username
+
+    def activity_feed_urls_for_account(self, account):
+        return [ "http://cliqset.com/feed/atom?uid=%s" % account.username ]
+
+AccountHandler.register(CliqsetAccountHandler());
+
+
