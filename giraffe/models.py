@@ -50,7 +50,7 @@ class ObjectBundle(models.Model):
 class Object(models.Model):
 
     foreign_id = models.CharField(max_length=256, db_index = True)
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=256, blank=True)
     permalink_url = models.CharField(max_length=256)
     published_time = models.DateTimeField()
     object_types = models.ManyToManyField(TypeURI, related_name="objects_with_object_type")
