@@ -71,11 +71,14 @@ class Object(models.Model):
 
 class Activity(models.Model):
 
-    foreign_id = models.CharField(max_length=256, db_index = True)
     actor = models.ForeignKey(Object, related_name="activities_with_actor")
     object = models.ForeignKey(Object, related_name="activities_with_object")
     target = models.ForeignKey(Object, related_name="activities_with_target", null=True)
     source = models.ForeignKey(Object, related_name="activities_with_source")
+    actor_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_actor")
+    object_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_object")
+    target_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_target", null=True)
+    source_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_source")
     verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
     occurred_time = models.DateTimeField()
     xml = models.TextField()
