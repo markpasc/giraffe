@@ -6,7 +6,7 @@ import time
 import datetime
 import re
 
-from lxml import etree
+from xml.etree import ElementTree
 from giraffe import models
 
 ATOM_PREFIX = "{http://www.w3.org/2005/Atom}"
@@ -37,6 +37,7 @@ def atomactivity_to_real_activity(atom_activity):
     actor = atom_entry_to_real_object(atom_activity.actor_elem)
     object = atom_entry_to_real_object(atom_activity.object_elem)
     target = atom_entry_to_real_object(atom_activity.target_elem)
+    source = atom_entry_to_real_object(atom_activity.source_elem)
 
     return None
 
@@ -63,14 +64,30 @@ def atom_entry_to_real_object(elem):
     object_type_objs = map(lambda uri : models.TypeURI.get(uri), object_types)
 
     title_elem = elem.find(ATOM_TITLE)
-    title = title_elem.text
+    if title_elem is None:
+        title = ""
+    else:
+        title = title_elem.text
+
+    if title is None:
+        title = ""
 
     published_elem = elem.find(ATOM_PUBLISHED)
-    published_w3cdtf = published_elem.text
+    if published_elem is None:
+        published_datetime = object.published_time
+    else:
+        published_w3cdtf = published_elem.text
+        published_datetime = _parse_date_w3cdtf(published_w3cdtf)
+
+    if published_datetime is None:
+        # Fall back on it being published now, which is
+        # probably wrong but at least it'll sort in
+        # more-or-less the right order.
+        published_datetime = datetime.datetime.now()
 
     object.foreign_id = id
     object.title = title
-    object.published_time = _parse_date_w3cdtf(published_w3cdtf)
+    object.published_time = published_datetime
     for link_elem in elem.findall(ATOM_LINK):
         type = link_elem.get("type")
         rel = link_elem.get("rel")
@@ -79,11 +96,17 @@ def atom_entry_to_real_object(elem):
                 object.permalink_url = link_elem.get("href")
                 break
 
+    object.xml = ElementTree.tostring(elem)
+
     if object_bundle is not None:
         object_bundle.save()
         object.bundle = object_bundle
 
     object.save()
+
+    object.object_types.clear()
+    for ot_o in object_type_objs:
+        object.object_types.add(ot_o)
 
     return object
 
@@ -108,7 +131,7 @@ class AtomActivityStream:
 
     def __init__(self, source):
         # TODO: Also allow source to be an already-parsed etree?
-        et = etree.parse(source)
+        et = ElementTree.parse(source)
 
         ret = []
 
