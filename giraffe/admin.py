@@ -31,6 +31,9 @@ class AccountAdmin(admin.ModelAdmin):
     search_fields = [ "username", "user_id", "domain" ]
     list_filter = [ "person" ]
 
+class ObjectToAccountAdmin(admin.ModelAdmin):
+    list_display = [ "object", "account" ]
+
 admin.site.register(models.TypeURI, TypeURIAdmin)
 admin.site.register(models.ObjectBundle)
 admin.site.register(models.Object, ObjectAdmin)
@@ -38,6 +41,7 @@ admin.site.register(models.Activity, ActivityAdmin)
 admin.site.register(models.Person)
 admin.site.register(models.Account, AccountAdmin)
 admin.site.register(models.PolledURL, PolledURLAdmin)
+admin.site.register(models.ObjectToAccount, ObjectToAccountAdmin)
 
 
 
