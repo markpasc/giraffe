@@ -29,7 +29,6 @@ ACTIVITY_ACTOR = ACTIVITY_PREFIX + "actor"
 POST_VERB = "http://activitystrea.ms/schema/1.0/post"
 
 def atomactivity_to_real_activity(atom_activity):
-    activity = models.Activity()
 
     # Turn our verb URI strings into TypeURI objects
     verb_objs = map(lambda uri : models.TypeURI.get(uri), atom_activity.verbs)
@@ -39,7 +38,60 @@ def atomactivity_to_real_activity(atom_activity):
     target = atom_entry_to_real_object(atom_activity.target_elem)
     source = atom_entry_to_real_object(atom_activity.source_elem)
 
-    return None
+    # An activity that doesn't have an actor or an object isn't interesting to us.
+    if actor is None or object is None:
+        return None
+
+    actor_bundle = None
+    object_bundle = None
+    target_bundle = None
+    source_bundle = None
+
+    if actor is not None:
+        actor_bundle = actor.bundle
+    if object is not None:
+        object_bundle = object.bundle
+    if target is not None:
+        target_bundle = target.bundle
+    if source is not None:
+        source_bundle = source.bundle
+
+    # Do we already have this activity in our database?
+    matching_activities = models.Activity.objects.filter(
+        actor_bundle=actor_bundle,
+        object_bundle=object_bundle,
+        target_bundle=target_bundle,
+        source_bundle=source_bundle,
+    )
+
+    activity = None
+    for possible_activity in matching_activities:
+        verb_uris = possible_activity.verb_uris
+        if atom_activity.verbs == verb_uris:
+            # We have a match!
+            activity = possible_activity
+            return activity
+
+    if activity is None:
+        activity = models.Activity()
+
+    activity.actor = actor
+    activity.object = object
+    activity.target = target
+    activity.source = source
+    activity.actor_bundle = actor_bundle
+    activity.object_bundle = object_bundle
+    activity.target_bundle = target_bundle
+    activity.source_bundle = source_bundle
+    activity.occurred_time = datetime.datetime.now()
+
+    activity.save()
+
+    activity.verbs.clear()
+    for v_o in verb_objs:
+        activity.verbs.add(v_o)
+
+    return activity
 
 def atom_entry_to_real_object(elem):
 

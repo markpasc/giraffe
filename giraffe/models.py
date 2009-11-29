@@ -58,7 +58,7 @@ class Object(models.Model):
     bundle = models.ForeignKey(ObjectBundle, related_name="objects")
 
     def __unicode__(self):
-        return self.foreign_id
+        return "%s (%i, %s)" % (self.foreign_id, self.bundle.id, self.title)
 
     @property
     def account(self):
@@ -71,20 +71,24 @@ class Object(models.Model):
 
 class Activity(models.Model):
 
-    actor = models.ForeignKey(Object, related_name="activities_with_actor")
-    object = models.ForeignKey(Object, related_name="activities_with_object")
+    actor = models.ForeignKey(Object, related_name="activities_with_actor", null=True)
+    object = models.ForeignKey(Object, related_name="activities_with_object", null=True)
     target = models.ForeignKey(Object, related_name="activities_with_target", null=True)
-    source = models.ForeignKey(Object, related_name="activities_with_source")
-    actor_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_actor")
-    object_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_object")
+    source = models.ForeignKey(Object, related_name="activities_with_source", null=True)
+    actor_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_actor", null=True)
+    object_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_object", null=True)
     target_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_target", null=True)
-    source_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_source")
+    source_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_source", null=True)
     verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
     occurred_time = models.DateTimeField()
     xml = models.TextField()
 
     def __unicode__(self):
-        return self.foreign_id
+        return str(self.id)
+
+    @property
+    def verb_uris(self):
+        return map(lambda v : v.uri, self.verbs.all())
 
     class Meta:
         verbose_name_plural = 'activities'
