@@ -61,10 +61,36 @@ class ConflictError(Exception):
 # Verbs
 register_toplevel_type("http://activitystrea.ms/schema/1.0/post")
 register_toplevel_type("http://activitystrea.ms/schema/1.0/share")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/save")
 register_toplevel_type("http://activitystrea.ms/schema/1.0/favorite")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/play")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/follow")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/make-friend")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/join")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/tag")
+
+register_toplevel_type("http://activitystrea.ms/schema/1.0/rsvp-yes")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/rsvp-maybe")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/rsvp-no")
 
 # Object types
-register_toplevel_type("http://activitystrea.ms/schema/1.0/weblog-entry")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/article")
+register_derived_type("http://activitystrea.ms/schema/1.0/blog-entry", "http://activitystrea.ms/schema/1.0/article")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/note")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/file")
 register_toplevel_type("http://activitystrea.ms/schema/1.0/photo")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/photo-album")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/playlist")
 register_toplevel_type("http://activitystrea.ms/schema/1.0/video")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/audio")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/bookmark")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/person")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/group")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/place")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/comment")
+
+register_toplevel_type("http://activitystrea.ms/schema/1.0/event")
+
+register_derived_type("http://activitystrea.ms/schema/1.0/song", "http://activitystrea.ms/schema/1.0/audio")
+
 
