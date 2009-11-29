@@ -65,6 +65,10 @@ class Object(models.Model):
     def account(self):
         return self.accounts.get()
 
+    @property
+    def object_type_uris(self):
+        return map(lambda ot : ot.uri, self.object_types.all())
+
     @classmethod
     def by_foreign_id(cls, id):
         return cls.objects.get(foreign_id=id)
