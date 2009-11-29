@@ -163,7 +163,8 @@ def atom_entry_to_real_object(elem):
     object.published_time = published_datetime
     object.permalink_url = permalink_url
 
-    object.xml = ElementTree.tostring(elem)
+    object.data_format = "A"
+    object.data = ElementTree.tostring(elem)
 
     if object_bundle is not None:
         object_bundle.save()

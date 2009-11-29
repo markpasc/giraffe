@@ -54,7 +54,8 @@ class Object(models.Model):
     permalink_url = models.CharField(max_length=256)
     published_time = models.DateTimeField()
     object_types = models.ManyToManyField(TypeURI, related_name="objects_with_object_type")
-    xml = models.TextField()
+    data_format = models.CharField(max_length=1, choices=(('A', 'AtomActivity'), ('J', 'JSON')))
+    data = models.TextField()
     bundle = models.ForeignKey(ObjectBundle, related_name="objects")
 
     def __unicode__(self):
