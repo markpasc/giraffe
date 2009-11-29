@@ -172,6 +172,23 @@ class ArticleTypeHandler(TypeHandler):
             content_elem.text = object_dict["content"]
 
 
+class NoteTypeHandler(TypeHandler):
+
+    def populate_dict_from_atom(self, object_elem, object_dict):
+        mappings = {
+            'content': atom.ATOM_CONTENT,
+        }
+        map_values_from_elem(object_dict, object_elem, mappings)
+
+    def populate_atom_from_dict(self, object_dict, object_elem):
+        if "content" in object_dict:
+            content_elem = object_elem.find(atom.ATOM_CONTENT)
+            if content_elem is None:
+                content_elem = ElementTree.Element(atom.ATOM_CONTENT)
+                object_elem.append(content_elem)
+            content_elem.text = object_dict["content"]
+
+
 class PersonTypeHandler(TypeHandler):
 
     def populate_dict_from_atom(self, object_elem, object_dict):
@@ -211,6 +228,7 @@ _tu = activitystreams.type_uri
 
 register_object_type_handler(_tu("article"), ArticleTypeHandler())
 register_object_type_handler(_tu("blog-entry"), ArticleTypeHandler())
+register_object_type_handler(_tu("note"), NoteTypeHandler())
 register_object_type_handler(_tu("person"), PersonTypeHandler())
 register_object_type_handler(_tu("photo"), PhotoTypeHandler())
 
