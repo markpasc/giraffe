@@ -293,7 +293,7 @@ class AtomActivityStream:
                actor_elem.append(actor_title_elem)
 
                if author_uri != "":
-                   actor_permalink_elem = ElementTree.Element(ATOM_LINK, {href:author_uri, type:"text/html", rel:"alternate"})
+                   actor_permalink_elem = ElementTree.Element(ATOM_LINK, {"href":author_uri, "type":"text/html", "rel":"alternate"})
                    actor_elem.append(actor_permalink_elem)
 
                if author_id is None:
