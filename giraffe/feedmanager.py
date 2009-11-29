@@ -19,7 +19,7 @@ def init():
 
     for account in accounts:
         feed_urls = account.activity_feed_urls()
-        callback = activitystreams_feed_callback(account)
+        callback = atom.urlpoller_callback(account)
         for feed_url in feed_urls:
             urlpoller.register_url(feed_url, callback)
 
@@ -28,21 +28,3 @@ def refresh_feeds():
     urlpoller.poll()
 
 
-def activitystreams_feed_callback(account):
-    def callback(url, result):
-        print "Got an activity feed update for "+str(account)+" at "+url
-        # "result" is a sufficiently file-like object that
-        # we can just pass it right into AtomActivityStream as-is.
-        activity_stream = atom.AtomActivityStream(result)
-
-        # FIXME: If activity_stream has a subject, create a link between
-        # the account and the subject.
-
-        for atom_activity in activity_stream.activities:
-            activity = atom_activity.make_real_activity()
-            if activity is not None:
-                activity.source_account = account
-                activity.source_person = account.person
-                activity.save()
-    return callback
-    
