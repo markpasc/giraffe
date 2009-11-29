@@ -50,7 +50,7 @@ class ObjectBundle(models.Model):
 class Object(models.Model):
 
     foreign_id = models.CharField(max_length=256, db_index = True)
-    title = models.CharField(max_length=256, blank=True)
+    display_name = models.CharField(max_length=256, blank=True)
     permalink_url = models.CharField(max_length=256)
     published_time = models.DateTimeField()
     object_types = models.ManyToManyField(TypeURI, related_name="objects_with_object_type")
@@ -59,7 +59,7 @@ class Object(models.Model):
     bundle = models.ForeignKey(ObjectBundle, related_name="objects")
 
     def __unicode__(self):
-        return "%s (%i, %s)" % (self.foreign_id, self.bundle.id, self.title)
+        return "%s (%i, %s)" % (self.foreign_id, self.bundle.id, self.display_name)
 
     @property
     def account(self):

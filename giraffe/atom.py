@@ -159,7 +159,7 @@ def atom_entry_to_real_object(elem):
         published_datetime = datetime.datetime.now()
 
     object.foreign_id = id
-    object.title = title
+    object.display_name = title
     object.published_time = published_datetime
     object.permalink_url = permalink_url
 
