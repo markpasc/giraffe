@@ -69,31 +69,6 @@ class Object(models.Model):
         return cls.objects.get(foreign_id=id)
 
 
-class Activity(models.Model):
-
-    actor = models.ForeignKey(Object, related_name="activities_with_actor", null=True)
-    object = models.ForeignKey(Object, related_name="activities_with_object", null=True)
-    target = models.ForeignKey(Object, related_name="activities_with_target", null=True)
-    source = models.ForeignKey(Object, related_name="activities_with_source", null=True)
-    actor_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_actor", null=True)
-    object_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_object", null=True)
-    target_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_target", null=True)
-    source_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_source", null=True)
-    verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
-    occurred_time = models.DateTimeField()
-    xml = models.TextField()
-
-    def __unicode__(self):
-        return str(self.id)
-
-    @property
-    def verb_uris(self):
-        return map(lambda v : v.uri, self.verbs.all())
-
-    class Meta:
-        verbose_name_plural = 'activities'
-
-
 class Person(models.Model):
 
     # TODO: Do we want to foreign-key into django.contrib.auth?
@@ -149,6 +124,33 @@ class Account(models.Model):
         else:
             return None
     profile_link_html.allow_tags = True
+
+
+class Activity(models.Model):
+
+    actor = models.ForeignKey(Object, related_name="activities_with_actor", null=True)
+    object = models.ForeignKey(Object, related_name="activities_with_object", null=True)
+    target = models.ForeignKey(Object, related_name="activities_with_target", null=True)
+    source = models.ForeignKey(Object, related_name="activities_with_source", null=True)
+    actor_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_actor", null=True)
+    object_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_object", null=True)
+    target_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_target", null=True)
+    source_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_source", null=True)
+    source_account = models.ForeignKey(Account, related_name="activities", null=True)
+    source_person = models.ForeignKey(Person, related_name="activities", null=True)
+    verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
+    occurred_time = models.DateTimeField()
+    xml = models.TextField()
+
+    def __unicode__(self):
+        return str(self.id)
+
+    @property
+    def verb_uris(self):
+        return map(lambda v : v.uri, self.verbs.all())
+
+    class Meta:
+        verbose_name_plural = 'activities'
 
 
 class PolledURL(models.Model):

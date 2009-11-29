@@ -29,8 +29,15 @@ def init():
                 # we can just pass it right into AtomActivityStream as-is.
                 activity_stream = atom.AtomActivityStream(result)
 
+                # FIXME: If activity_stream has a subject, create a link between
+                # the account and the subject.
+
                 for atom_activity in activity_stream.activities:
                     activity = atom_activity.make_real_activity()
+                    if activity is not None:
+                        activity.source_account = account
+                        activity.source_person = account.person
+                        activity.save()
 
             for feed_url in feed_urls:
                 urlpoller.register_url(feed_url, callback)
