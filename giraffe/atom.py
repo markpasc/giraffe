@@ -20,6 +20,8 @@ ATOM_SOURCE = ATOM_PREFIX + "source"
 ATOM_TITLE = ATOM_PREFIX + "title"
 ATOM_LINK = ATOM_PREFIX + "link"
 ATOM_PUBLISHED = ATOM_PREFIX + "published"
+ATOM_NAME = ATOM_PREFIX + "name"
+ATOM_URI = ATOM_PREFIX + "uri"
 ACTIVITY_SUBJECT = ACTIVITY_PREFIX + "subject"
 ACTIVITY_OBJECT = ACTIVITY_PREFIX + "object"
 ACTIVITY_OBJECT_TYPE = ACTIVITY_PREFIX + "object-type"
@@ -238,8 +240,54 @@ class AtomActivityStream:
                actor_id = actor_id_elem.text
                if actor_id == subject_id: actor_elem = feed_subject_elem
  
-       # TODO: If there's no actor specified, use atom:author instead
- 
+       if actor_elem is None:
+           # Synthesize an actor from the author.
+           author_elem = entry_elem.find(ATOM_AUTHOR)
+           if author_elem is None:
+               author_elem = feed_elem.find(ATOM_AUTHOR)
+           if author_elem is not None:
+               author_id_elem = author_elem.find(ATOM_ID)
+               author_id = None
+               # Atom deson't actually specify id as a valid child of author,
+               # but if it's present it's probably better than what we'd
+               # synthesize below.
+               if author_id_elem is not None:
+                   author_id = author_id_elem.text
+
+               feed_id_elem = feed_elem.find(ATOM_ID)
+               feed_id = ""
+               if feed_id_elem is not None:
+                   feed_id = feed_id_elem.text
+
+               author_name_elem = author_elem.find(ATOM_NAME)
+               if author_name_elem is not None:
+                   author_name = author_name_elem.text
+               else:
+                   author_name = ""
+               
+               author_uri_elem = author_elem.find(ATOM_URI)
+               if author_uri_elem is not None:
+                   author_uri = author_uri_elem.text
+               else:
+                   author_uri = ""
+               
+               actor_elem = ElementTree.Element(ACTIVITY_ACTOR)
+               
+               actor_title_elem = ElementTree.Element(ATOM_TITLE)
+               actor_title_elem.text = author_name
+               actor_elem.append(actor_title_elem)
+
+               if author_uri != "":
+                   actor_permalink_elem = ElementTree.Element(ATOM_LINK, {href:author_uri, type:"text/html", rel:"alternate"})
+                   actor_elem.append(actor_permalink_elem)
+
+               if author_id is None:
+                   author_id = "x-giraffe-fake-actor:%s@%s@%s" % (author_name, author_uri, feed_id)
+
+               actor_id_elem = ElementTree.Element(ATOM_ID)
+               actor_id_elem.text = author_id
+               actor_elem.append(actor_id_elem)
+
        source_elem = entry_elem.find(ATOM_SOURCE)
        if (source_elem is None): source_elem = feed_elem
  
