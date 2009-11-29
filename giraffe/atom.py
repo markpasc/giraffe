@@ -64,6 +64,7 @@ def atomactivity_to_real_activity(atom_activity):
         object_bundle=object_bundle,
         target_bundle=target_bundle,
         source_bundle=source_bundle,
+        occurred_time=atom_activity.occurred_time,
     )
 
     activity = None
@@ -85,7 +86,7 @@ def atomactivity_to_real_activity(atom_activity):
     activity.object_bundle = object_bundle
     activity.target_bundle = target_bundle
     activity.source_bundle = source_bundle
-    activity.occurred_time = datetime.datetime.now()
+    activity.occurred_time = atom_activity.occurred_time
 
     activity.save()
 
@@ -174,6 +175,7 @@ class AtomActivity:
     target_elem = None
     actor_elem = None
     source_elem = None
+    occurred_time = None
 
     def make_real_activity(self):
         return atomactivity_to_real_activity(self)
@@ -290,6 +292,14 @@ class AtomActivityStream:
 
        source_elem = entry_elem.find(ATOM_SOURCE)
        if (source_elem is None): source_elem = feed_elem
+
+       published_elem = entry_elem.find(ATOM_PUBLISHED)
+       occurred_time = None
+       if published_elem is not None:
+           occurred_time = _parse_date_w3cdtf(published_elem.text)
+
+       if occurred_time is None:
+           occurred_time = datetime.datetime.now()
  
        ret = []
  
@@ -300,6 +310,7 @@ class AtomActivityStream:
            activity.object_elem = object_elem
            activity.actor_elem = actor_elem
            activity.source_elem = source_elem
+           activity.occurred_time = occurred_time
            ret.append(activity)
  
        return ret
@@ -358,7 +369,7 @@ def _parse_date_w3cdtf(dateString):
         minutes = int(m.group('minutes'))
         seconds = m.group('seconds')
         if seconds:
-            seconds = int(seconds)
+            seconds = int(float(seconds))
         else:
             seconds = 0
         return hours, minutes, seconds
