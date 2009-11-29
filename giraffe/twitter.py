@@ -28,9 +28,12 @@ def urlpoller_callback(account):
         actor_title_elem = ElementTree.Element(atom.ATOM_TITLE)
         actor_title_elem.text = account.username
         actor_link_elem = ElementTree.Element(atom.ATOM_LINK, { "href": account.profile_url(), "rel": "alternate", "type": "text/html" })
+        actor_object_type_elem = ElementTree.Element(atom.ACTIVITY_OBJECT_TYPE)
+        actor_object_type_elem.text = "http://activitystrea.ms/schema/1.0/person"
         actor_elem.append(actor_id_elem)
         actor_elem.append(actor_title_elem)
         actor_elem.append(actor_link_elem)
+        actor_elem.append(actor_object_type_elem)
 
         for entry_elem in entry_elems:
             title_elem = entry_elem.find(atom.ATOM_TITLE)
