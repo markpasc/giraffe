@@ -54,3 +54,17 @@ def sort_types_by_derivedness(uris):
 
 class ConflictError(Exception):
     pass
+
+
+### Default activitystrea.ms types
+
+# Verbs
+register_toplevel_type("http://activitystrea.ms/schema/1.0/post")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/share")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/favorite")
+
+# Object types
+register_toplevel_type("http://activitystrea.ms/schema/1.0/weblog-entry")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/photo")
+register_toplevel_type("http://activitystrea.ms/schema/1.0/video")
+
