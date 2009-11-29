@@ -39,6 +39,8 @@ def get_object_as_atom(object, element_name = None):
         permalink_elem = ElementTree.Element(atom.ATOM_LINK, { "href": object.permalink_url, "rel": "alternate", "type": "text/html" })
         elem.append(permalink_elem)
 
+        # FIXME: Also need to put the published time in here
+
         for object_type in object_types:
             object_type_elem = ElementTree.Element(atom.ACTIVITY_OBJECT_TYPE)
             object_type_elem.text = object_type
@@ -67,6 +69,8 @@ def get_object_as_dict(object):
         dict["displayName"] = object.display_name
         dict["permalinkUrl"] = object.permalink_url
         dict["objectTypes"] = object_types
+
+        # FIXME: Also need to put the published time in here
 
         # Give each handler in turn a chance to add things to the Atom element
         for object_type in object_types:
