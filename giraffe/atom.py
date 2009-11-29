@@ -103,10 +103,27 @@ def atom_entry_to_real_object(elem):
         return None
 
     id_elem = elem.find(ATOM_ID)
-    if id_elem is None:
-        return None
 
-    id = id_elem.text
+    permalink_url = ""
+    for link_elem in elem.findall(ATOM_LINK):
+        type = link_elem.get("type")
+        rel = link_elem.get("rel")
+        if rel is None or rel == "alternate":
+            if type is None or type == "text/html":
+                permalink_url = link_elem.get("href")
+                break
+
+    id = None
+    if id_elem is not None:
+        id = id_elem.text
+    else:
+        # Fall back on the permalink URL as an id
+        id = permalink_url
+
+    # If we still don't have something useful to use as an id,
+    # bail out.
+    if not id:
+        return None
 
     # Do we already have this object?
     object_bundle = None
@@ -144,13 +161,7 @@ def atom_entry_to_real_object(elem):
     object.foreign_id = id
     object.title = title
     object.published_time = published_datetime
-    for link_elem in elem.findall(ATOM_LINK):
-        type = link_elem.get("type")
-        rel = link_elem.get("rel")
-        if rel is None or rel == "alternate":
-            if type is None or type == "text/html":
-                object.permalink_url = link_elem.get("href")
-                break
+    object.permalink_url = permalink_url
 
     object.xml = ElementTree.tostring(elem)
 
