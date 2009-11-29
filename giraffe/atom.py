@@ -299,7 +299,8 @@ class AtomActivityStream:
            occurred_time = _parse_date_w3cdtf(published_elem.text)
 
        if occurred_time is None:
-           occurred_time = datetime.datetime.now()
+           # Can't do anything sane with an activity that has no published time
+           return []
  
        ret = []
  
