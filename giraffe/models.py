@@ -111,6 +111,9 @@ class Account(models.Model):
     def activity_feed_urls(self):
         return self.handler().activity_feed_urls_for_account(self)
 
+    def custom_polled_urls(self):
+        return self.handler().custom_polled_urls_for_account(self)
+
     def provider_name(self):
         return self.handler().provider_name()
 

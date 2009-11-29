@@ -23,6 +23,12 @@ def init():
         for feed_url in feed_urls:
             urlpoller.register_url(feed_url, callback)
 
+        other_urls = account.custom_polled_urls()
+        for url_tuple in other_urls:
+            url = url_tuple[0]
+            callback = url_tuple[1](account)
+            urlpoller.register_url(url, callback)
+
 
 def refresh_feeds():
     urlpoller.poll()

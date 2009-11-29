@@ -38,6 +38,9 @@ class AccountHandler:
     def activity_feed_urls_for_account(self, account):
         return []
 
+    def custom_polled_urls_for_account(self, account):
+        return []
+
 DEFAULT_HANDLER = AccountHandler()
 
 # TODO: Make a generic accounthandler that can easily be seeded from
@@ -65,6 +68,7 @@ class WebsiteAccountHandler(AccountHandler):
 
 AccountHandler.register(WebsiteAccountHandler());
 
+
 class TwitterAccountHandler(AccountHandler):
 
     def provider_name(self):
@@ -76,8 +80,11 @@ class TwitterAccountHandler(AccountHandler):
     def profile_url_for_account(self, account):
         return "http://twitter.com/%s" % account.username
 
-    def activity_feed_urls_for_account(self, account):
-        return [ "http://twitter.com/statuses/user_timeline/%s.atom" % account.username ]
+    def custom_polled_urls_for_account(self, account):
+        from giraffe import twitter;
+        return [
+            ( "http://twitter.com/statuses/user_timeline/%s.atom" % account.username, twitter.urlpoller_callback ),
+        ]
 
 AccountHandler.register(TwitterAccountHandler());
 
