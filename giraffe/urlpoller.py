@@ -84,7 +84,7 @@ def _poll(url):
 
     try:
         result = urllib2.urlopen(req)
-    except urllib2.HTTPError as err:
+    except urllib2.HTTPError, err:
         url.last_fetch_status = err.code
         url.save()
         return
