@@ -2,8 +2,44 @@
 The default set of plugins that come with giraffe.
 """
 
-from giraffe import accounts
-AccountHandler = accounts.AccountHandler
+import logging
+from os.path import join, dirname
+
+import yaml
+
+from giraffe.accounts import AccountHandler
+
+
+class YamlAccountHandler(AccountHandler):
+
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+    def provider_name(self):
+        return self.provider
+
+    def handled_domains(self):
+        return self.domains
+
+    @classmethod
+    def template_with_account(cls, template, account):
+        return template % {
+            'username': account.username,
+            'user_id':  account.user_id,
+        }
+
+    def profile_url_for_account(self, account):
+        return self.template_with_account(self.profile_url, account)
+
+    def activity_feed_urls_for_account(self, account):
+        return [self.template_with_account(x, account) for x in self.feeds]
+
+
+yamlz = yaml.load(file(join(dirname(__file__), 'providers.yaml')))
+for provider in yamlz:
+    logging.debug('YAY %r', provider)
+    handler = YamlAccountHandler(**provider)
+    AccountHandler.register(handler)
 
 
 class TwitterAccountHandler(AccountHandler):
@@ -24,70 +60,3 @@ class TwitterAccountHandler(AccountHandler):
         ]
 
 AccountHandler.register(TwitterAccountHandler());
-
-
-class TypePadProfilesAccountHandler(AccountHandler):
-
-    def provider_name(self):
-        return "TypePad"
-
-    def handled_domains(self):
-        return [ "profile.typepad.com" ]
-
-    def profile_url_for_account(self, account):
-        return "http://profile.typepad.com/%s" % account.username
-
-    def activity_feed_urls_for_account(self, account):
-        return [ "http://profile.typepad.com/%s/activity/atom.xml" % account.username ]
-
-AccountHandler.register(TypePadProfilesAccountHandler());
-
-
-class LiveJournalAccountHandler(AccountHandler):
-
-    def provider_name(self):
-        return "LiveJournal"
-
-    def handled_domains(self):
-        return [ "livejournal.com" ]
-
-    def profile_url_for_account(self, account):
-        return "http://%s.livejournal.com/info" % account.username
-
-    def activity_feed_urls_for_account(self, account):
-        return [ "http://%s.livejournal.com/data/atom" % account.username ]
-
-AccountHandler.register(LiveJournalAccountHandler());
-
-
-class FacebookAccountHandler(AccountHandler):
-
-    def provider_name(self):
-        return "Facebook"
-
-    def handled_domains(self):
-        return [ "facebook.com" ]
-
-    def profile_url_for_account(self, account):
-        return "http://www.facebook.com/profile.php?id=%s" % account.user_id
-
-AccountHandler.register(FacebookAccountHandler());
-
-
-class CliqsetAccountHandler(AccountHandler):
-
-    def provider_name(self):
-        return "Cliqset"
-
-    def handled_domains(self):
-        return [ "cliqset.com" ]
-
-    def profile_url_for_account(self, account):
-        return "http://cliqset.com/user/%s" % account.username
-
-    def activity_feed_urls_for_account(self, account):
-        return [ "http://cliqset.com/feed/atom?uid=%s" % account.username ]
-
-AccountHandler.register(CliqsetAccountHandler());
-
-

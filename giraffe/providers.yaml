@@ -1,0 +1,22 @@
+- provider: TypePad
+  domains:
+    - profile.typepad.com
+  profile_url: http://profile.typepad.com/%(username)s
+  feeds:
+    - http://profile.typepad.com/%(username)s/activity/atom.xml
+- provider: LiveJournal
+  domains:
+    - livejournal.com
+  profile_url: http://%(username)s.livejournal.com/info
+  feeds:
+    - http://%(username)s.livejournal.com/data/atom
+- provider: Facebook
+  domains:
+    - facebook.com
+  profile_url: http://www.facebook.com/profile.php?id=%(user_id)s
+- provider: Cliqset
+  domains:
+    - cliqset.com
+  profile_url: http://cliqset.com/user/%(username)s
+  feeds:
+    - http://cliqset.com/feed/atom?uid=%(username)s
