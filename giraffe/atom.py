@@ -345,6 +345,8 @@ def urlpoller_callback(account):
             if activity is not None:
                 activity.source_account = account
                 activity.source_person = account.person
+                if account.person.personal_activity_stream:
+                    account.person.personal_activity_stream.activities.add(activity)
                 activity.save()
     return callback
 
