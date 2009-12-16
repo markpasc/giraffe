@@ -152,7 +152,7 @@ class Activity(models.Model):
     source_person = models.ForeignKey(Person, related_name="activities", null=True)
     verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
     occurred_time = models.DateTimeField()
-    activity_stream = models.ManyToManyField('ActivityStream', related_name="activities", null=True, blank=True)
+    activity_streams = models.ManyToManyField('ActivityStream', related_name="activities", null=True, blank=True)
 
     def __unicode__(self):
         return str(self.id)
