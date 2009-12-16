@@ -80,8 +80,8 @@ class Person(models.Model):
     display_name = models.CharField(max_length=75)
     is_site_owner = models.BooleanField()
     friends = models.ManyToManyField("Person", related_name="friendofs", blank=True)
-    personal_activity_stream = models.ForeignKey("ActivityStream", null=True, related_name="people_with_this_as_personal_activity_stream")
-    friends_activity_stream = models.ForeignKey("ActivityStream", null=True, related_name="people_with_this_as_friends_activity_stream")
+    personal_activity_stream = models.ForeignKey("ActivityStream", blank=True, null=True, related_name="people_with_this_as_personal_activity_stream")
+    friends_activity_stream = models.ForeignKey("ActivityStream", blank=True, null=True, related_name="people_with_this_as_friends_activity_stream")
 
     def __unicode__(self):
         return self.display_name
