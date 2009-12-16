@@ -198,9 +198,8 @@ class AtomActivityStream:
         An Activity Stream represented by an Atom feed or entry.
     """
 
-    def __init__(self, source):
+    def __init__(self, et):
         # TODO: Also allow source to be an already-parsed etree?
-        et = ElementTree.parse(source)
 
         ret = []
 
@@ -334,8 +333,15 @@ def urlpoller_callback(account):
     def callback(url, result):
         print "Got an activity feed update for "+str(account)+" at "+url
         # "result" is a sufficiently file-like object that
-        # we can just pass it right into AtomActivityStream as-is.
-        activity_stream = AtomActivityStream(result)
+        # we can just pass it right into ElementTree as-is.
+        et = ElementTree.parse(result)
+
+        from giraffe import accounts
+        mangler = accounts.get_feed_mangler_for_domain(account.domain)
+
+        et = mangler(et)
+
+        activity_stream = AtomActivityStream(et)
 
         # FIXME: If activity_stream has a subject, create a link between
         # the account and the subject.

@@ -7,8 +7,9 @@ from os.path import join, dirname
 
 import yaml
 
+from giraffe import accounts;
 from giraffe.accounts import AccountHandler
-
+from giraffe import activitystreams
 
 class YamlAccountHandler(AccountHandler):
 
@@ -63,3 +64,7 @@ class TwitterAccountHandler(AccountHandler):
         ]
 
 AccountHandler.register(TwitterAccountHandler());
+
+accounts.register_feed_mangler("youtube.com", accounts.object_type_feed_mangler(activitystreams.type_uri("video")))
+accounts.register_feed_mangler("livejournal.com", accounts.object_type_feed_mangler(activitystreams.type_uri("blog-entry")))
+

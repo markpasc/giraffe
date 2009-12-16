@@ -1,5 +1,6 @@
 
 handler_for_domain = {}
+mangler_for_domain = {}
 
 DEFAULT_HANDLER = None
 
@@ -41,6 +42,18 @@ class AccountHandler:
     def custom_polled_urls_for_account(self, account):
         return []
 
+def register_feed_mangler(domain, callback):
+    # FIXME: Should detect if we get a domain collision between two manglers
+    mangler_for_domain[domain] = callback
+
+def get_feed_mangler_for_domain(domain):
+    if domain in mangler_for_domain:
+        return mangler_for_domain[domain]
+    else:
+        def dummy(feed):
+            return feed
+        return dummy
+
 DEFAULT_HANDLER = AccountHandler()
 
 # TODO: Make a generic accounthandler that can easily be seeded from
@@ -67,4 +80,29 @@ class WebsiteAccountHandler(AccountHandler):
         return [ "" ]
 
 AccountHandler.register(WebsiteAccountHandler());
+
+
+def object_type_feed_mangler(*object_types):
+
+    def mangler(et):
+        from giraffe import atom
+        from xml.etree import ElementTree
+
+        feed_elem = et.getroot()
+        entry_elems = feed_elem.findall(atom.ATOM_ENTRY)
+
+        for entry_elem in entry_elems:
+            object_type_elems = entry_elem.findall(atom.ACTIVITY_OBJECT_TYPE)
+            if len(object_type_elems) > 0:
+                continue
+
+            for type_uri in object_types:
+                object_type_elem = ElementTree.Element(atom.ACTIVITY_OBJECT_TYPE)
+                object_type_elem.text = type_uri
+                entry_elem.append(object_type_elem)
+
+        return et
+
+    return mangler
+
 
