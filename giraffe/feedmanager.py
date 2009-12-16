@@ -18,23 +18,17 @@ def init():
     accounts = models.Account.objects.all()
 
     for account in accounts:
-        # Use a nested function to create a new scope where our
-        # callback can see the correct "account". Blech.
-        def dummy(account):
-            feed_urls = account.activity_feed_urls()
+        feed_urls = account.activity_feed_urls()
+        callback = atom.urlpoller_callback(account)
+        for feed_url in feed_urls:
+            urlpoller.register_url(feed_url, callback)
 
-            def callback(url, result):
-                print "Got an activity feed update for "+str(account)+" at "+url
-                # "result" is a sufficiently file-like object that
-                # we can just pass it right into AtomActivityStream as-is.
-                activity_stream = atom.AtomActivityStream(result)
+        other_urls = account.custom_polled_urls()
+        for url_tuple in other_urls:
+            url = url_tuple[0]
+            callback = url_tuple[1](account)
+            urlpoller.register_url(url, callback)
 
-                for atom_activity in activity_stream.activities:
-                    activity = atom_activity.make_real_activity()
-
-            for feed_url in feed_urls:
-                urlpoller.register_url(feed_url, callback)
-        dummy(account)
 
 def refresh_feeds():
     urlpoller.poll()

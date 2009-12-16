@@ -50,37 +50,28 @@ class ObjectBundle(models.Model):
 class Object(models.Model):
 
     foreign_id = models.CharField(max_length=256, db_index = True)
-    title = models.CharField(max_length=256)
+    display_name = models.CharField(max_length=256, blank=True)
     permalink_url = models.CharField(max_length=256)
     published_time = models.DateTimeField()
     object_types = models.ManyToManyField(TypeURI, related_name="objects_with_object_type")
-    xml = models.TextField()
+    data_format = models.CharField(max_length=1, choices=(('A', 'AtomActivity'), ('J', 'JSON')))
+    data = models.TextField()
     bundle = models.ForeignKey(ObjectBundle, related_name="objects")
 
     def __unicode__(self):
-        return self.foreign_id
+        return "%s (%i, %s)" % (self.foreign_id, self.bundle.id, self.display_name)
 
     @property
     def account(self):
         return self.accounts.get()
 
+    @property
+    def object_type_uris(self):
+        return map(lambda ot : ot.uri, self.object_types.all())
 
-class Activity(models.Model):
-
-    foreign_id = models.CharField(max_length=256, db_index = True)
-    actor = models.ForeignKey(Object, related_name="activities_with_actor")
-    object = models.ForeignKey(Object, related_name="activities_with_object")
-    target = models.ForeignKey(Object, related_name="activities_with_target", null=True)
-    source = models.ForeignKey(Object, related_name="activities_with_source")
-    verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
-    occurred_time = models.DateTimeField()
-    xml = models.TextField()
-
-    def __unicode__(self):
-        return self.foreign_id
-
-    class Meta:
-        verbose_name_plural = 'activities'
+    @classmethod
+    def by_foreign_id(cls, id):
+        return cls.objects.get(foreign_id=id)
 
 
 class Person(models.Model):
@@ -125,6 +116,9 @@ class Account(models.Model):
     def activity_feed_urls(self):
         return self.handler().activity_feed_urls_for_account(self)
 
+    def custom_polled_urls(self):
+        return self.handler().custom_polled_urls_for_account(self)
+
     def provider_name(self):
         return self.handler().provider_name()
 
@@ -138,6 +132,32 @@ class Account(models.Model):
         else:
             return None
     profile_link_html.allow_tags = True
+
+
+class Activity(models.Model):
+
+    actor = models.ForeignKey(Object, related_name="activities_with_actor", null=True)
+    object = models.ForeignKey(Object, related_name="activities_with_object", null=True)
+    target = models.ForeignKey(Object, related_name="activities_with_target", null=True)
+    source = models.ForeignKey(Object, related_name="activities_with_source", null=True)
+    actor_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_actor", null=True)
+    object_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_object", null=True)
+    target_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_target", null=True)
+    source_bundle = models.ForeignKey(ObjectBundle, related_name="activities_with_source", null=True)
+    source_account = models.ForeignKey(Account, related_name="activities", null=True)
+    source_person = models.ForeignKey(Person, related_name="activities", null=True)
+    verbs = models.ManyToManyField(TypeURI, related_name="activities_with_verb")
+    occurred_time = models.DateTimeField()
+
+    def __unicode__(self):
+        return str(self.id)
+
+    @property
+    def verb_uris(self):
+        return map(lambda v : v.uri, self.verbs.all())
+
+    class Meta:
+        verbose_name_plural = 'activities'
 
 
 class PolledURL(models.Model):

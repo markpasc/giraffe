@@ -4,15 +4,15 @@ from giraffe import models
 
 class ObjectAdmin(admin.ModelAdmin):
     date_hierarchy = "published_time"
-    list_display = [ "foreign_id", "title", "permalink_url", "published_time", "bundle" ]
+    list_display = [ "foreign_id", "display_name", "permalink_url", "published_time", "bundle" ]
     list_filter = [ "object_types" ]
     raw_id_fields = [ "bundle" ]
-    search_fields = [ "title" ]
+    search_fields = [ "display_name" ]
 
 class ActivityAdmin(admin.ModelAdmin):
     date_hierarchy = "occurred_time"
-    list_display = [ "foreign_id", "actor", "object", "target", "occurred_time" ]
-    list_filter = [ "verbs" ]
+    list_display = [ "pk", "source_person", "object", "target", "occurred_time" ]
+    list_filter = [ "verbs", "source_person" ]
 
 class ObjectBundleAdmin(admin.ModelAdmin):
     list_display = [ "pk" ]
