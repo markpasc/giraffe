@@ -32,7 +32,10 @@ class YamlAccountHandler(AccountHandler):
         return self.template_with_account(self.profile_url, account)
 
     def activity_feed_urls_for_account(self, account):
-        return [self.template_with_account(x, account) for x in self.feeds]
+        if "feeds" in self.__dict__:
+            return [self.template_with_account(x, account) for x in self.feeds]
+        else:
+            return []
 
 
 yamlz = yaml.load(file(join(dirname(__file__), 'providers.yaml')))
