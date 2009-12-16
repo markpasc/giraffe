@@ -20,3 +20,39 @@
   profile_url: http://cliqset.com/user/%(username)s
   feeds:
     - http://cliqset.com/feed/atom?uid=%(username)s
+- provider: Vox
+  domains:
+    - vox.com
+  profile_url: http://%(username)s.vox.com/profile
+  feeds:
+    - http://%(username)s.vox.com/library/atom-full.xml
+- provider: del.icio.us
+  domains:
+    - del.icio.us
+  profile_url: http://delicious.com/%(username)s
+- provider: Flickr
+  domains:
+    - flickr.com
+  profile_url: http://www.flickr.com/people/%(username)s
+  feeds:
+    - http://api.flickr.com/services/feeds/photos_public.gne?id=%(user_id)s&lang=en-us&format=atom
+- provider: Digg
+  domains:
+    - digg.com
+  profile_url: http://digg.com/users/%(username)s/
+- provider: YouTube
+  domains:
+    - youtube.com
+  profile_url: http://youtube.com/user/%(username)s
+  feeds:
+    - http://gdata.youtube.com/feeds/api/users/%(username)s/favorites?v=2
+    - http://gdata.youtube.com/feeds/api/users/%(username)s/uploads?v=2
+- provider: Upcoming
+  domains:
+    - upcoming.yahoo.com
+  profile_url: http://upcoming.yahoo.com/user/%(user_id)s/
+- provider: Goodreads
+  domains:
+    - goodreads.com
+  profile_url: http://www.goodreads.com/user/show/%(user_id)s
+
