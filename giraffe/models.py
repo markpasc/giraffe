@@ -78,6 +78,8 @@ class Person(models.Model):
 
     # TODO: Do we want to foreign-key into django.contrib.auth?
     display_name = models.CharField(max_length=75)
+    is_site_owner = models.BooleanField()
+    friends = models.ManyToManyField("Person", related_name="friendofs", blank=True)
 
     def __unicode__(self):
         return self.display_name
