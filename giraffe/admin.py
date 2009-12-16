@@ -34,6 +34,9 @@ class AccountAdmin(admin.ModelAdmin):
 class ObjectToAccountAdmin(admin.ModelAdmin):
     list_display = [ "object", "account" ]
 
+class ActivityStreamAdmin(admin.ModelAdmin):
+    list_display = [ "pk", "key" ]
+
 admin.site.register(models.TypeURI, TypeURIAdmin)
 admin.site.register(models.ObjectBundle)
 admin.site.register(models.Object, ObjectAdmin)
@@ -42,6 +45,7 @@ admin.site.register(models.Person)
 admin.site.register(models.Account, AccountAdmin)
 admin.site.register(models.PolledURL, PolledURLAdmin)
 admin.site.register(models.ObjectToAccount, ObjectToAccountAdmin)
+admin.site.register(models.ActivityStream, ActivityStreamAdmin)
 
 
 

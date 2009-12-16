@@ -80,6 +80,8 @@ class Person(models.Model):
     display_name = models.CharField(max_length=75)
     is_site_owner = models.BooleanField()
     friends = models.ManyToManyField("Person", related_name="friendofs", blank=True)
+    personal_activity_stream = models.ForeignKey("ActivityStream", null=True, related_name="people_with_this_as_personal_activity_stream")
+    friends_activity_stream = models.ForeignKey("ActivityStream", null=True, related_name="people_with_this_as_friends_activity_stream")
 
     def __unicode__(self):
         return self.display_name
@@ -160,6 +162,21 @@ class Activity(models.Model):
 
     class Meta:
         verbose_name_plural = 'activities'
+
+
+class ActivityStream(models.Model):
+    key = models.CharField(max_length=25, null=True, db_index=True, blank=True, unique=True)
+
+    def save(self, **kwargs):
+        if not self.key:
+            self.key = None
+        super(ActivityStream, self).save(**kwargs)
+
+    def __unicode__(self):
+        if self.key is None:
+            return "Anon#%i" % self.pk
+        else:
+            return self.key
 
 
 class PolledURL(models.Model):
