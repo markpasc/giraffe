@@ -70,12 +70,27 @@ def feed_is_youtube_favorites(et, account):
     id_elem = et.getroot().findtext(atom.ATOM_ID)
     return id_elem.endswith("favorites")
 
+def fix_youtube_video_ids(et, account):
+    from giraffe import atom
+    feed_elem = et.getroot()
+    entry_elems = feed_elem.findall(atom.ATOM_ENTRY)
+
+    for entry_elem in entry_elems:
+        id_elem = entry_elem.find(atom.ATOM_ID)
+        media_group_elem = entry_elem.find("{http://search.yahoo.com/mrss/}group")
+        video_id_elem = media_group_elem.find("{http://gdata.youtube.com/schemas/2007}videoid")
+        canonical_id = "tag:youtube.com,2008:video:%s" % video_id_elem.text
+        id_elem.text = canonical_id
+
+    return et
+
 accounts.register_feed_mangler("youtube.com", accounts.chain_feed_manglers(
     accounts.conditional_feed_mangler(
         feed_is_youtube_favorites,
         accounts.verb_feed_mangler(activitystreams.type_uri("favorite")),
     ),
     accounts.object_type_feed_mangler(activitystreams.type_uri("video")),
+    fix_youtube_video_ids
 ))
 accounts.register_feed_mangler("livejournal.com", accounts.object_type_feed_mangler(activitystreams.type_uri("blog-entry")))
 
