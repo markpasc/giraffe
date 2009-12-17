@@ -7,7 +7,7 @@ from os.path import join, dirname
 
 import yaml
 
-from giraffe import accounts;
+from giraffe import accounts
 from giraffe.accounts import AccountHandler
 from giraffe import activitystreams
 
@@ -65,6 +65,17 @@ class TwitterAccountHandler(AccountHandler):
 
 AccountHandler.register(TwitterAccountHandler());
 
-accounts.register_feed_mangler("youtube.com", accounts.object_type_feed_mangler(activitystreams.type_uri("video")))
+def feed_is_youtube_favorites(et, account):
+    from giraffe import atom
+    id_elem = et.getroot().findtext(atom.ATOM_ID)
+    return id_elem.endswith("favorites")
+
+accounts.register_feed_mangler("youtube.com", accounts.chain_feed_manglers(
+    accounts.conditional_feed_mangler(
+        feed_is_youtube_favorites,
+        accounts.verb_feed_mangler(activitystreams.type_uri("favorite")),
+    ),
+    accounts.object_type_feed_mangler(activitystreams.type_uri("video")),
+))
 accounts.register_feed_mangler("livejournal.com", accounts.object_type_feed_mangler(activitystreams.type_uri("blog-entry")))
 

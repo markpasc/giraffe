@@ -50,8 +50,8 @@ def get_feed_mangler_for_domain(domain):
     if domain in mangler_for_domain:
         return mangler_for_domain[domain]
     else:
-        def dummy(feed):
-            return feed
+        def dummy(et, account):
+            return et
         return dummy
 
 DEFAULT_HANDLER = AccountHandler()
@@ -84,7 +84,7 @@ AccountHandler.register(WebsiteAccountHandler());
 
 def object_type_feed_mangler(*object_types):
 
-    def mangler(et):
+    def object_type_mangler(et, account):
         from giraffe import atom
         from xml.etree import ElementTree
 
@@ -103,6 +103,48 @@ def object_type_feed_mangler(*object_types):
 
         return et
 
+    return object_type_mangler
+
+
+def verb_feed_mangler(*verbs):
+
+    def verb_mangler(et, account):
+        from giraffe import atom
+        from xml.etree import ElementTree
+
+        feed_elem = et.getroot()
+        entry_elems = feed_elem.findall(atom.ATOM_ENTRY)
+
+        for entry_elem in entry_elems:
+            verb_elems = entry_elem.findall(atom.ACTIVITY_VERB)
+            if len(verb_elems) > 0:
+                continue
+
+            for type_uri in verbs:
+                verb_elem = ElementTree.Element(atom.ACTIVITY_VERB)
+                verb_elem.text = type_uri
+                entry_elem.append(verb_elem)
+
+                #ElementTree.dump(entry_elem)
+
+        return et
+
+    return verb_mangler
+
+
+def chain_feed_manglers(*manglers):
+    def mangler(et, account):
+        for sub_mangler in manglers:
+            et = sub_mangler(et, account)
+        return et
+
     return mangler
 
 
+def conditional_feed_mangler(condition, mangler):
+    def inner_mangler(et, account):
+        if condition(et, account):
+            et = mangler(et, account)
+        return et
+
+    return inner_mangler

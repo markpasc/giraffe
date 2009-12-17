@@ -339,7 +339,7 @@ def urlpoller_callback(account):
         from giraffe import accounts
         mangler = accounts.get_feed_mangler_for_domain(account.domain)
 
-        et = mangler(et)
+        et = mangler(et, account)
 
         activity_stream = AtomActivityStream(et)
 
