@@ -168,6 +168,12 @@ def atom_entry_to_real_object(elem):
     object.published_time = published_datetime
     object.permalink_url = permalink_url
 
+    # If this thing is actually an atom:feed then it'll probably
+    # be full of atom:entry elements that we don't actually want
+    # to save here, so let's remove them.
+    for sub_entry_elem in elem.findall(ATOM_ENTRY):
+        elem.remove(sub_entry_elem)
+
     object.data_format = "A"
     object.data = ElementTree.tostring(elem)
 
@@ -456,3 +462,72 @@ def _parse_date_w3cdtf(dateString):
     gmt = __extract_date(m) + __extract_time(m) + (0, 0, 0)
     if gmt[0] == 0: return
     return datetime.datetime.utcfromtimestamp(time.mktime(gmt) + __extract_tzd(m) - time.timezone)
+
+
+def render_feed_from_activity_list(activities, title=""):
+    feed_elem = ElementTree.Element(ATOM_FEED)
+    et = ElementTree.ElementTree(feed_elem)
+
+    title_elem = ElementTree.Element(ATOM_TITLE)
+    title_elem.text = title
+    feed_elem.append(title_elem)
+
+    for activity in sorted(activities, lambda a, b : cmp(b.occurred_time, a.occurred_time)):
+        activity_elem = ElementTree.Element(ATOM_ENTRY)
+
+        id_elem = ElementTree.Element(ATOM_ID)
+        id_elem.text = local_atom_id("activity", activity.id)
+        activity_elem.append(id_elem)
+
+        title_elem = ElementTree.Element(ATOM_TITLE)
+        # FIXME: Make this be a natural language activity sentence rather than the id
+        title_elem.text = local_atom_id("activity", activity.id)
+        activity_elem.append(title_elem)
+
+        for verb_uri_obj in activity.verbs.all():
+            verb_elem = ElementTree.Element(ACTIVITY_VERB)
+            verb_elem.text = verb_uri_obj.uri
+            activity_elem.append(verb_elem)
+
+        from giraffe import typehandler
+        object = activity.object
+        if object:
+            elem = typehandler.get_object_as_atom(object, element_name = ACTIVITY_OBJECT)
+            activity_elem.append(elem)
+        target = activity.target
+        if target:
+            elem = typehandler.get_object_as_atom(target, element_name = ACTIVITY_TARGET)
+            activity_elem.append(elem)
+        actor = activity.actor
+        if actor:
+            elem = typehandler.get_object_as_atom(actor, element_name = ACTIVITY_ACTOR)
+            activity_elem.append(elem)
+        source = activity.source
+        if actor:
+            elem = typehandler.get_object_as_atom(source, element_name = ATOM_SOURCE)
+            activity_elem.append(elem)
+
+        from datetime import tzinfo
+        # Why on earth isn't this built in??!?
+        class UTC(tzinfo):
+            def utcoffset(self, dt):
+                return ZERO
+            def tzname(self, dt):
+                return "UTC"
+            def dst(self, dt):
+                return ZERO
+
+        occurred_time = activity.occurred_time
+        occurred_time.replace(tzinfo= UTC())
+        published_elem = ElementTree.Element(ATOM_PUBLISHED)
+        published_elem.text = occurred_time.isoformat()
+        activity_elem.append(published_elem)
+
+        feed_elem.append(activity_elem)
+
+    return et
+
+
+def local_atom_id(type, id):
+    from django.conf import settings
+    return "tag:%s:%s:%s" % (settings.ATOM_ID_AUTHORITY, type, id)
