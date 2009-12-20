@@ -1,6 +1,7 @@
 
 handler_for_domain = {}
 mangler_for_domain = {}
+feed_urls_override_for_domain = {}
 
 DEFAULT_HANDLER = None
 
@@ -53,6 +54,17 @@ def get_feed_mangler_for_domain(domain):
         def dummy(et, account):
             return et
         return dummy
+
+def register_feed_urls_override(domain, callback):
+    # FIXME: Should detect if we get a domain collision between two overrides
+    print "Installing feed urls override for domain "+domain
+    feed_urls_override_for_domain[domain] = callback
+
+def get_feed_urls_override_for_domain(domain):
+    if domain in feed_urls_override_for_domain:
+        return feed_urls_override_for_domain[domain]
+    else:
+        return None
 
 DEFAULT_HANDLER = AccountHandler()
 
