@@ -18,7 +18,7 @@ def activity_stream_atom_feed(request, stream_key=None, title=""):
     from xml.etree import ElementTree
     et = atom.render_feed_from_activity_list(stream.activities.order_by('-occurred_time').all()[:25], title=title)
 
-    response["content-type"] = "application/xml"
+    response["content-type"] = "application/atom+xml"
     response.content = ElementTree.tostring(et.getroot())
 
     return response
