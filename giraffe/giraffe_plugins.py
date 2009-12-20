@@ -11,6 +11,10 @@ from giraffe import accounts
 from giraffe.accounts import AccountHandler
 from giraffe import activitystreams
 
+
+logging.debug("Loading the built-in plugins")
+
+
 class YamlAccountHandler(AccountHandler):
 
     def __init__(self, **kwargs):
@@ -94,3 +98,14 @@ accounts.register_feed_mangler("youtube.com", accounts.chain_feed_manglers(
 ))
 accounts.register_feed_mangler("livejournal.com", accounts.object_type_feed_mangler(activitystreams.type_uri("blog-entry")))
 
+def fix_flickr_links(et, account):
+    # TODO: Extract the photo URL out of the content and synthesize
+    # link rel="enclosure" and rel="preview" with appropriate width/height
+    # so that we can render thumbnails and larger images in the activity
+    # streams.
+    return et
+
+accounts.register_feed_mangler("flickr.com", accounts.chain_feed_manglers(
+    accounts.object_type_feed_mangler(activitystreams.type_uri("photo")),
+    fix_flickr_links
+))

@@ -1,4 +1,7 @@
 
+import logging
+
+
 plugins_initialized = False
 
 def init():
@@ -12,6 +15,8 @@ def init():
 
     global plugins_initialized
 
+    logging.debug("Loading plugins")
+
     if plugins_initialized:
         return
     
@@ -21,7 +26,8 @@ def init():
         modname = '.'.join((app, "giraffe_plugins"))
         try:
             __import__(modname)
-        except ImportError:
+            logging.debug("Loaded plugins from " + modname)
+        except ImportError as ex:
             # No giraffe plugins in this module. Oh well.
             continue
 

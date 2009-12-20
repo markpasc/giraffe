@@ -11,6 +11,7 @@ from giraffe import models
 
 ATOM_PREFIX = "{http://www.w3.org/2005/Atom}"
 ACTIVITY_PREFIX = "{http://activitystrea.ms/spec/1.0/}"
+MEDIA_PREFIX = "{http://purl.org/syndication/atommedia}"
 
 ATOM_FEED = ATOM_PREFIX + "feed"
 ATOM_ENTRY = ATOM_PREFIX + "entry"
@@ -30,6 +31,10 @@ ACTIVITY_VERB = ACTIVITY_PREFIX + "verb"
 ACTIVITY_TARGET = ACTIVITY_PREFIX + "target"
 ACTIVITY_ACTOR = ACTIVITY_PREFIX + "actor"
 POST_VERB = "http://activitystrea.ms/schema/1.0/post"
+MEDIA_WIDTH = MEDIA_PREFIX + "width"
+MEDIA_HEIGHT = MEDIA_PREFIX + "height"
+MEDIA_DURATION = MEDIA_PREFIX + "duration"
+MEDIA_DESCRIPTION = MEDIA_PREFIX + "description"
 
 def atomactivity_to_real_activity(atom_activity):
 
