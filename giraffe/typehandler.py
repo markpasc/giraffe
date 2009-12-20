@@ -210,6 +210,29 @@ class PersonTypeHandler(TypeHandler):
                 object_elem.append(link_elem)
 
 
+class SongTypeHandler(TypeHandler):
+
+    def populate_dict_from_atom(self, object_elem, object_dict):
+        mappings = {
+            'artistName': atom.ATOM_AUTHOR+"/"+atom.ATOM_NAME,
+            'artistUrl': atom.ATOM_AUTHOR+"/"+atom.ATOM_URI,
+        }
+        map_values_from_elem(object_dict, object_elem, mappings)
+
+    def populate_atom_from_dict(self, object_dict, object_elem):
+        if "artistName" in object_dict or "artistUrl" in object_dict:
+            author_elem = ElementTree.Element(atom.ATOM_AUTHOR)
+            if "artistName" in object_dict:
+                name_elem = ElementTree.Element(atom.ATOM_NAME)
+                name_elem.text = object_dict["artistName"]
+                author_elem.append(name_elem)
+            if "artistUrl" in object_dict:
+                uri_elem = ElementTree.Element(atom.ATOM_URI)
+                uri_elem.text = object_dict["artistUrl"]
+                author_elem.append(uri_elem)
+            object_elem.append(author_elem)
+
+
 class PhotoTypeHandler(TypeHandler):
 
     def populate_dict_from_atom(self, object_elem, object_dict):
@@ -235,4 +258,5 @@ register_object_type_handler(_tu("blog-entry"), ArticleTypeHandler())
 register_object_type_handler(_tu("note"), NoteTypeHandler())
 register_object_type_handler(_tu("person"), PersonTypeHandler())
 register_object_type_handler(_tu("photo"), PhotoTypeHandler())
+register_object_type_handler(_tu("song"), SongTypeHandler())
 
