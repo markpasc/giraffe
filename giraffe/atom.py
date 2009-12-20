@@ -46,10 +46,6 @@ def atomactivity_to_real_activity(atom_activity):
     target = atom_entry_to_real_object(atom_activity.target_elem)
     source = atom_entry_to_real_object(atom_activity.source_elem)
 
-    # An activity that doesn't have an actor or an object isn't interesting to us.
-    if actor is None or object is None:
-        return None
-
     actor_bundle = None
     object_bundle = None
     target_bundle = None
@@ -343,16 +339,21 @@ class AtomActivityStream:
 def urlpoller_callback(account):
     def callback(url, result):
         print "Got an activity feed update for "+str(account)+" at "+url
-        # "result" is a sufficiently file-like object that
-        # we can just pass it right into ElementTree as-is.
-        et = ElementTree.parse(result)
+        try:
+            # "result" is a sufficiently file-like object that
+            # we can just pass it right into ElementTree as-is.
+            et = ElementTree.parse(result)
 
-        from giraffe import accounts
-        mangler = accounts.get_feed_mangler_for_domain(account.domain)
+            from giraffe import accounts
+            mangler = accounts.get_feed_mangler_for_domain(account.domain)
 
-        et = mangler(et, account)
+            et = mangler(et, account)
 
-        activity_stream = AtomActivityStream(et)
+            activity_stream = AtomActivityStream(et)
+        except Exception, ex:
+            import logging
+            logging.error("Error processing feed "+url+": "+repr(ex))
+            return
 
         # FIXME: If activity_stream has a subject, create a link between
         # the account and the subject.
