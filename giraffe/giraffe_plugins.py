@@ -82,9 +82,10 @@ def fix_youtube_video_ids(et, account):
     for entry_elem in entry_elems:
         id_elem = entry_elem.find(atom.ATOM_ID)
         media_group_elem = entry_elem.find("{http://search.yahoo.com/mrss/}group")
-        video_id_elem = media_group_elem.find("{http://gdata.youtube.com/schemas/2007}videoid")
-        canonical_id = "tag:youtube.com,2008:video:%s" % video_id_elem.text
-        id_elem.text = canonical_id
+        if media_group_elem:
+            video_id_elem = media_group_elem.find("{http://gdata.youtube.com/schemas/2007}videoid")
+            canonical_id = "tag:youtube.com,2008:video:%s" % video_id_elem.text
+            id_elem.text = canonical_id
 
     return et
 
@@ -109,3 +110,7 @@ accounts.register_feed_mangler("flickr.com", accounts.chain_feed_manglers(
     accounts.object_type_feed_mangler(activitystreams.type_uri("photo")),
     fix_flickr_links
 ))
+
+from giraffe import cliqset_feedproxy_overrides
+cliqset_feedproxy_overrides.install_all()
+
