@@ -111,4 +111,7 @@
   profile_url: http://github.com/%(username)s
   feeds:
     - http://github.com/%(username)s.atom
-
+- provider: Hulu
+  domains:
+    - hulu.com
+  profile_url: http://www.hulu.com/profiles/%(username)s

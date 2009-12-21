@@ -26,6 +26,7 @@ overrides["youtube.com"] = make_username_override("youtubevideosposted", "youtub
 overrides["hulu.com"] = make_username_override("huluactivityposted")
 overrides["last.fm"] = make_username_override("lastfmsongsplayed", "lastfmsongsfavorited", "lastfmweblogsposted")
 overrides["deviantart.com"] = make_username_override("deviantartweblogsposted", "deviantartphotosposted", "deviantartphotosfavorited")
+overrides["hulu.com"] = make_username_override("huluactivityposted")
 
 
 def install_all():
