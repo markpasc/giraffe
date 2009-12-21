@@ -57,7 +57,6 @@ def get_feed_mangler_for_domain(domain):
 
 def register_feed_urls_override(domain, callback):
     # FIXME: Should detect if we get a domain collision between two overrides
-    print "Installing feed urls override for domain "+domain
     feed_urls_override_for_domain[domain] = callback
 
 def get_feed_urls_override_for_domain(domain):

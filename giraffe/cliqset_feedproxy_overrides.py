@@ -3,7 +3,6 @@ Installs feed URL overrides to make certain feeds get loaded via the CliqSet fee
 which turns generic feeds into activity streams feeds.
 """
 
-print "Loading cliqset feed url overrides"
 
 
 def make_username_override(*feed_keys):
@@ -30,7 +29,6 @@ overrides["deviantart.com"] = make_username_override("deviantartweblogsposted", 
 
 
 def install_all():
-    print "Installing cliqset feed URLs overrides"
     from giraffe.accounts import register_feed_urls_override
     for domain in overrides:
         register_feed_urls_override(domain, overrides[domain])
