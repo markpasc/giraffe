@@ -115,3 +115,9 @@
   domains:
     - hulu.com
   profile_url: http://www.hulu.com/profiles/%(username)s
+- provider: Windows Live
+  domains:
+    - profile.live.com
+  profile_url: http://cid-%(user_id)s.profile.live.com/
+  feeds:
+    - http://sup.live.com/whatsnew/rafeed.aspx?cid=%(user_id)s
