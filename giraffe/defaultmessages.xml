@@ -1,0 +1,111 @@
+
+<am:message-bundle xmlns:am="http://activitystrea.ms/messagebundles" lang="en-us">
+
+	<am:uri-alias prefix="http://activitystrea.ms/schema/1.0/" alias="as" />
+
+	<am:context verb="{as}post">
+		<am:message object-type="*">
+			{actor} posted {object}
+		</am:message>
+		<am:message object-type="{as}note">
+			{object}.content
+		</am:message>
+		<am:message object-type="{as}status">
+			{object}.content
+		</am:message>
+		<am:context target-type="*">
+			<am:message object-type="*">
+				{actor} posted {object} to {target}
+			</am:message>
+		</am:context>
+	</am:context>
+
+	<am:context verb="{as}favorite">
+		<am:message object-type="*">
+			{actor} marked {object} as a favorite
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}save">
+		<am:message object-type="*">
+			{actor} saved {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}share">
+		<am:message object-type="*">
+			{actor} shared {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}play">
+		<am:message object-type="*">
+			{actor} played {object}
+		</am:message>
+		<am:message object-type="{as}video">
+			{actor} watched {object}
+		</am:message>
+		<am:message object-type="{as}song">
+			{actor} listened to {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}follow">
+		<am:message object-type="*">
+			{actor} is now following {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}make-friend">
+		<am:message object-type="*">
+			{actor} is now friends with {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}join">
+		<am:message object-type="*">
+			{actor} joined {object}
+		</am:message>
+		<am:message object-type="{as}group">
+			{actor} is now a member of {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}tag">
+		<am:message object-type="*">
+			{actor} tagged {object}
+		</am:message>
+		<am:message object-type="*" target-type="*">
+			{actor} tagged {object} in {target}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}rsvp-yes">
+		<am:message object-type="*">
+			{actor} gave a positive RSVP for {object}
+		</am:message>
+		<am:message object-type="{as}event">
+			{actor} plans to attend {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}rsvp-no">
+		<am:message object-type="*">
+			{actor} gave a negative RSVP for {object}
+		</am:message>
+		<am:message object-type="{as}event">
+			{actor} does not plan to attend {object}
+		</am:message>
+	</am:context>
+
+	<am:context verb="{as}rsvp-maybe">
+		<am:message object-type="*">
+			{actor} gave a possible RSVP for {object}
+		</am:message>
+		<am:message object-type="{as}event">
+			{actor} might attend {object}
+		</am:message>
+	</am:context>
+
+</am:message-bundle>
+
