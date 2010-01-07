@@ -55,4 +55,73 @@
   domains:
     - goodreads.com
   profile_url: http://www.goodreads.com/user/show/%(user_id)s
-
+- provider: Tumblr
+  domains:
+    - tumblr.com
+  profile_url: http://%(username)s.tumblr.com/
+- provider: MySpace
+  domains:
+    - myspace.com
+  profile_url: http://myspace.com/%(username)s
+- provider: Last.fm
+  domains:
+    - last.fm
+  profile_url: http://www.last.fm/user/%(username)s
+- provider: FriendFeed
+  domains:
+    - friendfeed.com
+  profile_url: http://friendfeed.com/%(username)s
+- provider: Dopplr
+  domains:
+    - dopplr.com
+  profile_url: http://www.dopplr.com/traveller/%(username)s
+- provider: Disqus
+  domains:
+    - disqus.com
+  profile_url: http://disqus.com/%(username)s/
+- provider: Advogato
+  domains:
+    - advogato.org
+  profile_url: http://advogato.org/person/%(username)s/
+- provider: ohloh
+  domains:
+    - ohloh.net
+  profile_url: https://www.ohloh.net/accounts/%(username)s
+- provider: Yahoo!
+  domains:
+    - yahoo.com
+  profile_url: http://profiles.yahoo.com/u/%(user_id)s
+- provider: Identi.ca
+  domains:
+    - identi.ca
+  profile_url: http://identi.ca/%(username)s
+  feeds:
+    - http://identi.ca/api/statuses/user_timeline/%(username)s.atom
+- provider: ClaimID
+  domains:
+    - claimid.com
+  profile_url: http://claimid.com/%(username)s
+- provider: BrightKite
+  domains:
+    - brightkite.com
+  profile_url: http://brightkite.com/people/%(username)s
+- provider: GitHub
+  domains:
+    - github.com
+  profile_url: http://github.com/%(username)s
+  feeds:
+    - http://github.com/%(username)s.atom
+- provider: Hulu
+  domains:
+    - hulu.com
+  profile_url: http://www.hulu.com/profiles/%(username)s
+- provider: Windows Live
+  domains:
+    - profile.live.com
+  profile_url: http://cid-%(user_id)s.profile.live.com/
+  feeds:
+    - http://sup.live.com/whatsnew/rafeed.aspx?cid=%(user_id)s
+- provider: LinkedIn
+  domains:
+    - linkedin.com
+  profile_url: http://www.linkedin.com/in/%(username)s

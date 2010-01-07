@@ -17,9 +17,17 @@ from giraffe import atom
 def init():
     accounts = models.Account.objects.all()
 
+    from giraffe import accounts as accounts_module
+
     for account in accounts:
-        feed_urls = account.activity_feed_urls()
+        feed_urls_override = accounts_module.get_feed_urls_override_for_domain(account.domain)
+        if feed_urls_override:
+            feed_urls = feed_urls_override(account)
+        else:
+            feed_urls = account.activity_feed_urls()
+            
         callback = atom.urlpoller_callback(account)
+        
         for feed_url in feed_urls:
             urlpoller.register_url(feed_url, callback)
 
