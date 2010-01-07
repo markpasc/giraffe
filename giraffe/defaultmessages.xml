@@ -8,10 +8,10 @@
 			{actor} posted {object}
 		</am:message>
 		<am:message object-type="{as}note">
-			{object}.content
+			{object.content}
 		</am:message>
 		<am:message object-type="{as}status">
-			{object}.content
+			{object.content}
 		</am:message>
 		<am:context target-type="*">
 			<am:message object-type="*">

@@ -3,6 +3,7 @@ Functionality for rendering natural language sentences that describe activities.
 """
 
 
+from giraffe import typeuriselector
 from xml.etree import ElementTree
 import string
 
@@ -21,10 +22,12 @@ class MessageSet:
         self.messages = {}
 
     def import_message_bundle(self, et):
-        _import_messages_from_bundle(et, self.messages)
+        _import_messages_from_bundle(et, self)
 
 
-def _import_messages_from_bundle(et, messages):
+def _import_messages_from_bundle(et, message_set):
+
+    messages = message_set.messages
 
     # First we need to figure out what aliases we're using for this bundle
     aliases = {}
@@ -106,4 +109,37 @@ def _expand_uri(uri, aliases):
         return aliases[alias]+suffix
     else:
         return uri
+
+
+def _make_selection_tuple_iterator_for_activity(message_set, activity):
+
+    verbs = typeuriselector.sort_types_by_derivedness(activity.verb_uris)
+    verbs.append("*")
+    object_types = [ "*" ]
+    target_types = [ None ]
+    actor_types = [ "*" ]
+    source_types = [ None ]
+
+    if activity.object is not None:
+        object_types = typeuriselector.sort_types_by_derivedness(activity.object.object_type_uris)
+        object_types.append("*")
+    if activity.target is not None:
+        target_types = typeuriselector.sort_types_by_derivedness(activity.target.object_type_uris)
+        target_types.append("*")
+        source_types.append(None)
+    if activity.actor is not None:
+        actor_types = typeuriselector.sort_types_by_derivedness(activity.actor.object_type_uris)
+        actor_types.append("*")
+    if activity.source is not None:
+        source_types = typeuriselector.sort_types_by_derivedness(activity.source.object_type_uris)
+        source_types.append("*")
+        source_types.append(None)
+
+    for actor_type in actor_types:
+        for source_type in source_types:
+            for target_type in target_types:
+                for verb in verbs:
+                    for object_type in object_types:
+                        yield(verb, actor_type, object_type, target_type, source_type)
+
 
