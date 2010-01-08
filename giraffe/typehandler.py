@@ -13,6 +13,9 @@ DEFAULT_HANDLER = None
 
 
 def get_object_as_atom(object, element_name = None):
+    if object is None:
+        return None
+    
     if object.data_format == "A":
         elem = ElementTree.XML(object.data)
         if element_name is not None:
@@ -55,6 +58,9 @@ def get_object_as_atom(object, element_name = None):
         
 
 def get_object_as_dict(object):
+    if object is None:
+        return None
+
     if object.data_format == "J":
         dict = json.loads(object.data)
         return dict

@@ -4,8 +4,11 @@ Functionality for rendering natural language sentences that describe activities.
 
 
 from giraffe import typeuriselector
+from giraffe import typehandler
 from xml.etree import ElementTree
+from xml.sax.saxutils import escape, quoteattr
 import string
+import re
 
 
 MB_PREFIX = "{http://activitystrea.ms/messagebundles}"
@@ -16,6 +19,10 @@ MB_MESSAGE = MB_PREFIX + "message";
 
 MB_SELECTION_ATTRS = ("verb", "actor-type", "object-type", "target-type", "source-type")
 
+
+VARIABLE_REGEX = re.compile(r'\{(\*?)(\w+(?:\.\w+)*)\}')
+
+
 class MessageSet:
 
     def __init__(self):
@@ -23,6 +30,102 @@ class MessageSet:
 
     def import_message_bundle(self, et):
         _import_messages_from_bundle(et, self)
+
+    @staticmethod
+    def with_defaults(cls):
+        from os.path import join, dirname
+        ret = cls()
+        defaults_file = file(join(dirname(__file__), 'defaultmessages.xml'))
+        ret.import_message_bundle(ElementTree.parse(defaults_file))
+        return ret
+
+    def get_plain_message_for_activity(self, activity):
+        def expander(value):
+            return repr(value)
+        return self.get_message_for_activity(activity, expander)
+
+    def get_html_message_for_activity(self, activity):
+        def expander(value, is_html):
+
+            permalinkUrl = None
+
+            parts = []
+
+            if isinstance(value, dict):
+                if "permalinkUrl" in value:
+                    permalinkUrl = value["permalinkUrl"]
+
+                if "displayName" in value and value["displayName"]:
+                    value = value["displayName"]
+                else:
+                    value = "(no title)"
+
+            if permalinkUrl:
+                parts.append("<a href=%s>" % quoteattr(permalinkUrl))
+
+            if is_html:
+                parts.append(value)
+            else:
+                parts.append(escape(value))
+
+            if permalinkUrl:
+                parts.append("</a>")
+
+            return ''.join(parts)
+
+        return self.get_message_for_activity(activity, expander)
+
+    def get_message_for_activity(self, activity, expander):
+
+        for selector in _make_selection_tuple_iterator_for_activity(self, activity):
+            if selector in self.messages:
+                message_template = self.messages[selector]
+
+                vars = {}
+                vars["target"] = typehandler.get_object_as_dict(activity.target)
+                vars["object"] = typehandler.get_object_as_dict(activity.object)
+                vars["actor"] = typehandler.get_object_as_dict(activity.actor)
+                vars["source"] = typehandler.get_object_as_dict(activity.source)
+
+                # We track if any of the variables fail to expand, and if
+                # so move on to the next message to avoid returning an
+                # incomplete message.
+                # We use a list here to trick python's stupid semi-lexical-scoping
+                # into letting us write a value out here.
+                missed = [False]
+
+                def replace(matchobj):
+
+                    if matchobj.group(1) == "*":
+                        is_html = True
+                    else:
+                        is_html = False
+
+                    current = vars
+                    for chunk in matchobj.group(2).split("."):
+                        try:
+                            current = current[chunk]
+                        except KeyError:
+                            pass
+                        except TypeError:
+                            pass
+
+                        if current is None:
+                            missed[0] = True
+                            return ""
+
+                    return expander(current, is_html=is_html)
+
+                result = VARIABLE_REGEX.sub(replace, message_template)
+
+                if not missed[0]:
+                    return result
+
+        # If we fell out here then there was no matching message,
+        # either because the verbs and object types aren't known
+        # or because the message template tried to substitute
+        # a variable that's not available for this activity.
+        return None
 
 
 def _import_messages_from_bundle(et, message_set):
