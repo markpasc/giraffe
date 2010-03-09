@@ -114,7 +114,12 @@ class Command(BaseCommand):
     help = "Imports a person's accounts using the Google Social Graph API."
     args = "<uri> <userid>"
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
+
+        verbosity = int(options.get('verbosity', 0))
+        if verbosity == 2:
+            logging.basicConfig(level=logging.DEBUG)
+
         try:
             uri, person_pk = args
         except ValueError:
