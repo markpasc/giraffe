@@ -2,13 +2,12 @@
 Functionality for rendering natural language sentences that describe activities.
 """
 
+import re
+from xml.etree import ElementTree
+from xml.sax.saxutils import escape, quoteattr
 
 from giraffe import typeuriselector
 from giraffe import typehandler
-from xml.etree import ElementTree
-from xml.sax.saxutils import escape, quoteattr
-import string
-import re
 
 
 MB_PREFIX = "{http://activitystrea.ms/messagebundles}"
@@ -18,7 +17,6 @@ MB_CONTEXT = MB_PREFIX + "context";
 MB_MESSAGE = MB_PREFIX + "message";
 
 MB_SELECTION_ATTRS = ("verb", "actor-type", "object-type", "target-type", "source-type")
-
 
 VARIABLE_REGEX = re.compile(r'\{(\*?)(\w+(?:\.\w+)*)\}')
 
@@ -182,7 +180,7 @@ def _import_messages_from_elem(elem, messages, context_stack, aliases):
         context_frame = {}
         previous_frame = context_stack[-1]
 
-        message = string.strip(elem.text)
+        message = elem.text.strip()
 
         for attr in MB_SELECTION_ATTRS:
             default = previous_frame[attr]
