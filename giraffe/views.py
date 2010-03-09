@@ -1,22 +1,20 @@
-
+from xml.etree import ElementTree
 
 from django.http import HttpResponse
+import simplejson as json
 
-
-from giraffe import models
+from giraffe import atom, models
 
 
 def activity_stream_atom_feed(request, stream_key=None, title=""):
     stream = models.ActivityStream.objects.get(key=stream_key)
-
     if not stream:
         raise LookupError("There is no stream with the key "+stream_key)
 
     response = HttpResponse()
 
-    from giraffe import atom
-    from xml.etree import ElementTree
-    et = atom.render_feed_from_activity_list(stream.activities.order_by('-occurred_time').all()[:25], title=title)
+    activities = stream.activities.order_by('-occurred_time').all()[:25]
+    et = atom.render_feed_from_activity_list(activities, title=title)
 
     response["content-type"] = "application/atom+xml"
     response.content = ElementTree.tostring(et.getroot())
@@ -26,7 +24,6 @@ def activity_stream_atom_feed(request, stream_key=None, title=""):
 
 def activity_stream_json(request, stream_key=None, title=""):
     stream = models.ActivityStream.objects.get(key=stream_key)
-
     if not stream:
         raise LookupError("There is no stream with the key "+stream_key)
 
@@ -67,9 +64,6 @@ def activity_stream_json(request, stream_key=None, title=""):
 
         json_activities.append(json_activity)
 
-    import simplejson as json
     response.content = json.dumps(ret)
 
     return response
-
-
