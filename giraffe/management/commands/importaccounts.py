@@ -3,6 +3,7 @@ import logging
 import sys
 import urlparse
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from giraffe.models import Account, Person
@@ -115,10 +116,7 @@ class Command(BaseCommand):
     args = "<uri> <userid>"
 
     def handle(self, *args, **options):
-
-        verbosity = int(options.get('verbosity', 0))
-        if verbosity == 2:
-            logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG if settings.DEBUG else logging.WARNING)
 
         try:
             uri, person_pk = args
