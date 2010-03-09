@@ -1,13 +1,38 @@
+from os.path import dirname, join
 from xml.etree import ElementTree
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 import simplejson as json
 
-from giraffe import atom, models
+from giraffe.activitymessages import MessageSet
+from giraffe import atom
+from giraffe.models import ActivityStream
+
+
+mset = MessageSet.with_defaults()
+
+
+def activity_stream(request, stream_key=None, template_name='giraffe/stream.html'):
+    stream = ActivityStream.objects.get(key=stream_key)
+    if not stream:
+        raise Http404
+
+    # TODO: page
+    activities = stream.activities.all()[:25]
+
+    for activity in activities:
+        activity.html = mset.get_html_message_for_activity(activity)
+
+    return render_to_response(template_name, {
+        'stream': stream,
+        'activities': activities,
+    }, context_instance=RequestContext(request))
 
 
 def activity_stream_atom_feed(request, stream_key=None, title=""):
-    stream = models.ActivityStream.objects.get(key=stream_key)
+    stream = ActivityStream.objects.get(key=stream_key)
     if not stream:
         raise LookupError("There is no stream with the key "+stream_key)
 
@@ -23,7 +48,7 @@ def activity_stream_atom_feed(request, stream_key=None, title=""):
 
 
 def activity_stream_json(request, stream_key=None, title=""):
-    stream = models.ActivityStream.objects.get(key=stream_key)
+    stream = ActivityStream.objects.get(key=stream_key)
     if not stream:
         raise LookupError("There is no stream with the key "+stream_key)
 

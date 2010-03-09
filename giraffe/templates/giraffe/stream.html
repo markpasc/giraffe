@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+</head><body>
+
+    {% for act in activities %}
+        {% if forloop.first %}<ul>{% endif %}
+        <li>{{ act.html }}</li>
+        {% if forloop.last %}</ul>{% endif %}
+    {% empty %}
+        <p>no activities in stream</p>
+    {% endfor %}
+
+</body></html>
