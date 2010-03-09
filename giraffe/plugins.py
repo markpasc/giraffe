@@ -1,8 +1,8 @@
-
 import logging
 
 
 plugins_initialized = False
+
 
 def init():
     """
@@ -27,9 +27,8 @@ def init():
         try:
             __import__(modname)
             logging.debug("Loaded plugins from " + modname)
-        except ImportError as ex:
+        except ImportError, exc:
             # No giraffe plugins in this module. Oh well.
             continue
 
     plugins_initialized = True
-
