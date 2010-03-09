@@ -1,15 +1,17 @@
-
 """
 Functions for interacting with Google's Social Graph API.
 """
 
 import urllib2
 import urllib
+
 import simplejson as json
+
 
 SGAPI_LOOKUP = "http://socialgraph.apis.google.com/lookup"
 
-class SocialGraphNode:
+
+class SocialGraphNode(object):
 
     nodes = None
     uri = None
@@ -33,9 +35,11 @@ class SocialGraphNode:
     def __unicode__(self):
         return self.uri
 
+
 def lookup_node(uri):
     nodes = lookup_nodes([uri])
     return nodes[uri]
+
 
 def lookup_nodes(uris):
     ret = {}
@@ -60,4 +64,3 @@ def lookup_nodes(uris):
         ret[uri] = SocialGraphNode(nodes, canon_uri)
 
     return ret
-

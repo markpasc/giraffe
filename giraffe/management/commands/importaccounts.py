@@ -1,27 +1,32 @@
+import cgi
+import logging
+import sys
+import urlparse
+
+from django.core.management.base import BaseCommand, CommandError
+
+from giraffe.models import Account, Person
+from giraffe import socialgraphapi
+
 
 # This is just a temporary development tool to make it easier
 # to seed the accounts table with real data.
 # It's not written very well.
 
-import cgi
-import urlparse
 
-import django.core.management.base
-
-from giraffe import models
-from giraffe import socialgraphapi
+log = logging.getLogger(__name__)
 
 
 def import_node(node, person):
     account = uri_to_account(node.uri)
 
-    print "processing "+node.uri
+    log.debug("processing %r", node.uri)
 
     account.person = person
 
     dupe_account = existing_account(account)
     if dupe_account is not None:
-        print "already have it!"
+        log.debug("already have %r!", node.uri)
         return dupe_account
 
     attributes = node.attributes()
@@ -51,20 +56,21 @@ def import_node(node, person):
 
     return account
 
+
 def existing_account(account):
     existing_accounts = []
 
     # Do we already have an account for this?
     if account.username != "":
-        print "looking for an account with domain %s, username %s" % (account.domain, account.username)
+        log.debug("looking for an account with domain %s, username %s", account.domain, account.username)
         try:
-            existing_accounts = models.Account.objects.filter(domain = account.domain, username = account.username, person = account.person)
+            existing_accounts = Account.objects.filter(domain = account.domain, username = account.username, person = account.person)
         except:
             pass
     elif account.user_id != "":
-        print "looking for an account with domain %s, user_id %s" % (account.domain, account.user_id)
+        log.debug("looking for an account with domain %s, user_id %s", account.domain, account.user_id)
         try:
-            existing_accounts = models.Account.objects.filter(domain = account.domain, user_id = account.user_id, person = account.person)
+            existing_accounts = Account.objects.filter(domain = account.domain, user_id = account.user_id, person = account.person)
         except:
             pass
 
@@ -73,8 +79,9 @@ def existing_account(account):
     else:
         return None
 
+
 def uri_to_account(uri):
-    account = models.Account()
+    account = Account()
 
     if uri.startswith("sgn:"):
         # urlparse parses sgn: URIs wrong, so we trick
@@ -101,15 +108,23 @@ def uri_to_account(uri):
 
     return account
 
-class Command(django.core.management.base.BaseCommand):
-    def handle(self, *args, **kwargs):
-        uri = args[0]
-        person_pk = args[1]
 
-        person = models.Person.objects.filter(pk = person_pk)[0]
+class Command(BaseCommand):
+
+    help = "Imports a person's accounts using the Google Social Graph API."
+    args = "<uri> <userid>"
+
+    def handle(self, *args, **kwargs):
+        try:
+            uri, person_pk = args
+        except ValueError:
+            raise CommandError("Both URI and user ID arguments are required")
+
+        try:
+            person = Person.objects.get(pk=person_pk)
+        except Person.DoesNotExist:
+            raise CommandError("No user with ID %r seems to exist" % person_pk)
 
         node = socialgraphapi.lookup_node(uri)
 
         import_node(node, person)
-
-
