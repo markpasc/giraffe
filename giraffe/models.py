@@ -15,12 +15,11 @@ class TypeURI(models.Model):
 
     @classmethod
     def get(cls, uri):
-
         # Does the thing already exist?
-        objs = cls.objects.filter(uri = uri)
-
-        if len(objs) > 0:
-            return objs[0]
+        try:
+            return cls.objects.get(uri=uri)
+        except cls.DoesNotExist:
+            pass
 
         # Otherwise, we need to create it.
         try:
@@ -67,7 +66,7 @@ class Object(models.Model):
 
     @property
     def object_type_uris(self):
-        return map(lambda ot : ot.uri, self.object_types.all())
+        return [ot.uri for ot in self.object_types.all()]
 
     @classmethod
     def by_foreign_id(cls, id):
@@ -159,7 +158,7 @@ class Activity(models.Model):
 
     @property
     def verb_uris(self):
-        return map(lambda v : v.uri, self.verbs.all())
+        return [v.uri for v in self.verbs.all()]
 
     class Meta:
         verbose_name_plural = 'activities'

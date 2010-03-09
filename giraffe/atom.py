@@ -2,12 +2,13 @@
 Functionality that deals with Atom feeds containing activities and objects.
 """
 
-import time
 import datetime
 import re
-
+import time
 from xml.etree import ElementTree
-from giraffe import models
+
+from giraffe.models import Activity, TypeURI, Object, ObjectBundle
+
 
 ATOM_PREFIX = "{http://www.w3.org/2005/Atom}"
 ACTIVITY_PREFIX = "{http://activitystrea.ms/spec/1.0/}"
@@ -39,7 +40,7 @@ MEDIA_DESCRIPTION = MEDIA_PREFIX + "description"
 def atomactivity_to_real_activity(atom_activity):
 
     # Turn our verb URI strings into TypeURI objects
-    verb_objs = map(lambda uri : models.TypeURI.get(uri), atom_activity.verbs)
+    verb_objs = [TypeURI.get(uri) for uri in atom_activity.verbs]
 
     actor = atom_entry_to_real_object(atom_activity.actor_elem)
     object = atom_entry_to_real_object(atom_activity.object_elem)
@@ -61,7 +62,7 @@ def atomactivity_to_real_activity(atom_activity):
         source_bundle = source.bundle
 
     # Do we already have this activity in our database?
-    matching_activities = models.Activity.objects.filter(
+    matching_activities = Activity.objects.filter(
         actor_bundle=actor_bundle,
         object_bundle=object_bundle,
         target_bundle=target_bundle,
@@ -78,7 +79,7 @@ def atomactivity_to_real_activity(atom_activity):
             return activity
 
     if activity is None:
-        activity = models.Activity()
+        activity = Activity()
 
     activity.actor = actor
     activity.object = object
@@ -129,13 +130,13 @@ def atom_entry_to_real_object(elem):
     # Do we already have this object?
     object_bundle = None
     try:
-        object = models.Object.by_foreign_id(id)
-    except models.Object.DoesNotExist:
-        object = models.Object()
-        object_bundle = models.ObjectBundle()
+        object = Object.by_foreign_id(id)
+    except Object.DoesNotExist:
+        object = Object()
+        object_bundle = ObjectBundle()
 
-    object_types = map(lambda elem : elem.text, elem.findall(ACTIVITY_OBJECT_TYPE))
-    object_type_objs = map(lambda uri : models.TypeURI.get(uri), object_types)
+    object_types = [elem.text for elem in elem.findall(ACTIVITY_OBJECT_TYPE)]
+    object_type_objs = [TypeURI.get(uri) for uri in object_types]
 
     title_elem = elem.find(ATOM_TITLE)
     if title_elem is None:
@@ -240,7 +241,7 @@ class AtomActivityStream:
        feed_subject_elem = self.subject_elem
        feed_elem = self.feed_elem
  
-       verbs = map(lambda elem : elem.text, entry_elem.findall(ACTIVITY_VERB))
+       verbs = [elem.text for elem in entry_elem.findall(ACTIVITY_VERB)]
  
        if (len(verbs) == 0): verbs = [ POST_VERB ]
  

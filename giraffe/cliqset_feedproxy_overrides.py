@@ -8,14 +8,14 @@ which turns generic feeds into activity streams feeds.
 def make_username_override(*feed_keys):
     def cb(account):
         username = account.username
-        return map(lambda k : "http://api.cliqset.com/feed?svcuser=%s&feedid=%s" % (username, k), feed_keys)
+        return ["http://api.cliqset.com/feed?svcuser=%s&feedid=%s" % (username, k) for k in feed_keys]
     return cb
 
 
 def make_userid_override(*feed_keys):
     def cb(account):
         user_id = account.user_id
-        return map(lambda k : "http://api.cliqset.com/feed?svcuser=%s&feedid=%s" % (user_id, k), feed_keys)
+        return ["http://api.cliqset.com/feed?svcuser=%s&feedid=%s" % (user_id, k) for k in feed_keys]
     return cb
 
 

@@ -2,6 +2,7 @@
 Functionality for rendering natural language sentences that describe activities.
 """
 
+from os.path import join, dirname
 import re
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape, quoteattr
@@ -21,7 +22,7 @@ MB_SELECTION_ATTRS = ("verb", "actor-type", "object-type", "target-type", "sourc
 VARIABLE_REGEX = re.compile(r'\{(\*?)(\w+(?:\.\w+)*)\}')
 
 
-class MessageSet:
+class MessageSet(object):
 
     def __init__(self):
         self.messages = {}
@@ -29,9 +30,8 @@ class MessageSet:
     def import_message_bundle(self, et):
         _import_messages_from_bundle(et, self)
 
-    @staticmethod
+    @classmethod
     def with_defaults(cls):
-        from os.path import join, dirname
         ret = cls()
         defaults_file = file(join(dirname(__file__), 'defaultmessages.xml'))
         ret.import_message_bundle(ElementTree.parse(defaults_file))
@@ -194,7 +194,7 @@ def _import_messages_from_elem(elem, messages, context_stack, aliases):
                     context_frame[attr] = "*"
 
         c = context_frame
-        selector_tuple = tuple(map(lambda attr : context_frame[attr], MB_SELECTION_ATTRS))
+        selector_tuple = tuple(context_frame[attr] for attr in MB_SELECTION_ATTRS)
 
         messages[selector_tuple] = message
 

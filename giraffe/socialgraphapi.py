@@ -30,7 +30,7 @@ class SocialGraphNode(object):
         return self.json_obj()["attributes"]
 
     def claimed_nodes(self):
-        return map(lambda uri : SocialGraphNode(self.nodes, uri), self.json_obj()["claimed_nodes"])
+        return [SocialGraphNode(self.nodes, uri) for uri in self.json_obj()["claimed_nodes"]]
 
     def __unicode__(self):
         return self.uri

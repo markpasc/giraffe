@@ -1,8 +1,7 @@
-
 from xml.etree import ElementTree
-import json
 
-from giraffe import models
+import simplejson as json
+
 from giraffe import atom
 from giraffe import activitystreams
 
