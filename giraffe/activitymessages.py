@@ -2,6 +2,7 @@
 Functionality for rendering natural language sentences that describe activities.
 """
 
+import logging
 from os.path import join, dirname
 import re
 from xml.etree import ElementTree
@@ -10,6 +11,8 @@ from xml.sax.saxutils import escape, quoteattr
 from giraffe import typeuriselector
 from giraffe import typehandler
 
+
+log = logging.getLogger(__name__)
 
 MB_PREFIX = "{http://activitystrea.ms/messagebundles}"
 MB_MESSAGE_BUNDLE = MB_PREFIX + "message-bundle";
@@ -22,10 +25,52 @@ MB_SELECTION_ATTRS = ("verb", "actor-type", "object-type", "target-type", "sourc
 VARIABLE_REGEX = re.compile(r'\{(\*?)(\w+(?:\.\w+)*)\}')
 
 
+class _ANY(object):
+
+    def __new__(cls):
+        try:
+            return cls._instance
+        except AttributeError:
+            cls._instance = object.__new__(cls)
+            return cls._instance
+
+    def __repr__(self):
+        return 'ANY'
+
+ANY = _ANY()
+
+
 class MessageSet(object):
+
+    """A set of messages for displaying activities.
+
+    The `MessageSet` stores a suite of activity messages, mapped based on which component URIs they apply to. For
+    instance, a message may be about ``tag:foo`` actors and ``tag:bar`` objects; the `MessageSet` allows you to retrieve
+    that message when you ask for messages about ``tag:foo`` actors and ``tag:bar-bar`` objects (which happens to be a
+    derived type of ``tag:bar``).
+
+    It provides:
+
+    * Message mapping based on verb, actor, object, target, source URIs
+    * Smart handling of derived types and missing/default criteria
+    * Loading message sets from activity message XML documents
+
+    """
 
     def __init__(self):
         self.messages = {}
+
+    def add_message(self, message, verb=ANY, actor=ANY, object=ANY, target=ANY, source=ANY):
+        """Adds the message `message` to the set, to match when looking for the given criteria.
+
+        The criteria (`verb`, `actor`, `object`, `target`, and `source`) may be individual URIs or ``None``. A criterion
+        of ``None`` means the message should only be used if that selector is missing from the activity. The default
+        value for the criteria is `giraffe.activitymessages.ANY`, meaning the message is a default that applies
+        regardless of what type URI is present for that criterion.
+
+        """
+        parts = (verb, actor, object, target, source)
+        self.messages[parts] = message
 
     def import_message_bundle(self, et):
         _import_messages_from_bundle(et, self)
@@ -72,6 +117,49 @@ class MessageSet(object):
             return ''.join(parts)
 
         return self.get_message_for_activity(activity, expander)
+
+    def get_message(self, verb=None, actor=None, object=None, target=None, source=None):
+        """Returns the message that best matches the given URIs.
+
+        The object criteria (`actor`, `object`, `target`, and `source`) should be:
+
+        * an individual URI that the message must match
+        * a tuple of URIs, ordered from most derived to least derived
+        * ``None``, if that criterion is not present in the activity
+
+        The returned message will be the message in the set with the most specific matching URI for each criterion, or a
+        default message if no URIs matched. The default value for each criterion is ``None``.
+
+        If no matching message is found at all, this method returns ``None``. (If you register your own default message
+        with no type criteria at all, you will always match at least that message.)
+
+        """
+        # TODO: could use itertools.product for this in 2.6. OH WELL
+        def selection_tuples(verb_types, actor_types, object_types, target_types, source_types):
+            # TODO: If each combination of criteria is a space on a checkerboard, searching this way means we're
+            # marching down each row, then if there's no match starting over at the top of the next file. To match best,
+            # shouldn't we want to walk down the top file, then compromise on each row as evenly as possible? For
+            # example, the nested-for search will have a message that matches everything but has an object type of ANY;
+            # shouldn't we prefer a message that matches everything including the object, except for a more general but
+            # non-ANY actor type?
+            for actor in actor_types:
+                for source in source_types:
+                    for target in target_types:
+                        for verb in verb_types:
+                            for object in object_types:
+                                yield (verb, actor, object, target, source)
+
+        stuff = (verb, actor, object, target, source)
+        stuff = [(x,) if x is ANY else (x, ANY) if type(x) is not tuple else x + (ANY,) for x in stuff]
+        for sel in selection_tuples(*stuff):
+            log.debug('Trying %r', sel)
+            try:
+                return self.messages[sel]
+            except KeyError:
+                pass
+
+        # Oops, no matches.
+        return
 
     def get_message_for_activity(self, activity, expander):
 
