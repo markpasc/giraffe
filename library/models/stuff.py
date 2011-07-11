@@ -1,3 +1,5 @@
+import base64
+
 from django.core.urlresolvers import reverse
 from django.template import Template, Context
 from django.utils.safestring import mark_safe
@@ -131,3 +133,9 @@ class Image(Model):
     content = db.BlobProperty()
     content_type = db.StringProperty()
     slug = db.StringProperty()
+
+    def as_data(self):
+        data = super(Image, self).as_data()
+        data['content_b64'] = base64.b64encode(data['content'])
+        del data['content']
+        return data

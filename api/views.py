@@ -94,7 +94,7 @@ def myself(request):
 @admin_only
 @allowed_methods("POST", "GET")
 @api_error
-def list(request, kind):
+def list(request, kind, offset=None):
     try:
         cls = api.model_for_kind[kind]
     except ValueError:
@@ -105,15 +105,24 @@ def list(request, kind):
 
     # Show a list if it's a GET.
     if request.method == "GET":
+        offset = int(offset) if offset else 0
         q = cls.all()
         if kind == 'asset':
             q = q.order('-published')
-        objs = q[0:30]
+        objs = q[offset:offset+30]
         resp = [x.as_data() for x in objs]
 
+        try:
+            content = json.dumps(resp, indent=4, default=encoder)
+        except UnicodeDecodeError:
+            content = repr(resp)
+            content_type = 'text/plain'
+        else:
+            content_type = 'application/json'
+
         return HttpResponse(
-            content=json.dumps(resp, indent=4, default=encoder),
-            content_type='application/json',
+            content=content,
+            content_type=content_type,
         )
 
     # Otherwise try to make one.
