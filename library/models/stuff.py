@@ -57,6 +57,11 @@ class Asset(Model):
     published = UtcDateTimeProperty(auto_now_add=True)
     updated = UtcDateTimeProperty(auto_now=True)
 
+    def as_data(self):
+        data = super(Asset, self).as_data()
+        data['content_html'] = self.content_as_html()
+        return data
+
     def get_permalink_url(self):
         if self.slug is not None:
             return reverse('asset', kwargs={'slug': self.slug})
